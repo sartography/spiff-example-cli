@@ -1,0 +1,13 @@
+amqp==2.6.1
+billiard==3.6.3.0
+celery==4.4.7
+configparser==5.0.0
+future==0.18.2
+kombu==4.6.11
+lxml==4.5.2
+pkg-resources==0.0.0
+python-box==5.1.0
+python-Levenshtein-wheels==0.13.1
+pytz==2020.1
+SpiffWorkflow===DEVELOPMENT
+vine==1.3.0
