@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1t08rlt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <bpmn:process id="step1" name="step1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_057w6ij</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_057w6ij" sourceRef="StartEvent_1" targetRef="Activity_0yq5jxw" />
+    <bpmn:userTask id="Activity_0yq5jxw" name="Trip Info" camunda:formKey="TripInfo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="location" label="Where are you going?" type="enum" defaultValue="cabin">
+            <camunda:value id="cabin" name="Cabin" />
+            <camunda:value id="hotel" name="Hotel " />
+            <camunda:value id="camping" name="Camping" />
+          </camunda:formField>
+          <camunda:formField id="spam" label="Do you like spam? " type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_057w6ij</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bbmiea</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_1uz2nsj">
+      <bpmn:incoming>Flow_0qhi01a</bpmn:incoming>
+      <bpmn:incoming>Flow_1uoxhb5</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0bbmiea" sourceRef="Activity_0yq5jxw" targetRef="Gateway_1jnomgf" />
+    <bpmn:exclusiveGateway id="Gateway_1jnomgf">
+      <bpmn:incoming>Flow_0bbmiea</bpmn:incoming>
+      <bpmn:outgoing>Flow_1nv46jj</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1c0sxiu</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1nv46jj" name="No Spam" sourceRef="Gateway_1jnomgf" targetRef="Activity_0kgrztz">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">spam != "yes"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1c0sxiu" name="Yes spam" sourceRef="Gateway_1jnomgf" targetRef="Activity_091ji7g">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">spam == "yes"</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_1thzy50" sourceRef="Activity_091ji7g" targetRef="Activity_1p5umzh" />
+    <bpmn:scriptTask id="Activity_0kgrztz" name="Eww Spam">
+      <bpmn:incoming>Flow_1nv46jj</bpmn:incoming>
+      <bpmn:outgoing>Flow_0qhi01a</bpmn:outgoing>
+      <bpmn:script>print("Eww Soam")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_091ji7g" name="Yeah Spam">
+      <bpmn:incoming>Flow_1c0sxiu</bpmn:incoming>
+      <bpmn:outgoing>Flow_1thzy50</bpmn:outgoing>
+      <bpmn:script>print ("yeah spam")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:userTask id="Activity_1p5umzh" name="Count" camunda:formKey="Count">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="count" label="How many people are going? " type="long" defaultValue="1" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1thzy50</bpmn:incoming>
+      <bpmn:outgoing>Flow_1o1ipmb</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_1o1ipmb" sourceRef="Activity_1p5umzh" targetRef="Gateway_0uqxire" />
+    <bpmn:sequenceFlow id="Flow_0qhi01a" sourceRef="Activity_0kgrztz" targetRef="Event_1uz2nsj" />
+    <bpmn:exclusiveGateway id="Gateway_0uqxire">
+      <bpmn:incoming>Flow_1o1ipmb</bpmn:incoming>
+      <bpmn:outgoing>Flow_1uoxhb5</bpmn:outgoing>
+      <bpmn:outgoing>Flow_06ei31j</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_1uoxhb5" sourceRef="Gateway_0uqxire" targetRef="Event_1uz2nsj">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">count == 1</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:sequenceFlow id="Flow_06ei31j" sourceRef="Gateway_0uqxire" targetRef="Activity_18syng0">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">count &gt; 1</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:userTask id="Activity_18syng0" name="Age" camunda:formKey="Age">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="Age" label="How old are the people going? " type="long" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_06ei31j</bpmn:incoming>
+      <bpmn:outgoing>Flow_0jm6ljm</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="Ages" camunda:elementVariable="AgeA">
+        <bpmn:loopCardinality xsi:type="bpmn:tFormalExpression">count</bpmn:loopCardinality>
+      </bpmn:multiInstanceLoopCharacteristics>
+    </bpmn:userTask>
+    <bpmn:sequenceFlow id="Flow_0jm6ljm" sourceRef="Activity_18syng0" targetRef="Activity_14k8zgm" />
+    <bpmn:scriptTask id="Activity_14k8zgm">
+      <bpmn:incoming>Flow_0jm6ljm</bpmn:incoming>
+      <bpmn:script>print(Ages)</bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="step1">
+      <bpmndi:BPMNEdge id="Flow_057w6ij_di" bpmnElement="Flow_057w6ij">
+        <di:waypoint x="215" y="177" />
+        <di:waypoint x="270" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bbmiea_di" bpmnElement="Flow_0bbmiea">
+        <di:waypoint x="370" y="177" />
+        <di:waypoint x="425" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1nv46jj_di" bpmnElement="Flow_1nv46jj">
+        <di:waypoint x="450" y="152" />
+        <di:waypoint x="450" y="120" />
+        <di:waypoint x="520" y="120" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="444" y="133" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1c0sxiu_di" bpmnElement="Flow_1c0sxiu">
+        <di:waypoint x="450" y="202" />
+        <di:waypoint x="450" y="300" />
+        <di:waypoint x="510" y="300" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="442" y="248" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1thzy50_di" bpmnElement="Flow_1thzy50">
+        <di:waypoint x="610" y="300" />
+        <di:waypoint x="700" y="300" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o1ipmb_di" bpmnElement="Flow_1o1ipmb">
+        <di:waypoint x="800" y="300" />
+        <di:waypoint x="900" y="300" />
+        <di:waypoint x="900" y="275" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0qhi01a_di" bpmnElement="Flow_0qhi01a">
+        <di:waypoint x="620" y="120" />
+        <di:waypoint x="862" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1uoxhb5_di" bpmnElement="Flow_1uoxhb5">
+        <di:waypoint x="900" y="225" />
+        <di:waypoint x="900" y="182" />
+        <di:waypoint x="880" y="182" />
+        <di:waypoint x="880" y="138" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_06ei31j_di" bpmnElement="Flow_06ei31j">
+        <di:waypoint x="925" y="250" />
+        <di:waypoint x="973" y="250" />
+        <di:waypoint x="973" y="290" />
+        <di:waypoint x="1020" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jm6ljm_di" bpmnElement="Flow_0jm6ljm">
+        <di:waypoint x="1120" y="290" />
+        <di:waypoint x="1230" y="290" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="159" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0hsw8f4_di" bpmnElement="Activity_0yq5jxw">
+        <dc:Bounds x="270" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_1jnomgf_di" bpmnElement="Gateway_1jnomgf" isMarkerVisible="true">
+        <dc:Bounds x="425" y="152" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_03gqmbx_di" bpmnElement="Activity_0kgrztz">
+        <dc:Bounds x="520" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1h4xu06_di" bpmnElement="Activity_1p5umzh">
+        <dc:Bounds x="700" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0f6v1lk_di" bpmnElement="Activity_091ji7g">
+        <dc:Bounds x="510" y="260" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xkiqfj_di" bpmnElement="Activity_18syng0">
+        <dc:Bounds x="1020" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1uz2nsj_di" bpmnElement="Event_1uz2nsj">
+        <dc:Bounds x="862" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0uqxire_di" bpmnElement="Gateway_0uqxire" isMarkerVisible="true">
+        <dc:Bounds x="875" y="225" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0p568c3_di" bpmnElement="Activity_14k8zgm">
+        <dc:Bounds x="1230" y="250" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
