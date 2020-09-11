@@ -3,6 +3,17 @@ from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
 
+def updateDotDict(dict,id,value):
+    x = id.split('.')
+    #print(x)
+    if len(x) == 1:
+        dict[x[0]]=value
+    elif dict.get(x[0]):
+        dict[x[0]][x[1]] = value
+    else:
+        dict[x[0]] = {x[1]:value}
+
+
 def show_form(task):
     model = {}
     form = task.task_spec.form
@@ -15,15 +26,18 @@ def show_form(task):
         if isinstance(field, EnumFormField):
             prompt += "? (Options: " + ', '.join([str(option.id) for option in field.options]) + ")"
         prompt += "? "
+        answer = input(prompt)
         if field.type == "long":
-            task.data[field.id] = int(input(prompt))
-        else:
-            task.data[field.id] = input(prompt)
-
+            answer = int(answer)
+        print(task.data)
+        print(field.id)
+        print(answer)
+        updateDotDict(model,field.id,answer)
+        task.update_data(model)
 
 x = CamundaParser()
-x.add_bpmn_file('multi_instance_array.bpmn')
-spec = x.get_spec('MultiInstanceArray')
+x.add_bpmn_file('step1.bpmn')
+spec = x.get_spec('step1')
 
 workflow = BpmnWorkflow(spec)
 
