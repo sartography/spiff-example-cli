@@ -6,11 +6,6 @@
 Welcome to Business Process Model and Notation Documentation's
 ============================================================
 
- toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
-
 Indices and tables
 ==================
 
