@@ -10,46 +10,24 @@ from SpiffWorkflow.operators import Operator
 from SpiffWorkflow.serializer.xml import XmlSerializer
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
-#import logging
-#debug = True
-#logger = logging.getLogger('spiffLogger')
-#logger.setLevel(logging.DEBUG)
-#ch = logging.StreamHandler()
-#formatter = logging.Formatter('%(asctime)s - %(filename)s:%(lineno)s - %(levelname)s - %(message)s')
-#ch.setFormatter(formatter)
-#logger.addHandler(ch)
-#
 
-def updateDotDict(dict,id,value):
-    x = id.split('.')
-    print(x)
-    if len(x) == 1:
-        dict[x[0]]=value
-    elif dict.get(x[0]):
-        dict[x[0]][x[1]] = value
-    else:
-        dict[x[0]] = {x[1]:value}
 
 def show_form(task):
-    model = {}
     form = task.task_spec.form
-    docs = task.task_spec.documentation
-    
-    #template = Template(docs)
-    #print(template.render(task.data))
+
+    if task.data is None:
+        task.data = {}
+
     for field in form.fields:
         #print("Please complete the following questions:")
         prompt = field.label
-        print(task.data)
         if isinstance(field, EnumFormField):
             prompt += "? (Options: " + ', '.join([str(option.id) for option in field.options]) + ")"
         prompt += "? "
-        updateDotDict(model,field.id,input(prompt))
-        #model[field.id] = input(prompt)
-    if task.data is None:
-        task.data = {}
-    task.update_data(model)
-#    print(task.data)
+        answer = input(prompt)
+        task.update_data_var(field.id,answer)
+
+
 
 ser = BpmnSerializer()
 
@@ -59,19 +37,13 @@ x.add_bpmn_file('lanes.bpmn')
 spec = x.get_spec('lanes')
 count = 0
 
-def dumpStatus():
-    global ser
-    global count
-    #print('dumping status #%d'%count)
-    json = ser.serialize_workflow(workflow)
-    f = open('status'+str(count)+'.json','w+')
-    f.write(json)
-    f.close()
-    count = count + 1
     
 def printTaskTree(tree,currentID,data):
-    f = open('treeoutput.txt','w')
+    #f = open('treeoutput.txt','w')
     #fix up to follow tree
+    print("/n/n/n")
+    print("Current Tree")
+    print("-------------")
     lookup = {'COMPLETED':'* ',
               'READY':'> ',
               'LIKELY':'0 ',
@@ -79,42 +51,39 @@ def printTaskTree(tree,currentID,data):
               }
     for x in tree:
         if x['id'] == currentID:
-            f.write('>>')
+            print('>>', end='')
         else:
-            f.write(lookup.get(x['state'],'O '))
-        f.write("  "*x['indent'])
-        f.write(x['description'])
+            print(lookup.get(x['state'],'O '),end='')
+        print("  "*x['indent'], end='')
+        print(x['description'], end = '')
         if x['task_id'] is not None:
-            f.write(' ---> ')
-            f.write(str(x['lane']))
+            print(' ---> ',end='')
+            print(str(x['lane']),end='')
         if x.get('is_decision') and x.get('backtracks') is not None:
-            f.write('\n')
-            f.write('  ' * x['indent'] + '   Returns to '+x['backtracks'][1])
+            print()
+            print('  ' * x['indent'] + '   Returns to '+x['backtracks'][1],end='')
         elif x.get('is_decision') and x.get('child_count',0)==0:
-            f.write('\n')
-            f.write('  '*x['indent']+'   Do Nothing')
-        f.write('\n')
-    f.write('\n\n\n-----------------\n')
-    f.write(str(data))
+            print()
+            print('  '*x['indent']+'   Do Nothing', end='')
+        print()
+    print('\n\nCurrent Data')
+    print('-----------------')
+    print(str(data),end='')
+    print('\n\nReady Tasks')
+    print('-----------------')
+
     for lane in ['A','B']:
-        f.write('\n\n'+lane+' Tasks\n')
+        print(lane+' Tasks')
         for x in workflow.get_ready_user_tasks(lane=lane):
-            f.write('    ' + x.get_name() + '\n')
-    f.close()
+            print('    ' + x.get_name())
+    
 
 
-# def printTaskTree(tree,currentID):
-#     f = open('treeoutput.txt','w')
-#     #fix up to follow tree
-#     for x in tree:
-#         f.write(str(x))
-#         f.write('\n')
-#     f.close()
 
 
 
 workflow = BpmnWorkflow(spec)
-dumpStatus()
+
 while not workflow.is_completed():
     workflow.do_engine_steps()
 
