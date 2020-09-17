@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0v4rfw2" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <bpmn:process id="Process_0yfq6lt" isExecutable="true">
+    <bpmn:startEvent id="Event_1d29irb">
+      <bpmn:outgoing>Flow_0wf5awd</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Activity_00by6zh" name="Trip Info" camunda:formKey="TripInfo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="location" label="Where are you going" type="enum" defaultValue="cabin">
+            <camunda:value id="cabin" name="Cabin" />
+            <camunda:value id="hotel" name="Hotel " />
+            <camunda:value id="camping" name="Camping" />
+          </camunda:formField>
+          <camunda:formField id="spam" label="Do you like spam" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0wf5awd</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ndbi30</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:scriptTask id="Activity_0cj34fd" name="Eww Spam">
+      <bpmn:incoming>Flow_10wywsf</bpmn:incoming>
+      <bpmn:outgoing>Flow_0bduhs4</bpmn:outgoing>
+      <bpmn:script>print("Eww Soam")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_17k0twy" name="Yeah Spam">
+      <bpmn:incoming>Flow_1yqw325</bpmn:incoming>
+      <bpmn:outgoing>Flow_0m8wfdi</bpmn:outgoing>
+      <bpmn:script>print ("Yeah Spam!!")</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:endEvent id="Event_1lczh6a">
+      <bpmn:incoming>Flow_0bduhs4</bpmn:incoming>
+      <bpmn:incoming>Flow_0m8wfdi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0wf5awd" sourceRef="Event_1d29irb" targetRef="Activity_00by6zh" />
+    <bpmn:sequenceFlow id="Flow_1ndbi30" sourceRef="Activity_00by6zh" targetRef="Gateway_0e0lw20" />
+    <bpmn:sequenceFlow id="Flow_10wywsf" name="No Spam" sourceRef="Gateway_0e0lw20" targetRef="Activity_0cj34fd" />
+    <bpmn:sequenceFlow id="Flow_1yqw325" name="Yes spam" sourceRef="Gateway_0e0lw20" targetRef="Activity_17k0twy" />
+    <bpmn:sequenceFlow id="Flow_0bduhs4" sourceRef="Activity_0cj34fd" targetRef="Event_1lczh6a" />
+    <bpmn:sequenceFlow id="Flow_0m8wfdi" sourceRef="Activity_17k0twy" targetRef="Event_1lczh6a" />
+    <bpmn:parallelGateway id="Gateway_0e0lw20">
+      <bpmn:incoming>Flow_1ndbi30</bpmn:incoming>
+      <bpmn:outgoing>Flow_10wywsf</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1yqw325</bpmn:outgoing>
+    </bpmn:parallelGateway>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0yfq6lt">
+      <bpmndi:BPMNEdge id="Flow_0wf5awd_di" bpmnElement="Flow_0wf5awd">
+        <di:waypoint x="188" y="170" />
+        <di:waypoint x="250" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ndbi30_di" bpmnElement="Flow_1ndbi30">
+        <di:waypoint x="350" y="170" />
+        <di:waypoint x="405" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_10wywsf_di" bpmnElement="Flow_10wywsf">
+        <di:waypoint x="430" y="145" />
+        <di:waypoint x="430" y="110" />
+        <di:waypoint x="510" y="110" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="424" y="125" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1yqw325_di" bpmnElement="Flow_1yqw325">
+        <di:waypoint x="430" y="195" />
+        <di:waypoint x="430" y="240" />
+        <di:waypoint x="510" y="240" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="422" y="212" width="48" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0bduhs4_di" bpmnElement="Flow_0bduhs4">
+        <di:waypoint x="610" y="110" />
+        <di:waypoint x="700" y="110" />
+        <di:waypoint x="700" y="152" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m8wfdi_di" bpmnElement="Flow_0m8wfdi">
+        <di:waypoint x="610" y="240" />
+        <di:waypoint x="700" y="240" />
+        <di:waypoint x="700" y="188" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_1d29irb_di" bpmnElement="Event_1d29irb">
+        <dc:Bounds x="152" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00by6zh_di" bpmnElement="Activity_00by6zh">
+        <dc:Bounds x="250" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0cj34fd_di" bpmnElement="Activity_0cj34fd">
+        <dc:Bounds x="510" y="70" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_17k0twy_di" bpmnElement="Activity_17k0twy">
+        <dc:Bounds x="510" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1lczh6a_di" bpmnElement="Event_1lczh6a">
+        <dc:Bounds x="682" y="152" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_02arumw_di" bpmnElement="Gateway_0e0lw20">
+        <dc:Bounds x="405" y="145" width="50" height="50" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
