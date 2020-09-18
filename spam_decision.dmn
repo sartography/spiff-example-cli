@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" id="Definitions_194o1o3" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.7.0">
+  <decision id="SpamDecision" name="Decision 1">
+    <decisionTable id="decisionTable_1">
+      <input id="input_1" label="Location">
+        <inputExpression id="inputExpression_1" typeRef="string">
+          <text>location</text>
+        </inputExpression>
+      </input>
+      <output id="output_1" label="Where to get Spam" name="spampurchase" typeRef="string" />
+      <rule id="DecisionRule_0yw5z0v">
+        <description>We might not have a store nearby</description>
+        <inputEntry id="UnaryTests_1he9uo9">
+          <text>"cabin"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0i71d2h">
+          <text>"pack"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_14gnb5v">
+        <description>You always have a store near a hotel</description>
+        <inputEntry id="UnaryTests_1gs7pfj">
+          <text>"hotel"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_1ycqx7m">
+          <text>"get it at store"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_0upx1ht">
+        <description>we may be in the boonies </description>
+        <inputEntry id="UnaryTests_1yqt7d0">
+          <text>"camping"</text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0koobn7">
+          <text>"pack"</text>
+        </outputEntry>
+      </rule>
+      <rule id="DecisionRule_02mpg0f">
+        <description>We have no idea what to do!!</description>
+        <inputEntry id="UnaryTests_1nhsk23">
+          <text></text>
+        </inputEntry>
+        <outputEntry id="LiteralExpression_0wfc3ma">
+          <text>"panic"</text>
+        </outputEntry>
+      </rule>
+    </decisionTable>
+  </decision>
+</definitions>
