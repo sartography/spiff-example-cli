@@ -3,7 +3,6 @@ from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
 
-
 def show_form(task):
     model = {}
     form = task.task_spec.form
@@ -39,3 +38,4 @@ while len(ready_tasks) > 0:
         workflow.complete_task_from_id(task.id)
     workflow.do_engine_steps()
     ready_tasks = workflow.get_ready_user_tasks()
+print(workflow.last_task.data)

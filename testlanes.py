@@ -33,8 +33,8 @@ ser = BpmnSerializer()
 
 #f = open('RepeatForm.bpmn')
 x = CamundaParser()
-x.add_bpmn_file('lanes.bpmn')
-spec = x.get_spec('lanes')
+x.add_bpmn_file('parallelgateway.bpmn')
+spec = x.get_spec('pgateway')
 count = 0
 
     
