@@ -76,9 +76,9 @@ with a UserTask, and an end event. When the user task activity box is clicked th
 questions. In this flow the user is answering two questions : Where are they going and do they like spam. Below you will
 find what the user is being prompted to answer and how the data is being stored in the dictionary.
 
-.. image::images/Basicexample.png
+.. image:: images/basic_example.png
 
-.. image::images/Basicexample-output.png
+.. image:: images/basic_example_output.png
 
 When making the BPM and assigning the activity with a UserTask you then have the option to fill out a form which will (with
 the show form function), promote and ask the sure to complete the questions and collect the data. The form in the image
@@ -89,7 +89,7 @@ in this case and enum. Next we need to have a label, this is the Information tha
 Followed by values, it is recommended that you add a default value just in case the user does not input a variable
 that is recognized. And with all that you have the basics that you need to get the form up and working.
 
-.. image::images/BasicExample-Form.png
+.. image:: images/basic_example_form.png
 
 Exclusive Gateway Example:
 --------------------------
@@ -154,6 +154,7 @@ Now let's look at the DMN table:
 .. image:: images/dmn.png
 
 Lastly you can see an example of what is happening in the output image below.
+
 .. image:: images/dmn-output.png
 
 
@@ -173,8 +174,8 @@ this trip. We are then going to use that number to go through the multi-instance
 means that you can add the names in any order. Then in the next activity the multi-instance in sequential and will go
 through the names in the order they were received. This can more easily be seen through the output image.
 
-.. image::images/multi_instance_array.png
-.. image::images/multi_instance_array-output.png
+.. image:: images/multi_instance_array.png
+.. image:: images/multi_instance_array-output.png
 
 
 
