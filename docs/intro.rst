@@ -25,3 +25,21 @@ The diamond shape is called a gateway, It represents a branch point in our flow.
 BPMN utilizes but the one used in our example is called an exclusive data-based  gateway (also called an XOR gateway).
 When we use this gateway we are saying that you must take one path or the other based on some data condition.
 
+
+Goals of a Good BPMN:
+---------------------
+1. Correctness. Now we understand this means not only semantic correctness – the  shapes and symbols are used correctly
+– but structural correctness as well, so that the  instance of each activity corresponds 1:1 with the process instance.
+
+2.Clarity. The process logic should be clear from the diagrams alone, without prior  knowledge of how the process works
+or even of the terminology employed.
+
+3.Completeness. It should be possible to tell from a single glance how the process  starts, it’s possible end states,
+what the instance represents, and all interactions with  external entities. The Method actually begins with this.
+
+4. Consistency. Given the same set of process information, ideally all modelers should  create (more or less) the same
+process model. If all members of your project team  follow the Method, understanding each other’s diagrams becomes a breeze.
+Over ten years of teaching Method and Style, the Method has evolved to become more  mechanical, more standardized in the
+order of its steps, and this has helped with  consistency.
+
+

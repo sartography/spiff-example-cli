@@ -121,11 +121,41 @@ Script Example:
 it will be Camandu) or implementer defines a script in a language that the engine can interpret, we will be using python.
 When the Task is ready to start, the engine will execute the script. When the script is completed, the Task will also be
 completed. These are easy to use when a task can easily be performed automatically.
+
 .. image:: images/Scriptsexample.png
 .. image:: images/Scriptsexample-output.png
 
 Dmn and Decision Table Example:
 --------------------------------
+In DMN, decisions can be modeled and executed using the same language. Business analysts can model the rules that lead
+to a decision in an easy to read table, and those tables can be executed directly by a decision engine (like Camunda).
+This minimizes the risk of misunderstandings between business analysts and developers, and it even allows rapid changes
+in production. Yes we can do a lot of the things we do with DMN using BPMN gateways but it creates complicated and very
+disorganized BPMN allowing for mistakes and confusions. BPMN includes a business rule task, which is the decision table.
+That task refers to a decision that needs to be made, and the outcome of the decision that is made based on the table
+allows for the next gateway or activity to route the flow.
+
+Let's first look at the BPMN image below we are building on the basic example. Here we have an activity with the
+business tasks that reads Make a decision this is where the table is rooted and called on the BPMN side.
+
+.. image:: images/decision_table.png
+
+Now let's look at the DMN table:
+    -The column second from the left refers to possible input data. In this example,
+    there is only one input column. The cell with the text “Location” defines what the input is. In DMN, this is the label
+    for an input expression. The cells below called input entries refer to the possible conditions regarding the input.
+    Those conditions are in quotation marks (like “cabin”), which is because we are technically comparing String values.
+    -For each possible input entry, we define the according output entry in the cell next to it. That’s how we express
+    that based on the location, how you must bring your Spam. Again, we have to use quotation marks because technically
+    we are assigning String values.
+    -Last but not least, you can annotate your rules in the column on the right.
+    Those annotations are only there for you to explain and are not seen by anyone else, and will be ignored by a decision engine.
+
+.. image:: images/dmn.png
+
+Lastly you can see an example of what is happening in the output image below.
+.. image:: images/dmn-output.png
+
 
 Multi-Instance Example:
 -------------------------
