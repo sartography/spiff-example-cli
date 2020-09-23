@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<definitions xmlns="http://www.omg.org/spec/DMN/20151101/dmn.xsd" id="Definitions_194o1o3" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="3.7.0">
+<definitions xmlns="https://www.omg.org/spec/DMN/20191111/MODEL/" id="Definitions_194o1o3" name="DRD" namespace="http://camunda.org/schema/1.0/dmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
   <decision id="SpamDecision" name="Decision 1">
     <decisionTable id="decisionTable_1">
       <input id="input_1" label="Location">
@@ -14,7 +14,7 @@
           <text>"cabin"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0i71d2h">
-          <text>"pack"</text>
+          <text>"Make sure to pack Spam!"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_14gnb5v">
@@ -23,16 +23,16 @@
           <text>"hotel"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_1ycqx7m">
-          <text>"get it at store"</text>
+          <text>"You can get Spam at the store"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_0upx1ht">
-        <description>we may be in the boonies </description>
+        <description>we may be in the boonies</description>
         <inputEntry id="UnaryTests_1yqt7d0">
           <text>"camping"</text>
         </inputEntry>
         <outputEntry id="LiteralExpression_0koobn7">
-          <text>"pack"</text>
+          <text>"Make sure to pack Spam!"</text>
         </outputEntry>
       </rule>
       <rule id="DecisionRule_02mpg0f">
