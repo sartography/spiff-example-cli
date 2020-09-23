@@ -1,3 +1,4 @@
+from jinja2 import Template
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
@@ -6,6 +7,10 @@ from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 def show_form(task):
     model = {}
     form = task.task_spec.form
+    docs = task.task_spec.documentation
+
+    template = Template(docs)
+    print(template.render(task.data))
 
     if task.data is None:
         task.data = {}
