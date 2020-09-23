@@ -30,8 +30,6 @@ Things that you will need to download:
 
 
 
-
-
 toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -40,3 +38,5 @@ toctree::
 Indices and tables
 ==================
 
+intro.rst
+examples.rst

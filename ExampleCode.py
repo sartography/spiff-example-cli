@@ -21,8 +21,8 @@ def show_form(task):
         task.update_data_var(field.id,answer)
 
 x = CamundaParser()
-x.add_bpmn_file('Scriptsexample.bpmn')
-spec = x.get_spec('ScriptsExample')
+x.add_bpmn_file('multi_instance_array.bpmn')
+spec = x.get_spec('MultiInstanceArray')
 
 workflow = BpmnWorkflow(spec)
 
