@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<<<<<<< HEAD
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0p4zkct" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
-=======
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0p4zkct" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.0">
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
   <bpmn:process id="MultiInstanceArray" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0bplvtg</bpmn:outgoing>
@@ -12,11 +8,7 @@
       <bpmn:documentation>Please enter family size:</bpmn:documentation>
       <bpmn:extensionElements>
         <camunda:formData>
-<<<<<<< HEAD
           <camunda:formField id="Family.Size" label="Family Size" type="long" defaultValue="2">
-=======
-          <camunda:formField id="FamilySize" label="Family Size" type="long" defaultValue="2">
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
             <camunda:validation>
               <camunda:constraint name="min1" config="&#62;=1" />
               <camunda:constraint name="max10" config="&#60;=10" />
@@ -28,13 +20,6 @@
             <camunda:map />
           </camunda:outputParameter>
         </camunda:inputOutput>
-<<<<<<< HEAD
-        <camunda:properties>
-          <camunda:property name="Test1" value="Value1" />
-          <camunda:property name="Test2" value="Value2" />
-        </camunda:properties>
-=======
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0bplvtg</bpmn:incoming>
       <bpmn:outgoing>Flow_0zpm0rc</bpmn:outgoing>
@@ -46,33 +31,17 @@
         <camunda:formData>
           <camunda:formField id="FamilyMember.FirstName" label="First Name" type="string" />
         </camunda:formData>
-<<<<<<< HEAD
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0zpm0rc</bpmn:incoming>
       <bpmn:outgoing>Flow_0659lqh</bpmn:outgoing>
       <bpmn:multiInstanceLoopCharacteristics camunda:collection="Family.Members" camunda:elementVariable="FamilyMember">
         <bpmn:loopCardinality xsi:type="bpmn:tFormalExpression">Family.Size</bpmn:loopCardinality>
-=======
-        <camunda:properties>
-          <camunda:property name="Kelly" value="silly" />
-          <camunda:property />
-        </camunda:properties>
-      </bpmn:extensionElements>
-      <bpmn:incoming>Flow_0zpm0rc</bpmn:incoming>
-      <bpmn:outgoing>Flow_0659lqh</bpmn:outgoing>
-      <bpmn:multiInstanceLoopCharacteristics isSequential="true" camunda:collection="Family.Members" camunda:elementVariable="FamilyMember">
-        <bpmn:loopCardinality xsi:type="bpmn:tFormalExpression">FamilySize</bpmn:loopCardinality>
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
         <bpmn:completionCondition xsi:type="bpmn:tFormalExpression">test completion</bpmn:completionCondition>
       </bpmn:multiInstanceLoopCharacteristics>
     </bpmn:userTask>
     <bpmn:sequenceFlow id="Flow_0bplvtg" sourceRef="StartEvent_1" targetRef="Activity_FamSize" />
     <bpmn:userTask id="FamilyMemberBday" name="GetBirthday for each family member in prev step" camunda:formKey="FamilyBDay">
-<<<<<<< HEAD
-      <bpmn:documentation>Enter Birthday for {{  CurrentFamilyMember['FamilyMember.FormField_FirstName'] }}</bpmn:documentation>
-=======
       <bpmn:documentation>Enter Birthday for {{  CurrentFamilyMember.FirstName }}</bpmn:documentation>
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="CurrentFamilyMember.Birthdate" label="Birthday" type="string" />
@@ -91,7 +60,6 @@
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MultiInstanceArray">
-<<<<<<< HEAD
       <bpmndi:BPMNEdge id="Flow_0ncqf54_di" bpmnElement="Flow_0ncqf54">
         <di:waypoint x="690" y="117" />
         <di:waypoint x="788" y="117" />
@@ -112,13 +80,10 @@
         <di:waypoint x="390" y="117" />
         <di:waypoint x="420" y="117" />
       </bpmndi:BPMNEdge>
-=======
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_00ttlok_di" bpmnElement="Activity_FamSize">
-<<<<<<< HEAD
         <dc:Bounds x="260" y="70" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0sj67t1_di" bpmnElement="FamilyMemberTask">
@@ -127,39 +92,9 @@
       <bpmndi:BPMNShape id="Activity_1lj1hu8_di" bpmnElement="FamilyMemberBday">
         <dc:Bounds x="590" y="77" width="100" height="80" />
       </bpmndi:BPMNShape>
-=======
-        <dc:Bounds x="260" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0zpm0rc_di" bpmnElement="Flow_0zpm0rc">
-        <di:waypoint x="360" y="117" />
-        <di:waypoint x="420" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Activity_0sj67t1_di" bpmnElement="FamilyMemberTask">
-        <dc:Bounds x="420" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0bplvtg_di" bpmnElement="Flow_0bplvtg">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="260" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Activity_1lj1hu8_di" bpmnElement="FamilyMemberBday">
-        <dc:Bounds x="590" y="77" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_0659lqh_di" bpmnElement="Flow_0659lqh">
-        <di:waypoint x="520" y="117" />
-        <di:waypoint x="590" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0ncqf54_di" bpmnElement="Flow_0ncqf54">
-        <di:waypoint x="690" y="117" />
-        <di:waypoint x="788" y="117" />
-      </bpmndi:BPMNEdge>
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
       <bpmndi:BPMNShape id="Event_11av7pp_di" bpmnElement="Event_EndJoin">
         <dc:Bounds x="788" y="99" width="36" height="36" />
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
-<<<<<<< HEAD
 </bpmn:definitions>
-=======
-</bpmn:definitions>
->>>>>>> b3c929088754aaebdc2a57182e2d5c767a260704
