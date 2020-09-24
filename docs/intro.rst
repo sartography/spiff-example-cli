@@ -3,7 +3,7 @@ How to Create Your Own BPMN:
 
 Making your first BPMN can be overwhelming, here we can go over an example step by step and create a simple flow together
 with as many attributes as possible. In our example and through the documentation we will continue to use Camunda Modeler
-as our application for modeling BPMN. `Camunda Modeler <https://camunda.com/download/modeler/>`_
+as our application for modeling BPMN. `Camunda Modeler Download Page <https://camunda.com/download/modeler/>`_
 
 .. sidebar:: BPMN Modelers
 
@@ -16,7 +16,7 @@ The first step in anything in life is getting started, with BPMN you represent t
 border circle, also known as a start event. In some cases there are symbols inside the start event called triggers.
 These triggers identify the “meaning” of the process's start.
 
-.. _
+
 .. figure:: images/simplestworkflow.png
    :scale: 25%
    :align: center
@@ -36,11 +36,24 @@ When the node at the tail of a sequence flow completes, the node  at the arrowhe
 Now we need to tell the flow what it needs to do, this is down by drawing a rounded rectangular shape.
 These are called activities which represent an action.
 
+More complicated Workflows
+--------------------------
+
+.. figure:: images/plgateway.png
+   :scale: 25%
+   :align: center
+
+   A workflow with a gateway
 
 
 The diamond shape is called a gateway, It represents a branch point in our flow.  There are a few other gateways that
 BPMN utilizes but the one used in our example is called an exclusive data-based  gateway (also called an XOR gateway).
 When we use this gateway we are saying that you must take one path or the other based on some data condition.
+
+The important point is that we can add a branch in the workflow **without** creating an explicit branch in the code.
+As we build more complicated workflows with more features, we will have to add some items to our code to support
+those features, but once we have them, we should be able to run any workflow without major changes to the underlying
+code that is using the SpiffWorkflow library.
 
 .. sidebar:: BPMN Resources
 

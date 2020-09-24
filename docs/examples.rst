@@ -1,13 +1,44 @@
 Concepts, Example Code,and Diagrams
 ===================================
 
+
+Basic Example:
+--------------
+In this example you are doing one of the most simple versions of a BPMN workflow. We have a start event, an activity
+with a UserTask, and an end event. When the user task activity box is clicked there are forms that you can fill to ask
+questions. In this flow the user is answering two questions : Where are they going and do they like spam. Below you will
+find what the user is being prompted to answer and how the data is being stored in the data dictionary (covered later).
+
+.. image:: images/basic_example.png
+   :scale: 25%
+   :align: center
+
+.. image:: images/basic_example_output.png
+
+When making the BPMN and assigning the activity with a UserTask you then have the option to fill out a form which
+will (using the source code listed below), prompt and ask the sure to complete the questions and collect the data.
+
+The form in the image
+below is the same form that is used to create the example above.  In this form you are first asked to enter a form key
+which identifies the name of the form. Then you can add form fields. So here we have added location, below we have added
+the different components that need to be in this form field, first with the id-the name of the variable, then the type
+in this case and enum. Next we need to have a label, this is the Information that will be displayed to the user.
+Followed by values, it is recommended that you add a default value just in case the user does not input a variable
+that is recognized. And with all that you have the basics that you need to get the form up and working.
+
+.. image:: images/basic_example_form.png
+
 Example Code
 ------------
+To enable the workflow we made above, we can interact with it using the code found in the
+`ExampleCode.py <ExampleCode.py>`_ file.
 
 This is the example code for running the workflow. The first thing that you will need to do is make sure that the
 following files are imported
 
 .. code:: python
+   :name: ExampleCode.py
+   :number-lines: 1
 
     from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
     from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
@@ -19,15 +50,19 @@ we then add the file (bpmn) in, that we just parsed. Lastly for this chunck we a
 all the files from the and has complied it down
 
 .. code:: python
+   :name: ExampleCode.py
+   :number-lines: 23
 
     x = CamundaParser()
     x.add_bpmn_file('Basicexample.bpmn')
-    spec = x.get_spec('BasicExample')
+    spec = x.get_spec('Basicexample')
 
 On this line below we are calling BPMNworkflow(spec), this is creating instances of that workflow. Meaning that it is a running
 working workflow, this allows for the state to be known, such as where you are and what current tasks needs to be completed.
 
 .. code:: python
+   :name: ExampleCode.py
+   :number-lines: 27
 
     workflow = BpmnWorkflow(spec)
 
@@ -37,15 +72,19 @@ already there. The code after that on other hands calls for all task, and gets i
 getting parallele tasks ready to run
 
 .. code:: python
+   :name: ExampleCode.py
+   :number-lines: 29
 
     workflow.do_engine_steps()
     ready_tasks = workflow.get_ready_user_tasks()
 
-In these last few lines our code is running through the workflow and seeing where there are task that have a Usertask
-then it will show form and print out the data from that task. (look at example bellow to see what printed questions
+In these last few lines our code is running through the workflow and seeing where there are task that have a UserTask
+then it will show form and print out the data from that task. (look at example below to see what printed questions
 look like and what the data at the end looks like.)
 
 .. code:: python
+   :name: ExampleCode.py
+   :number-lines: 29
 
     while len(ready_tasks) > 0:
         for task in ready_tasks:
@@ -58,11 +97,13 @@ look like and what the data at the end looks like.)
 
 All below examples will use the same code
 
-There is also a funcation at the top of the Example Code file that allows for the form to ask the user the quations
-that are filled out in the form section, ask for an mput and updata the insfomation as the workflow is working through
-the procces.
+There is also a function at the top of the Example Code file that allows for the form to ask the user the quations
+that are filled out in the form section, ask for input and update the information as the workflow is working through
+the process.
 
 .. code:: python
+   :name: ExampleCode.py
+   :number-lines: 6
 
     def show_form(task):
         model = {}
@@ -81,29 +122,7 @@ the procces.
                 answer = int(answer)
             task.update_data_var(field.id,answer)
 
-Basic Example:
---------------
-In this example you are doing one of the most simple versions of a BPMN workflow. We have a start event, an activity
-with a UserTask, and an end event. When the user task activity box is clicked there are forms that you can fill to ask
-questions. In this flow the user is answering two questions : Where are they going and do they like spam. Below you will
-find what the user is being prompted to answer and how the data is being stored in the dictionary.
-
-.. image:: images/basic_example.png
-
-.. image:: images/basic_example_output.png
-
-When making the BPM and assigning the activity with a UserTask you then have the option to fill out a form which will (with
-the show form function), promote and ask the sure to complete the questions and collect the data. The form in the image
-below is the same form that is used to create the example above.  In this form you are first asked to enter a form key
-which identifies the name of the form. Then you can add form fields. So here we have added location, below we have added
-the different components that need to be in this form field, first with the id-the name of the variable, then the type
-in this case and enum. Next we need to have a label, this is the Information that will be displayed to the user.
-Followed by values, it is recommended that you add a default value just in case the user does not input a variable
-that is recognized. And with all that you have the basics that you need to get the form up and working.
-
-.. image:: images/basic_example_form.png
-
-Exclusive Gateway Example:
+Exclusive Gateway Example
 --------------------------
 An exclusive gateway is used to express that exactly one alternative can be selected. In an exclusive gateway, the
 token runs along the sequence flow whose condition is met first. The response you get depends on which one path that
@@ -112,11 +131,13 @@ response to the “Do you like spam?” question in the user task previous. If y
 bad spam brands, if you answered yes you will be asked ONLY good spam brands.
 
 .. image:: images/exgateway.png
+   :scale: 25%
+   :align: center
 
 .. image:: images/exgateway-output.png
 
 
-Parallel Gateway Example:
+Parallel Gateway Example
 -------------------------
 A parallel or AND gateway creates parallel paths without checking any conditions. This means that each outgoing sequence
 flow becomes active upon the execution of a parallel gateway, which is commonly known as a “process fork”. Let's look
@@ -124,10 +145,12 @@ at the example below, unlike in the previous example of exclusive gateways, you 
 in regards to both good AND bad brands.
 
 .. image:: images/plgateway.png
+   :scale: 25%
+   :align: center
 
 .. image:: images/plgateway-output.png
 
-Script Example:
+Script Example
 -----------------
 
 A Script Task is executed by a business process engine. In our example it's the .do_engine_steps(). The modeler (for us
@@ -136,7 +159,35 @@ When the Task is ready to start, the engine will execute the script. When the sc
 completed. These are easy to use when a task can easily be performed automatically.
 
 .. image:: images/Scriptsexample.png
+   :scale: 25%
+   :align: center
+
 .. image:: images/Scriptsexample-output.png
+
+
+Multi-Instance Example
+-------------------------
+Multi-instance activities are represented by three horizontal or vertical lines at the bottom-center of the activity
+and task symbol. It’s purpose is to show that the activity occurs for a collection of objects or items.  The number of
+times that the activity completes is defined by the number of items that exist in the collection. This is different from
+other looping mechanisms that must check a condition every time the loop completes in order to determine if it should
+continue looping. Three vertical lines indicate that the multi-instance activity is non-sequential.  This means that the
+activity can be completed for each item in the collection in no particular order. Three horizontal lines indicate that
+the multi-instance activity is sequential. This means that the activity must complete for each item in the order that
+they are received within the collection.
+
+Let's look at the example below, the first activity is a UserTask which allows us to ask how many people are going on
+this trip. We are then going to use that number to go through the multi-instance. The first is non-sequential, which
+means that you can add the names in any order. Then in the next activity the multi-instance in sequential and will go
+through the names in the order they were received. This can more easily be seen through the output image.
+
+.. image:: images/multi_instance_array.png
+.. image:: images/multi_instance_array-output.png
+
+
+
+
+
 
 Dmn and Decision Table Example:
 --------------------------------
@@ -172,26 +223,5 @@ Now let's look at the DMN table:
 Lastly you can see an example of what is happening in the output image below.
 
 .. image:: images/dmn-output.png
-
-
-Multi-Instance Example:
--------------------------
-Multi-instance activities are represented by three horizontal or vertical lines at the bottom-center of the activity
-and task symbol. It’s purpose is to show that the activity occurs for a collection of objects or items.  The number of
-times that the activity completes is defined by the number of items that exist in the collection. This is different from
-other looping mechanisms that must check a condition every time the loop completes in order to determine if it should
-continue looping. Three vertical lines indicate that the multi-instance activity is non-sequential.  This means that the
-activity can be completed for each item in the collection in no particular order. Three horizontal lines indicate that
-the multi-instance activity is sequential. This means that the activity must complete for each item in the order that
-they are received within the collection.
-
-Let's look at the example below, the first activity is a UserTask which allows us to ask how many people are going on
-this trip. We are then going to use that number to go through the multi-instance. The first is non-sequential, which
-means that you can add the names in any order. Then in the next activity the multi-instance in sequential and will go
-through the names in the order they were received. This can more easily be seen through the output image.
-
-.. image:: images/multi_instance_array.png
-.. image:: images/multi_instance_array-output.png
-
 
 
