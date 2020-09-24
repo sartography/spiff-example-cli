@@ -5,7 +5,7 @@ When using forms, it is often nice to have the ability to display the context of
 using a multi-instance to enter the name of a bunch of people and then we need to enter the birthday for the list we
 just created. If I don't have context, how do I know if I am putting in the birthday for Bob or Sally?
 
-.. image:: /home/kelly/sartography/SpiffExample/docs/images/multi_instance_array.png
+.. image:: images/multi_instance_array.png
 
 Luckily, we have a place to do that for camunda modeler. When we click on the 'Enter Birthday for each family member
 in prev step' user task, there is an 'Element Documentation' in the left hand sidebar.

@@ -5,7 +5,9 @@ Example Code
 ------------
 
 This is the example code for running the workflow. The first thing that you will need to do is make sure that the
-following files are imported ::
+following files are imported
+
+.. code:: python
 
     from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
     from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
@@ -14,28 +16,36 @@ following files are imported ::
 
 In the code below we have first specialized parse that parsers the Camunda file
 we then add the file (bpmn) in, that we just parsed. Lastly for this chunck we are getting a specification, it is loading
-all the files from the and has complied it down ::
+all the files from the and has complied it down
+
+.. code:: python
 
     x = CamundaParser()
     x.add_bpmn_file('Basicexample.bpmn')
     spec = x.get_spec('BasicExample')
 
 On this line below we are calling BPMNworkflow(spec), this is creating instances of that workflow. Meaning that it is a running
-working workflow, this allows for the state to be known, such as where you are and what current tasks needs to be completed. ::
+working workflow, this allows for the state to be known, such as where you are and what current tasks needs to be completed.
+
+.. code:: python
 
     workflow = BpmnWorkflow(spec)
 
 On the line bellow you are running .do_engine_steps(): This allows you to do things that are automatic. For example if
 you have script task that need to run at the start event it will go through and do all the automatic task that are
 already there. The code after that on other hands calls for all task, and gets it ready to run all tasks. Including
-getting parallele tasks ready to run ::
+getting parallele tasks ready to run
+
+.. code:: python
 
     workflow.do_engine_steps()
     ready_tasks = workflow.get_ready_user_tasks()
 
 In these last few lines our code is running through the workflow and seeing where there are task that have a Usertask
 then it will show form and print out the data from that task. (look at example bellow to see what printed questions
-look like and what the data at the end looks like.) ::
+look like and what the data at the end looks like.)
+
+.. code:: python
 
     while len(ready_tasks) > 0:
         for task in ready_tasks:
@@ -50,7 +60,9 @@ All below examples will use the same code
 
 There is also a funcation at the top of the Example Code file that allows for the form to ask the user the quations
 that are filled out in the form section, ask for an mput and updata the insfomation as the workflow is working through
-the procces. ::
+the procces.
+
+.. code:: python
 
     def show_form(task):
         model = {}
@@ -117,7 +129,8 @@ in regards to both good AND bad brands.
 
 Script Example:
 -----------------
- A Script Task is executed by a business process engine. In our example it's the .do_engine_steps(). The modeler (for us
+
+A Script Task is executed by a business process engine. In our example it's the .do_engine_steps(). The modeler (for us
 it will be Camandu) or implementer defines a script in a language that the engine can interpret, we will be using python.
 When the Task is ready to start, the engine will execute the script. When the script is completed, the Task will also be
 completed. These are easy to use when a task can easily be performed automatically.
@@ -141,15 +154,18 @@ business tasks that reads Make a decision this is where the table is rooted and 
 .. image:: images/decision_table.png
 
 Now let's look at the DMN table:
-    -The column second from the left refers to possible input data. In this example,
-    there is only one input column. The cell with the text “Location” defines what the input is. In DMN, this is the label
-    for an input expression. The cells below called input entries refer to the possible conditions regarding the input.
-    Those conditions are in quotation marks (like “cabin”), which is because we are technically comparing String values.
-    -For each possible input entry, we define the according output entry in the cell next to it. That’s how we express
-    that based on the location, how you must bring your Spam. Again, we have to use quotation marks because technically
-    we are assigning String values.
-    -Last but not least, you can annotate your rules in the column on the right.
-    Those annotations are only there for you to explain and are not seen by anyone else, and will be ignored by a decision engine.
+
+    * The column second from the left refers to possible input data. In this example,
+      there is only one input column. The cell with the text “Location” defines what the input is. In DMN, this is the
+      label for an input expression. The cells below called input entries refer to the possible conditions regarding the
+      input. Those conditions are in quotation marks (like “cabin”), which is because we are technically comparing
+      String values.
+    * For each possible input entry, we define the according output entry in the cell next to it. That’s how we express
+      that based on the location, how you must bring your Spam. Again, we have to use quotation marks because
+      technically we are assigning String values.
+    * Last but not least, you can annotate your rules in the column on the right. Those annotations are only there
+      for you to explain and are not seen by anyone else, and will be ignored by a decision engine.
+
 
 .. image:: images/dmn.png
 

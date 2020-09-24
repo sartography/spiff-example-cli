@@ -29,13 +29,12 @@ Software Requirements:
 Things that you will need to download:
 
 
-toctree::
+.. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   intro
+   examples
+   jinja
 
-Indices and tables
-==================
 
-intro.rst
-examples.rst
