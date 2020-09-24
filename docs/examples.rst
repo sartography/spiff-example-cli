@@ -1,5 +1,5 @@
-Concepts, Example Code,and Digrams
-==================================
+Concepts, Example Code,and Diagrams
+===================================
 
 Example Code
 ------------

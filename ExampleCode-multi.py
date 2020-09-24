@@ -10,6 +10,7 @@ def show_form(task):
     docs = task.task_spec.documentation
 
     template = Template(docs)
+    print(task.data)
     print(template.render(task.data))
 
     if task.data is None:
