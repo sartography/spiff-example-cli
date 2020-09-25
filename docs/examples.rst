@@ -152,11 +152,23 @@ in regards to both good AND bad brands.
 
 Script Example
 -----------------
+.. sidebar:: Setting up a script task
+
+  To create a script task in Camunda modeler, you drag over a task from the object bar and then right click on the
+  task, use the wrench and select a script task from the options.  Once you have a script task selected, use the
+  'inline script' option in the options bar on the right and put in the code that you want to run. When using scripts,
+  you can interact with all of the data that has been put into the task.data object during the workflow.
+
+  .. image:: images/script_task.png
+     :align: center
+
 
 A Script Task is executed by a business process engine. In our example it's the .do_engine_steps(). The modeler (for us
-it will be Camandu) or implementer defines a script in a language that the engine can interpret, we will be using python.
+it will be Camunda) or implementer defines a script in a language that the engine can interpret, we will be using
+python.
 When the Task is ready to start, the engine will execute the script. When the script is completed, the Task will also be
 completed. These are easy to use when a task can easily be performed automatically.
+
 
 .. image:: images/Scriptsexample.png
    :scale: 25%
@@ -185,14 +197,167 @@ through the names in the order they were received. This can more easily be seen 
 .. image:: images/multi_instance_array-output.png
 
 
+MultiInstance Notes
+-------------------
+
+A subset of MultiInstance and Looping Tasks are supported. Notably,
+the completion condition is not currently supported.
+
+The following definitions should prove helpful
+
+**loopCardinality** - This variable can be a text representation of a
+number - for example '2' or it can be the name of a variable in
+task.data that resolves to a text representation of a number.
+It can also be a collection such as a list or a dictionary. In the
+case that it is a list, the loop cardinality is equal to the length of
+the list and in the case of a dictionary, it is equal to the list of
+the keys of the dictionary.
+
+If loopCardinality is left blank and the Collection is defined, or if
+loopCardinality and Collection are the same collection, then the
+MultiInstance will loop over the collection and update each element of
+that collection with the new information. In this case, it is assumed
+that the incoming collection is a dictionary, currently behavior for
+working with a list in this manner is not defined and will raise an error.
+
+**Collection** This is the name of the collection that is created from
+the data generated when the task is run. Examples of this would be
+form data that is generated from a UserTask or data that is generated
+from a script that is run. Currently the collection is built up to be
+a dictionary with a numeric key that corresponds to the place in the
+loopCardinality. For example, if we set the loopCardinality to be a
+list such as ['a','b','c] the resulting collection would be {1:'result
+from a',2:'result from b',3:'result from c'} - and this would be true
+even if it is a parallel MultiInstance where it was filled out in a
+different order.
+
+**Element Variable** This is the variable name for the current
+iteration of the MultiInstance. In the case of the loopCardinality
+being just a number, this would be 1,2,3, . . .  If the
+loopCardinality variable is mapped to a collection it would be either
+the list value from that position, or it would be the value from the
+dictionary where the keys are in sorted order.  It is the content of the
+element variable that should be updated in the task.data. This content
+will then be added to the collection each time the task is completed.
+
+Example:
+  In a sequential MultiInstance, loop cardinality is ['a','b','c'] and elementVariable is 'myvar'
+  then in the case of a sequential multiinstance the first call would
+  have 'myvar':'a' in the first run of the task and 'myvar':'b' in the
+  second.
+
+Example:
+  In a Parallel MultiInstance, Loop cardinality is a variable that contains
+  {'a':'A','b':'B','c':'C'} and elementVariable is 'myvar' - when the multiinstance is ready, there
+  will be 3 tasks. If we choose the second task, the task.data will
+  contain 'myvar':'B'.
+
+Updating Data
+-------------
+
+While there may be some MultiInstances that will not result in any
+data, most of the time there will be some kind of data generated that
+will be collected from the MultiInstance. A good example of this is a
+UserTask that has an associated form or a script that will do a lookup
+on a variable.
+
+Each time the MultiInstance task generates data, the method
+task.update_data(data) should be called where data is the data
+generated. The 'data' variable that is passed in is assumed to be a
+dictionary that contains the element variable. Calling task.update_data(...)
+will ensure that the MultiInstance gets the correct data to include in the
+collection. The task.data is also updated with the dictionary passed to
+this method.
+
+Example:
+  In a Parallel MultiInstance, Loop cardinality is a variable that contains
+  {'a':'A','b':'B','c':'C'} and elementVariable is 'myvar'.
+  If we choose the second task, the task.data will contain 'myvar':{'b':'B'}.
+  If we wish to update the data, we would call task.update_data('myvar':{'b':'B2'})
+  When the task is completed, the task.data will now contain:
+  {'a':'A','b':'B2','c':'C'}
+
+Looping Tasks
+-------------
+
+A looping task sets the cardinality to 25 which is assumed to be a
+sane maximum value. The looping task will add to the collection each
+time it is processed assuming data is updated as outlined in the
+previous paragraph.
+
+To halt the looping the task.terminate_loop()
+
+Each time task.complete() is called (or
+workflow.complete_task_by_id(task.id) ), the task will again present
+as READY until either the cardinality is exausted, or
+task.terminate_loop() is called.
 
 
+Shared code
+-----------
 
+Up to this point, all of these examples can run using the exact same code, only changing the name of the BPMN and the
+id of the workflow (in Camunda modeler, you click on the background and change the ID field in the 'general' tab -
+this is slightly different when working with multi-lane workflows which are covered later).
+
+For the following example, we will need to change the code a bit so that we can import a DMN table, outlined below.
+
+Please see the Example-dmn.py code for an example.
+
+Below are the code changes that happened to make this happen
+
+add
+
+.. code:: python
+   :number-lines: 2
+
+   from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
+
+and
+
+.. code:: python
+   :number-lines: 6
+
+    class MyCustomParser(BpmnDmnParser):
+     """
+     A BPMN and DMN parser that can also parse Camunda forms.
+     """
+     OVERRIDE_PARSER_CLASSES = BpmnDmnParser.OVERRIDE_PARSER_CLASSES
+     OVERRIDE_PARSER_CLASSES.update(CamundaParser.OVERRIDE_PARSER_CLASSES)
+
+change
+
+.. code:: python
+   :number-lines: 23
+
+   x = CamundaParser()
+   x.add_bpmn_file('Basicexample.bpmn')
+   spec = x.get_spec('Basicexample')
+
+to
+
+.. code:: python
+   :number-lines: 31
+
+    x = MyCustomParser()
+    x.add_bpmn_file('decision_table.bpmn')
+    x.add_dmn_file('spam_decision.dmn')
+    spec = x.get_spec('step1')
+
+Basically, we needed a class that would handle both the Camunda parser AND a dmn parser in the same workflow so we
+made the custom class above
+
+.. sidebar:: TODO
+
+   This should really change - it seems really confusing to a person new to this as to why I should have to create a
+   custom class to do this.
+
+Once we have the additional capabilities we will be able to process a workflow with a DMN table
 
 Dmn and Decision Table Example:
 --------------------------------
 In DMN, decisions can be modeled and executed using the same language. Business analysts can model the rules that lead
-to a decision in an easy to read table, and those tables can be executed directly by a decision engine (like Camunda).
+to a decision in an easy to read table, and those tables can be executed directly by SpiffWorkflow
 This minimizes the risk of misunderstandings between business analysts and developers, and it even allows rapid changes
 in production. Yes we can do a lot of the things we do with DMN using BPMN gateways but it creates complicated and very
 disorganized BPMN allowing for mistakes and confusions. BPMN includes a business rule task, which is the decision table.
@@ -203,6 +368,12 @@ Let's first look at the BPMN image below we are building on the basic example. H
 business tasks that reads Make a decision this is where the table is rooted and called on the BPMN side.
 
 .. image:: images/decision_table.png
+
+
+.. sidebar:: TODO
+
+   SpiffWorkflow still doesn't honor the hit policy, and it currently requires you to jump through some hoops if you
+   want to use the FEEL expression language rather than python ( you can't just change the expression language)
 
 Now let's look at the DMN table:
 
@@ -216,6 +387,12 @@ Now let's look at the DMN table:
       technically we are assigning String values.
     * Last but not least, you can annotate your rules in the column on the right. Those annotations are only there
       for you to explain and are not seen by anyone else, and will be ignored by a decision engine.
+
+In the DMN table for each input and output, we can define an expression to evaluate. For example, the expression for
+"Location" is location that we created in the TripInfo user task, and stores the output in the variable
+'spampurchase'. These are defined as part of the DMN table. You can have multiple inputs and outputs, for example you
+might want to add another input varible that determines if we are hungry or not, and if we aren't hungry we have the
+output show that we don't need to get any Spam.
 
 
 .. image:: images/dmn.png
