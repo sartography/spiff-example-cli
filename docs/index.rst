@@ -36,5 +36,6 @@ Things that you will need to download:
    intro
    examples
    jinja
+   advanced_features
 
 

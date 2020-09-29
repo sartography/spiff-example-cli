@@ -24,19 +24,22 @@ Returning to the sample code, when we print out the form, we use the new code li
 ExampleCode-multi.py)
 
 .. code:: python
+   :number-lines:
 
-    from jinja2 import Template
+    from jinja2 import Template  # <-- Added
 
-    ... more code here ...
+.. code:: python
+   :number-lines: 7
+
 
     def show_form(task):
          model = {}
          form = task.task_spec.form
-         docs = task.task_spec.documentation
+         docs = task.task_spec.documentation # <-- Added
 
-         template = Template(docs)
+         template = Template(docs)  # <-- Added
          print(task.data)
-         print(template.render(task.data))
+         print(template.render(task.data))  # <-- Added
 
 This code effectively gets the documentation string we entered above from the task specification, creates a jinja
 template and then uses that template paired with the current task data that we have created elsewhere.
@@ -72,4 +75,6 @@ been transformed by jinja to use CurrentFamilyMember.FirstName (CurrentFamilyMem
 if you enjoy typing extra characters) and we can also see the label text that we entered for the form variable on the
 form for the last task.
 
-
+This feature is rather useful in giving end users feedback about exactly what they are filling out, especialy in the
+context of a MultiInstance task, since, by nature, the MultiInstance task will be allowing users to do the one thing
+multiple times, perhaps with different contexts.
