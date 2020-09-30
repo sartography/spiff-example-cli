@@ -37,5 +37,6 @@ Things that you will need to download:
    examples
    jinja
    advanced_features
+   call_activity
 
 
