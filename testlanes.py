@@ -31,17 +31,15 @@ def show_form(task):
 
 ser = BpmnSerializer()
 
-#f = open('RepeatForm.bpmn')
+
 x = CamundaParser()
-x.add_bpmn_file('parallelgateway.bpmn')
-spec = x.get_spec('pgateway')
+x.add_bpmn_file('lanes.bpmn')
+spec = x.get_spec('lanes')
 count = 0
 
     
 def printTaskTree(tree,currentID,data):
-    #f = open('treeoutput.txt','w')
-    #fix up to follow tree
-    print("/n/n/n")
+    print("\n\n\n")
     print("Current Tree")
     print("-------------")
     lookup = {'COMPLETED':'* ',
@@ -76,6 +74,7 @@ def printTaskTree(tree,currentID,data):
         print(lane+' Tasks')
         for x in workflow.get_ready_user_tasks(lane=lane):
             print('    ' + x.get_name())
+    print('\n\n\n')
     
 
 
@@ -97,9 +96,10 @@ while not workflow.is_completed():
             else:
                 print("Complete Task ",task.task_spec.name)
             workflow.complete_task_from_id(task.id)
-            printTaskTree(workflow.get_nav_list(),task.task_spec.id,task.data)
+            
         workflow.do_engine_steps()
         ready_tasks = workflow.get_ready_user_tasks()
+printTaskTree(workflow.get_nav_list(),task.task_spec.id,task.data)
 print("All tasks in the workflow are now complete.")
 print("The following data was collected:")
 print(workflow.last_task.data)

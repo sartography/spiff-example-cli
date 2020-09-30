@@ -38,5 +38,6 @@ Things that you will need to download:
    jinja
    advanced_features
    call_activity
+   nav_list
 
 
