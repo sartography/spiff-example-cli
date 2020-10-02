@@ -41,5 +41,6 @@ Things that you will need to download:
    nav_list
    serialize
    ScriptingEnhancements
+   Api Documentation<modules>
 
 

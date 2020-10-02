@@ -1,4 +1,4 @@
-Scripting Enhancemnents
+Scripting Enhancements
 ===================================
 
 SpiffWorkflow is really flexible, and allows us to update and alter a workflow to adjust to the changing business
