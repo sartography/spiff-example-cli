@@ -40,5 +40,6 @@ Things that you will need to download:
    call_activity
    nav_list
    serialize
+   ScriptingEnhancements
 
 
