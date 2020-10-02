@@ -14,6 +14,11 @@ help:
 
 .PHONY: help Makefile
 
+.PHONY: apidoc
+apidoc:
+	sphinx-apidoc -d5 -Mefo . ../venv/lib/python3.7/site-packages/SpiffWorkflow
+
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile

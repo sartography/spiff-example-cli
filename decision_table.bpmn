@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1t08rlt" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.2.0">
+  <bpmn:process id="step1" name="step1" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_057w6ij</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_057w6ij" sourceRef="StartEvent_1" targetRef="Activity_070hkv6" />
+    <bpmn:userTask id="Activity_0yq5jxw" name="Trip Info" camunda:formKey="TripInfo">
+      <bpmn:extensionElements>
+        <camunda:formData>
+          <camunda:formField id="location" label="Where are you going" type="enum" defaultValue="cabin">
+            <camunda:value id="cabin" name="Cabin" />
+            <camunda:value id="hotel" name="Hotel " />
+            <camunda:value id="camping" name="Camping" />
+          </camunda:formField>
+          <camunda:formField id="spam" label="Do you like spam" type="string" />
+        </camunda:formData>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0ushj1a</bpmn:incoming>
+      <bpmn:outgoing>Flow_19nyt2z</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:endEvent id="Event_1lta6f5">
+      <bpmn:incoming>Flow_1kgblq9</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_19nyt2z" sourceRef="Activity_0yq5jxw" targetRef="Activity_1qdhrqv" />
+    <bpmn:sequenceFlow id="Flow_0vqve5w" sourceRef="Activity_1qdhrqv" targetRef="Activity_18xiwkl" />
+    <bpmn:businessRuleTask id="Activity_1qdhrqv" name="Make a decision" camunda:decisionRef="SpamDecision">
+      <bpmn:incoming>Flow_19nyt2z</bpmn:incoming>
+      <bpmn:outgoing>Flow_0vqve5w</bpmn:outgoing>
+    </bpmn:businessRuleTask>
+    <bpmn:sequenceFlow id="Flow_1kgblq9" sourceRef="Activity_18xiwkl" targetRef="Event_1lta6f5" />
+    <bpmn:scriptTask id="Activity_18xiwkl" name="where are we getting spam?">
+      <bpmn:incoming>Flow_0vqve5w</bpmn:incoming>
+      <bpmn:outgoing>Flow_1kgblq9</bpmn:outgoing>
+      <bpmn:script>print(spampurchase)</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_0ushj1a" sourceRef="Activity_070hkv6" targetRef="Activity_0yq5jxw" />
+    <bpmn:scriptTask id="Activity_070hkv6" name="Init&#10;&#10;">
+      <bpmn:incoming>Flow_057w6ij</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ushj1a</bpmn:outgoing>
+      <bpmn:script>location = None</bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="step1">
+      <bpmndi:BPMNEdge id="Flow_0ushj1a_di" bpmnElement="Flow_0ushj1a">
+        <di:waypoint x="400" y="120" />
+        <di:waypoint x="470" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1kgblq9_di" bpmnElement="Flow_1kgblq9">
+        <di:waypoint x="920" y="120" />
+        <di:waypoint x="1012" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vqve5w_di" bpmnElement="Flow_0vqve5w">
+        <di:waypoint x="750" y="120" />
+        <di:waypoint x="820" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19nyt2z_di" bpmnElement="Flow_19nyt2z">
+        <di:waypoint x="570" y="120" />
+        <di:waypoint x="650" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_057w6ij_di" bpmnElement="Flow_057w6ij">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="300" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_0hsw8f4_di" bpmnElement="Activity_0yq5jxw">
+        <dc:Bounds x="470" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1lta6f5_di" bpmnElement="Event_1lta6f5">
+        <dc:Bounds x="1012" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10sog1y_di" bpmnElement="Activity_1qdhrqv">
+        <dc:Bounds x="650" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xxnlj4_di" bpmnElement="Activity_18xiwkl">
+        <dc:Bounds x="820" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1l9udcg_di" bpmnElement="Activity_070hkv6">
+        <dc:Bounds x="300" y="80" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
