@@ -39,5 +39,6 @@ Things that you will need to download:
    advanced_features
    call_activity
    nav_list
+   serialize
 
 
