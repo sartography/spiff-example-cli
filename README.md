@@ -1,6 +1,13 @@
-#SpiffExample
+SpiffExample
+==============
+This is the documentation and example repository for the SpiffWorkflow BPMN workflow engine. While the knipknap
+ version of this is the master, there are many (many) changes that are only in the sartography repository. 
+ 
+Below is a brief outline on how to get started using this documentation - which in itself is designed as a tool for
+ getting started with Spiffworkflow. 
+ 
 How to use and Extend
-===================================
+-----------------------
 
 Here is what you need to be able to interact and extend this documentation
 
