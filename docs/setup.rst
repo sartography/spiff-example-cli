@@ -1,4 +1,3 @@
-#SpiffExample
 How to use and Extend
 ===================================
 

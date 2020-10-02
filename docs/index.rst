@@ -44,3 +44,11 @@ Things that you will need to download:
    Api Documentation<modules>
 
 
+Setting up this documentation
+------------------------------
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Setting up this repository
+
+   setup
