@@ -10,5 +10,6 @@ python-box==5.1.0
 jinja2==2.11.2
 python-Levenshtein-wheels==0.13.1
 pytz==2020.1
+sphinx==3.2.1
 git+git://github.com/sartography/SpiffWorkflow.git@cr-connect-117-serialize-deserialize
 vine==1.3.0
