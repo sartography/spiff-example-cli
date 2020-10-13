@@ -20,9 +20,9 @@ def show_form(task):
             answer = int(answer)
         task.update_data_var(field.id,answer)
 
-x = CamundaParser()
-x.add_bpmn_file('Basicexample.bpmn')
-spec = x.get_spec('Basicexample')
+parser = CamundaParser()
+parser.add_bpmn_file('Basicexample.bpmn')
+spec = parser.get_spec('Basicexample')
 
 workflow = BpmnWorkflow(spec)
 
