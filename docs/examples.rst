@@ -1,90 +1,74 @@
 Concepts, Example Code,and Diagrams
 ===================================
 
+The basic idea of SpiffWorkflow is that you can use it to write an interpreter in Python that creates business applications from BPMN models.
+
+In this section of the documentation, we introduce that process.
+
+All the Python code and BPMN models used here are available in the SpiffExample directory.
+
 
 Basic Example:
 --------------
-In this example you are doing one of the most simple versions of a BPMN workflow. We have a start event, an activity
-with a UserTask, and an end event. When the user task activity box is clicked there are forms that you can fill to ask
-questions. In this flow the user is answering two questions : Where are they going and do they like spam. Below you will
-find what the user is being prompted to answer and how the data is being stored in the data dictionary (covered later).
+This model is found in BasicExample.bpmn.
+
+In this example, we examine one of the simplest BPMN workflows. There is a start event, an activity
+called Trip Info with a UserTask, and an end event.
 
 .. image:: images/basic_example.png
    :scale: 25%
    :align: center
 
-.. image:: images/basic_example_output.png
+User tasks can include forms that ask the user questions. When you click on a user task in Camunda modeler, the Properties Panel includes a form tab. Use this tab to build your questions.
 
-When making the BPMN and assigning the activity with a UserTask you then have the option to fill out a form which
-will (using the source code listed below), prompt and ask the sure to complete the questions and collect the data.
+In this flow the user is answering two questions : where they are going, and whether they like spam.
 
-The form in the image
-below is the same form that is used to create the example above.  In this form you are first asked to enter a form key
-which identifies the name of the form. Then you can add form fields. So here we have added location, below we have added
-the different components that need to be in this form field, first with the id-the name of the variable, then the type
-in this case and enum. Next we need to have a label, this is the Information that will be displayed to the user.
-Followed by values, it is recommended that you add a default value just in case the user does not input a variable
-that is recognized. And with all that you have the basics that you need to get the form up and working.
+In the image below you can see information about the *location* question associated with the Trip Info user task. We are using an enumeration type with 3 possible answers; cabin, hotel, and camping. Note that there is also a *spam* form field for the second question.
+
+It is recommended that you add a default value in case the user does not input a variable
+that is recognized.
 
 .. image:: images/basic_example_form.png
 
 Example Code
 ------------
-To enable the workflow we made above, we can interact with it using the code found in the
-`ExampleCode.py <ExampleCode.py>`_ file.
+We can use the code in `ExampleCode.py <../../../ExampleCode.py>`_ to run the workflow in our BPMN model.
 
-This is the example code for running the workflow. The first thing that you will need to do is make sure that the
-following files are imported
+First, we have some imports.
 
 .. code:: python
-   :name: ExampleCode.py
-   :number-lines: 1
 
     from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
     from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
     from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
 
-In the code below we have first specialized parse that parsers the Camunda file
-we then add the file (bpmn) in, that we just parsed. Lastly for this chunck we are getting a specification, it is loading
-all the files from the and has complied it down
+Next, we instantiate a parser, read the BPMN file, and grab the spec.
 
 .. code:: python
-   :name: ExampleCode.py
-   :number-lines: 23
 
-    x = CamundaParser()
-    x.add_bpmn_file('Basicexample.bpmn')
-    spec = x.get_spec('Basicexample')
+    parser = CamundaParser()
+    parser.add_bpmn_file('BasicExample.bpmn')
+    spec = parser.get_spec('BasicExample')
 
-On this line below we are calling BPMNworkflow(spec), this is creating instances of that workflow. Meaning that it is a running
-working workflow, this allows for the state to be known, such as where you are and what current tasks needs to be completed.
+Note that we hardcoded the name of the BPMN file and the spec. We will return to this below.
+
+Next, we create a workflow instance from the spec using BPMNWorkflow. This is the engine that does the work for us. It manages the tasks and branches, and holds the data for a working workflow.
 
 .. code:: python
-   :name: ExampleCode.py
-   :number-lines: 27
 
     workflow = BpmnWorkflow(spec)
 
-On the line bellow you are running .do_engine_steps(): This allows you to do things that are automatic. For example if
-you have script task that need to run at the start event it will go through and do all the automatic task that are
-already there. The code after that on other hands calls for all task, and gets it ready to run all tasks. Including
-getting parallele tasks ready to run
+We use do_engine_steps() to run all tasks the engine can complete on its own. I.e., without user input. Then, we gather the user tasks.
 
 .. code:: python
-   :name: ExampleCode.py
-   :number-lines: 29
 
     workflow.do_engine_steps()
     ready_tasks = workflow.get_ready_user_tasks()
 
-In these last few lines our code is running through the workflow and seeing where there are task that have a UserTask
-then it will show form and print out the data from that task. (look at example below to see what printed questions
-look like and what the data at the end looks like.)
+The next section of code loops through the user tasks, displays their forms, and completes the task.
 
 .. code:: python
-   :name: ExampleCode.py
-   :number-lines: 29
 
     while len(ready_tasks) > 0:
         for task in ready_tasks:
@@ -95,15 +79,9 @@ look like and what the data at the end looks like.)
                 print("Complete Task ", task.task_spec.name)
             workflow.complete_task_from_id(task.id)
 
-All below examples will use the same code
-
-There is also a function at the top of the Example Code file that allows for the form to ask the user the quations
-that are filled out in the form section, ask for input and update the information as the workflow is working through
-the process.
+ExampleCode.py also defines the function *show_form* that builds an input prompt from the form, displays the prompt, and updates the workflow data with the user response.
 
 .. code:: python
-   :name: ExampleCode.py
-   :number-lines: 6
 
     def show_form(task):
         model = {}
@@ -122,36 +100,110 @@ the process.
                 answer = int(answer)
             task.update_data_var(field.id,answer)
 
+Here is some sample output when running the code.
+
+.. code:: bash
+
+  $ python ExampleCode.py
+  Where are you going? (Options: cabin, hotel, camping)? camping
+  ['location']
+  Do you like spam? Yes
+  ['spam']
+  {'location': 'camping', 'spam': 'Yes'}
+  {'location': 'camping', 'spam': 'Yes'}
+
+
 Exclusive Gateway Example
 --------------------------
-An exclusive gateway is used to express that exactly one alternative can be selected. In an exclusive gateway, the
-token runs along the sequence flow whose condition is met first. The response you get depends on which one path that
-you chose to take. For example looking at the BPMN and output you can see that the path that is taken depends on the
-response to the “Do you like spam?” question in the user task previous. If you answered no you will be asked for ONLY
-bad spam brands, if you answered yes you will be asked ONLY good spam brands.
+This model is found in ExclusiveGateway.bpmn.
+
+In an exclusive gateway, exactly one alternative can be selected. The token runs along the sequence flow whose condition is met first. The response you get depends on which path you take.
+
+In this example, the path taken depends on the response to the “Do you like spam?” question in the previous user task . If you answered no, you will ONLY be asked for bad spam brands. If you answered yes, you will ONLY be asked good spam brands.
 
 .. image:: images/exgateway.png
    :scale: 25%
    :align: center
 
-.. image:: images/exgateway-output.png
+With a little modification, we can use the python in ExampleCode.py to run this model.
+
+Remember that we hardcoded the name of the BPMN file and the spec. To run the exclusive gateway model, we just need to edit the two lines to the new file and spec.
+
+Change
+
+.. code:: python
+
+    parser.add_bpmn_file('Basicexample.bpmn')
+    spec = parser.get_spec('Basicexample')
+
+to
+
+.. code:: python
+
+    parser.add_bpmn_file('ExclusiveGateway.bpmn')
+    spec = parser.get_spec('ExclusiveGateway')
+
+and run ExampleCode.py.
+
+Here is some sample output for ExclusiveGateway.bpmn
+
+.. code:: bash
+
+    $ python ExampleCode.py
+    Where are you going? (Options: cabin, hotel, camping)? hotel
+    ['location']
+    Do you like spam? yes
+    ['spam']
+    {'location': 'hotel', 'spam': 'yes'}
+    What is a good spam brand? SpamX
+    ['good brand']
+    {'location': 'hotel', 'spam': 'yes', 'good brand': 'SpamX'}
+    {'location': 'hotel', 'spam': 'yes', 'good brand': 'SpamX'}
 
 
 Parallel Gateway Example
 -------------------------
-A parallel or AND gateway creates parallel paths without checking any conditions. This means that each outgoing sequence
-flow becomes active upon the execution of a parallel gateway, which is commonly known as a “process fork”. Let's look
-at the example below, unlike in the previous example of exclusive gateways, you will be promoted to answer questions
-in regards to both good AND bad brands.
+This model is found in ParallelGateway.bpmn.
+
+A parallel or AND gateway creates parallel paths without checking any conditions. This means that each outgoing sequence flow becomes active upon the execution of a parallel gateway
+
+In this workflow, you will be prompted for both a good and bad example of spam.
 
 .. image:: images/plgateway.png
    :scale: 25%
    :align: center
 
-.. image:: images/plgateway-output.png
+To run this code, edit ExampleCode.py to use *ParallelGateway.bpmn* and *ParallelGateway*.
+
+.. code:: python
+
+    parser.add_bpmn_file('ParallelGateway.bpmn')
+    spec = parser.get_spec('ParallelGateway')
+
+
+Here is sample output.
+
+.. code:: bash
+
+    $ python ExampleCode.py
+    Where are you going? (Options: cabin, hotel, camping)? cabin
+    ['location']
+    Do you like spam? yes
+    ['spam']
+    {'location': 'cabin', 'spam': 'yes'}
+    What is a bad spam brand? Spambolina
+    ['bad brand']
+    {'location': 'cabin', 'spam': 'yes', 'bad brand': 'Spambolina'}
+    What is a good spam brand? SpamX
+    ['good brand']
+    {'location': 'cabin', 'spam': 'yes', 'good brand': 'SpamX'}
+    {'location': 'cabin', 'spam': 'yes', 'good brand': 'SpamX', 'bad brand': 'Spambolina'}
+
 
 Script Example
 -----------------
+This model is found in ScriptExample.bpmn.
+
 .. sidebar:: Setting up a script task
 
   To create a script task in Camunda modeler, you drag over a task from the object bar and then right click on the
@@ -163,35 +215,51 @@ Script Example
      :align: center
 
 
-A Script Task is executed by a business process engine. In our example it's the .do_engine_steps(). The modeler (for us
-it will be Camunda) or implementer defines a script in a language that the engine can interpret, we will be using
-python.
-When the Task is ready to start, the engine will execute the script. When the script is completed, the Task will also be
-completed. These are easy to use when a task can easily be performed automatically.
+A Script Task is executed by a business process engine. In our example, it's do_engine_steps(). The modeler or implementer defines a script in a language that the engine can interpret. For us, this is python.
+
+When the Task is ready to start, the engine will execute the script. When the script is completed, the Task will also be completed. These are good to use when a task can be performed automatically.
 
 
 .. image:: images/Scriptsexample.png
    :scale: 25%
    :align: center
 
-.. image:: images/Scriptsexample-output.png
+In this example, the script prints something based on whether or not you like spam.
+
+To run this code, edit ExampleCode.py to use *ScriptExample.bpmn* and *ScriptExample*.
+
+.. code:: python
+
+    parser.add_bpmn_file('ScriptExample.bpmn')
+    spec = parser.get_spec('ScriptExample')
+
+
+Here is sample output.
+
+.. code:: bash
+
+    $ python ExampleCode.py
+    Where are you going? (Options: cabin, hotel, camping)? cabin
+    ['location']
+    Do you like spam? yes
+    ['spam']
+    {'location': 'cabin', 'spam': 'yes'}
+    Yeah Spam!!
+    {'location': 'cabin', 'spam': 'yes'}
 
 
 Multi-Instance Example
 -------------------------
-Multi-instance activities are represented by three horizontal or vertical lines at the bottom-center of the activity
-and task symbol. It’s purpose is to show that the activity occurs for a collection of objects or items.  The number of
-times that the activity completes is defined by the number of items that exist in the collection. This is different from
-other looping mechanisms that must check a condition every time the loop completes in order to determine if it should
-continue looping. Three vertical lines indicate that the multi-instance activity is non-sequential.  This means that the
-activity can be completed for each item in the collection in no particular order. Three horizontal lines indicate that
-the multi-instance activity is sequential. This means that the activity must complete for each item in the order that
-they are received within the collection.
+This model is found in MultiInstance.bpmn.
 
-Let's look at the example below, the first activity is a UserTask which allows us to ask how many people are going on
-this trip. We are then going to use that number to go through the multi-instance. The first is non-sequential, which
-means that you can add the names in any order. Then in the next activity the multi-instance in sequential and will go
-through the names in the order they were received. This can more easily be seen through the output image.
+Multi-instance activities are represented by three horizontal or vertical lines at the bottom-center of the activity and task symbol. The number of times that the activity completes is defined by the number of items that exist in the collection. This is different from other looping mechanisms that must check a condition every time the loop completes in order to determine if it should continue looping.
+
+Three vertical lines indicate that the multi-instance activity is non-sequential.  This means that the
+activity can be completed for each item in the collection in no particular order.
+
+Three horizontal lines indicate that the multi-instance activity is sequential. This means that the activity must complete for each item in the order that they are received within the collection.
+
+Let's look at the example below, the first activity is a UserTask which allows us to ask how many people are going on this trip. We are then going to use that number to go through the multi-instance. The first is non-sequential, which means that you can add the names in any order. Then in the next activity the multi-instance in sequential and will go through the names in the order they were received. This can more easily be seen through the output image.
 
 .. image:: images/multi_instance_array.png
 .. image:: images/multi_instance_array-output.png
@@ -330,19 +398,19 @@ change
 .. code:: python
    :number-lines: 23
 
-   x = CamundaParser()
-   x.add_bpmn_file('Basicexample.bpmn')
-   spec = x.get_spec('Basicexample')
+   parser = CamundaParser()
+   parser.add_bpmn_file('BasicExample.bpmn')
+   spec = parser.get_spec('BasicExample')
 
 to
 
 .. code:: python
    :number-lines: 31
 
-    x = MyCustomParser()
-    x.add_bpmn_file('decision_table.bpmn')
-    x.add_dmn_file('spam_decision.dmn')
-    spec = x.get_spec('step1')
+    parser = MyCustomParser()
+    parser.add_bpmn_file('decision_table.bpmn')
+    parser.add_dmn_file('spam_decision.dmn')
+    spec = parser.get_spec('step1')
 
 Basically, we needed a class that would handle both the Camunda parser AND a dmn parser in the same workflow so we
 made the custom class above
