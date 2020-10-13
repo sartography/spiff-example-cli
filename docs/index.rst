@@ -37,6 +37,7 @@ Contents
 
    intro
    examples
+   dmn
    jinja
    advanced_features
    call_activity
