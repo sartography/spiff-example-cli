@@ -16,8 +16,7 @@ This minimizes the risk of misunderstandings between business analysts and devel
 
 BPMN includes a decision task that refers to the decision table. The outcome of the decision lookup allows the next gateway or activity to route the flow.
 
-Let's first look at the BPMN image below we are building on the basic example. Here we have an activity with the
-business tasks that reads Make a decision this is where the table is rooted and called on the BPMN side.
+In the BPMN model below we build on our basic example. It includes a business rules task named *Make a decision*. This is where the decision table lookup is called on the BPMN side. The result of the table lookup is used by the *Where are we getting spam?* task.
 
 .. image:: images/decision_table.png
 
@@ -25,13 +24,15 @@ business tasks that reads Make a decision this is where the table is rooted and 
 Decision Table
 ----------------------
 
-Here is a simple table example based on our TripInfo data.
+Here is the decision table for our *Make a decision* lookup.
 
 .. image:: images/dmn.png
 
-Users were asked to choose between cabin, hotel, and camping for the location of their trip. Based on this information, we want to send them a message about spam.
+Based on their response to the *Location* question, we make a lookup in the table. We can then send them a message about where to get spam.
 
-If they go camping or stay in a cabin, they should bring spam. If they stay in a hotel, they can buy it near the hotel. DMN tables allow annotations that help explain entries in the table.
+If they go camping or stay in a cabin, we tell them to bring spam. If they stay in a hotel, we tell them they can buy it near the hotel.
+
+DMN tables also allow annotations that help explain entries in the table.
 
 
 Changes to ExampleCode.py
@@ -88,52 +89,17 @@ Note that we add both a bpmn file and a dmn file to the parser.
    This should really change - it seems really confusing to a person new to this as to why I should have to create a
    custom class to do this.
 
-Once we have the additional capabilities we will be able to process a workflow with a DMN table
+With this new code, we can run the DMN workflow.
 
-Dmn and Decision Table Example:
---------------------------------
-In DMN, decisions can be modeled and executed using the same language. Business analysts can model the rules that lead
-to a decision in an easy to read table, and those tables can be executed directly by SpiffWorkflow
-This minimizes the risk of misunderstandings between business analysts and developers, and it even allows rapid changes
-in production. Yes we can do a lot of the things we do with DMN using BPMN gateways but it creates complicated and very
-disorganized BPMN allowing for mistakes and confusions. BPMN includes a business rule task, which is the decision table.
-That task refers to a decision that needs to be made, and the outcome of the decision that is made based on the table
-allows for the next gateway or activity to route the flow.
+Here is some sample output from running Example-dmn.py.
 
-Let's first look at the BPMN image below we are building on the basic example. Here we have an activity with the
-business tasks that reads Make a decision this is where the table is rooted and called on the BPMN side.
+.. code:: bash
 
-.. image:: images/decision_table.png
-
-
-.. sidebar:: TODO
-
-   SpiffWorkflow still doesn't honor the hit policy, and it currently requires you to jump through some hoops if you
-   want to use the FEEL expression language rather than python ( you can't just change the expression language)
-
-Now let's look at the DMN table:
-
-    * The column second from the left refers to possible input data. In this example,
-      there is only one input column. The cell with the text “Location” defines what the input is. In DMN, this is the
-      label for an input expression. The cells below called input entries refer to the possible conditions regarding the
-      input. Those conditions are in quotation marks (like “cabin”), which is because we are technically comparing
-      String values.
-    * For each possible input entry, we define the according output entry in the cell next to it. That’s how we express
-      that based on the location, how you must bring your Spam. Again, we have to use quotation marks because
-      technically we are assigning String values.
-    * Last but not least, you can annotate your rules in the column on the right. Those annotations are only there
-      for you to explain and are not seen by anyone else, and will be ignored by a decision engine.
-
-In the DMN table for each input and output, we can define an expression to evaluate. For example, the expression for
-"Location" is location that we created in the TripInfo user task, and stores the output in the variable
-'spampurchase'. These are defined as part of the DMN table. You can have multiple inputs and outputs, for example you
-might want to add another input varible that determines if we are hungry or not, and if we aren't hungry we have the
-output show that we don't need to get any Spam.
-
-
-.. image:: images/dmn.png
-
-Lastly you can see an example of what is happening in the output image below.
-
-.. image:: images/dmn-output.png
-
+    $ python ExampleCode-dmn.py
+    Where are you going? (Options: cabin, hotel, camping)? cabin
+    ['location']
+    Do you like spam? Yes
+    ['spam']
+    {'location': 'cabin', 'spam': 'Yes'}
+    Make sure to pack Spam!
+    {'location': 'cabin', 'spam': 'Yes', 'spampurchase': 'Make sure to pack Spam!'}
