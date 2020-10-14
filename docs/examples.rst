@@ -1,5 +1,5 @@
-Concepts, Example Code,and Diagrams
-===================================
+Basic Concepts, Example Code,and Diagrams
+=========================================
 
 The basic idea of SpiffWorkflow is that you can use it to write an interpreter in Python that creates business applications from BPMN models.
 
@@ -51,7 +51,7 @@ Next, we instantiate a parser, read the BPMN file, and grab the spec.
     parser.add_bpmn_file('BasicExample.bpmn')
     spec = parser.get_spec('BasicExample')
 
-Note that we hardcoded the name of the BPMN file and the spec. We will return to this below.
+[Note that we hardcoded the name of the BPMN file and the spec. We will return to this below.]
 
 Next, we create a workflow instance from the spec using BPMNWorkflow. This is the engine that does the work for us. It manages the tasks and branches, and holds the data for a working workflow.
 
@@ -66,7 +66,7 @@ We use do_engine_steps() to run all tasks the engine can complete on its own. I.
     workflow.do_engine_steps()
     ready_tasks = workflow.get_ready_user_tasks()
 
-The next section of code loops through the user tasks, displays their forms, and completes the task.
+The next section of code loops through the user tasks, displays their forms, and completes each task.
 
 .. code:: python
 
@@ -259,10 +259,31 @@ activity can be completed for each item in the collection in no particular order
 
 Three horizontal lines indicate that the multi-instance activity is sequential. This means that the activity must complete for each item in the order that they are received within the collection.
 
-Let's look at the example below, the first activity is a UserTask which allows us to ask how many people are going on this trip. We are then going to use that number to go through the multi-instance. The first is non-sequential, which means that you can add the names in any order. Then in the next activity the multi-instance in sequential and will go through the names in the order they were received. This can more easily be seen through the output image.
-
 .. image:: images/multi_instance_array.png
-.. image:: images/multi_instance_array-output.png
+
+In this example, the first activity is a UserTask where we ask for the family size. We then use that number to go through the multi-instance. The first multi-instance is non-sequential, which means that you can add the names in any order. The second multi-instance is sequential and will loop through the names from the previous task in the order they were received.
+
+.. code:: bash
+
+    $ python ExampleCode.py
+    Family Size? 2
+    ['Family', 'Size']
+    {'Family': {'Size': 2}}
+    First Name? John
+    ['FamilyMember', 'FirstName']
+    {'FamilyMember': {'FirstName': 'John'}, 'Family': {'Size': 2}}
+    First Name? Jane
+    ['FamilyMember', 'FirstName']
+    {'FamilyMember': {'FirstName': 'Jane'}, 'Family': {'Size': 2, 'Members': {1: {'FirstName': 'John'}}}}
+    Birthday? Johnday
+    ['CurrentFamilyMember', 'Birthdate']
+    {'CurrentFamilyMember': {'FirstName': 'John', 'Birthdate': 'Johnday'}, 'Family': {'Size': 2, 'Members': {1: {'FirstName': 'John'}, 2: {'FirstName': 'Jane'}}}, 'FamilyMember': {'FirstName': 'John'}}
+    Birthday? Janeday
+    ['CurrentFamilyMember', 'Birthdate']
+    {'CurrentFamilyMember': {'FirstName': 'Jane', 'Birthdate': 'Janeday'}, 'Family': {'Size': 2, 'Members': {1: {'FirstName': 'John', 'Birthdate': 'Johnday'}, 2: {'FirstName': 'Jane'}}}, 'FamilyMember': {'FirstName': 'John'}}
+    {'Family': {'Size': 2, 'Members': {1: {'FirstName': 'John', 'Birthdate': 'Johnday'}, 2: {'FirstName': 'Jane', 'Birthdate': 'Janeday'}}}, 'FamilyMember': {'FirstName': 'John'}}
+
+This is somewhat problematic, because the user must remember the order in which they entered the names. In the chapter on Jinja2, we cover multi-instance in more depth and use Templates to solve our problem.
 
 
 MultiInstance Notes
@@ -360,113 +381,5 @@ workflow.complete_task_by_id(task.id) ), the task will again present
 as READY until either the cardinality is exausted, or
 task.terminate_loop() is called.
 
-
-Shared code
------------
-
-Up to this point, all of these examples can run using the exact same code, only changing the name of the BPMN and the
-id of the workflow (in Camunda modeler, you click on the background and change the ID field in the 'general' tab -
-this is slightly different when working with multi-lane workflows which are covered later).
-
-For the following example, we will need to change the code a bit so that we can import a DMN table, outlined below.
-
-Please see the Example-dmn.py code for an example.
-
-Below are the code changes that happened to make this happen
-
-add
-
-.. code:: python
-   :number-lines: 2
-
-   from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
-
-and
-
-.. code:: python
-   :number-lines: 6
-
-    class MyCustomParser(BpmnDmnParser):
-     """
-     A BPMN and DMN parser that can also parse Camunda forms.
-     """
-     OVERRIDE_PARSER_CLASSES = BpmnDmnParser.OVERRIDE_PARSER_CLASSES
-     OVERRIDE_PARSER_CLASSES.update(CamundaParser.OVERRIDE_PARSER_CLASSES)
-
-change
-
-.. code:: python
-   :number-lines: 23
-
-   parser = CamundaParser()
-   parser.add_bpmn_file('BasicExample.bpmn')
-   spec = parser.get_spec('BasicExample')
-
-to
-
-.. code:: python
-   :number-lines: 31
-
-    parser = MyCustomParser()
-    parser.add_bpmn_file('decision_table.bpmn')
-    parser.add_dmn_file('spam_decision.dmn')
-    spec = parser.get_spec('step1')
-
-Basically, we needed a class that would handle both the Camunda parser AND a dmn parser in the same workflow so we
-made the custom class above
-
-.. sidebar:: TODO
-
-   This should really change - it seems really confusing to a person new to this as to why I should have to create a
-   custom class to do this.
-
-Once we have the additional capabilities we will be able to process a workflow with a DMN table
-
-Dmn and Decision Table Example:
---------------------------------
-In DMN, decisions can be modeled and executed using the same language. Business analysts can model the rules that lead
-to a decision in an easy to read table, and those tables can be executed directly by SpiffWorkflow
-This minimizes the risk of misunderstandings between business analysts and developers, and it even allows rapid changes
-in production. Yes we can do a lot of the things we do with DMN using BPMN gateways but it creates complicated and very
-disorganized BPMN allowing for mistakes and confusions. BPMN includes a business rule task, which is the decision table.
-That task refers to a decision that needs to be made, and the outcome of the decision that is made based on the table
-allows for the next gateway or activity to route the flow.
-
-Let's first look at the BPMN image below we are building on the basic example. Here we have an activity with the
-business tasks that reads Make a decision this is where the table is rooted and called on the BPMN side.
-
-.. image:: images/decision_table.png
-
-
-.. sidebar:: TODO
-
-   SpiffWorkflow still doesn't honor the hit policy, and it currently requires you to jump through some hoops if you
-   want to use the FEEL expression language rather than python ( you can't just change the expression language)
-
-Now let's look at the DMN table:
-
-    * The column second from the left refers to possible input data. In this example,
-      there is only one input column. The cell with the text “Location” defines what the input is. In DMN, this is the
-      label for an input expression. The cells below called input entries refer to the possible conditions regarding the
-      input. Those conditions are in quotation marks (like “cabin”), which is because we are technically comparing
-      String values.
-    * For each possible input entry, we define the according output entry in the cell next to it. That’s how we express
-      that based on the location, how you must bring your Spam. Again, we have to use quotation marks because
-      technically we are assigning String values.
-    * Last but not least, you can annotate your rules in the column on the right. Those annotations are only there
-      for you to explain and are not seen by anyone else, and will be ignored by a decision engine.
-
-In the DMN table for each input and output, we can define an expression to evaluate. For example, the expression for
-"Location" is location that we created in the TripInfo user task, and stores the output in the variable
-'spampurchase'. These are defined as part of the DMN table. You can have multiple inputs and outputs, for example you
-might want to add another input varible that determines if we are hungry or not, and if we aren't hungry we have the
-output show that we don't need to get any Spam.
-
-
-.. image:: images/dmn.png
-
-Lastly you can see an example of what is happening in the output image below.
-
-.. image:: images/dmn-output.png
 
 
