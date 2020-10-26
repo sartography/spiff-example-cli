@@ -10,11 +10,11 @@ one that shows only tasks for the B role.
 
 Up until now, we have just asked the workflow processor for any ready tasks, but it is possible to ask the workflow
 processor for just those tasks that are for a specific lane. Please note that this feature will only work for those
-situations where you have set up a workflow with swimlanes
+situations where you have set up a workflow with lanes
 
 .. tip:: Workflows with 'pools'
 
-  When you add swimlanes to a BPMN document, those lanes are contained within a 'pool' That pool has its own process
+  When you add lanes to a BPMN document, those lanes are contained within a 'pool' That pool has its own process
   ID. To activate the workflow inside of a pool, you need to use the process id for the pool and not the workflow
   document itself as we have in previous workflows. In the workflow above, the main workflow ID is lanes_outer, and
   the processid on the pool is 'lanes' - so we would use 'lanes' in the 'get_spec' line of code to interact with this
@@ -51,9 +51,7 @@ Nav(igation) List
   with the navigation list are any kind of boundary events which may cause a non-linear flow which would be hard to
   render.
 
-In order to get the navigation list, we can call the workflow.get_nav_list() function. This will return a list of
-dictionaries with information about each task and decision point in the workflow. Each item in this list returns some
-information about the tasks that are in the workflow, and how it relates to the other tasks.
+In order to get the navigation list, we can call the workflow.get_nav_list() function. This will return a list of dictionaries with information about each task and decision point in the workflow. Each item in this list returns some information about the tasks that are in the workflow, and how it relates to the other tasks.
 
 To give you an idea of what is in the list I'll include a segment from the documentation::
 
@@ -73,11 +71,9 @@ To give you an idea of what is in the list I'll include a segment from the docum
                 Any task with a blank or None as the description are excluded from the list (i.e. gateways)
 
 
-Because the output from this list may be used in a variety of contexts, the implementation is left to the user,
-however, I do have some example code that creates a text based representation of the nav-list.
+Because the output from this list may be used in a variety of contexts, the implementation is left to the user, however, we do have some example code that creates a text based representation of the nav-list.
 
-The example code for this lives in 'testlanes.py' and runs the above workflow. The code to print the nav-list is in
-the printTaskTree function
+The example code for this lives in 'testlanes.py' and runs the above workflow. The code to print the nav-list is in the printTaskTree function
 
 
 .. code:: python
