@@ -121,7 +121,7 @@ In an exclusive gateway, exactly one alternative can be selected. The token runs
 
 In this example, the path taken depends on the response to the “Do you like spam?” question in the previous user task . If you answered no, you will ONLY be asked for bad spam brands. If you answered yes, you will ONLY be asked good spam brands.
 
-.. image:: images/exgateway.png
+.. image:: images/ExclusiveGateway.png
    :scale: 25%
    :align: center
 
@@ -169,7 +169,7 @@ A parallel or AND gateway creates parallel paths without checking any conditions
 
 In this workflow, you will be prompted for both a good and bad example of spam.
 
-.. image:: images/plgateway.png
+.. image:: images/ParallelGateway.png
    :scale: 25%
    :align: center
 
@@ -254,14 +254,14 @@ This model is found in MultiInstance.bpmn.
 
 Multi-instance activities are represented by three horizontal or vertical lines at the bottom-center of the activity and task symbol. The number of times that the activity completes is defined by the number of items that exist in the collection. This is different from other looping mechanisms that must check a condition every time the loop completes in order to determine if it should continue looping.
 
-Three vertical lines indicate that the multi-instance activity is non-sequential.  This means that the
+Three vertical lines indicate that the multi-instance activity is parallel.  This means that the
 activity can be completed for each item in the collection in no particular order.
 
 Three horizontal lines indicate that the multi-instance activity is sequential. This means that the activity must complete for each item in the order that they are received within the collection.
 
 .. image:: images/multi_instance_array.png
 
-In this example, the first activity is a UserTask where we ask for the family size. We then use that number to go through the multi-instance. The first multi-instance is non-sequential, which means that you can add the names in any order. The second multi-instance is sequential and will loop through the names from the previous task in the order they were received.
+In this example, the first activity is a UserTask where we ask for the family size. We then use that number to go through the multi-instance. The first multi-instance is parallel, which means that you can add the names in any order. The second multi-instance is sequential and will loop through the names from the previous task in the order they were received.
 
 .. code:: bash
 
@@ -369,17 +369,11 @@ Example:
 Looping Tasks
 -------------
 
-A looping task sets the cardinality to 25 which is assumed to be a
-sane maximum value. The looping task will add to the collection each
-time it is processed assuming data is updated as outlined in the
-previous paragraph.
+A looping task sets the cardinality to 25 which is assumed to be a sane maximum value. The looping task will add to the collection each time it is processed if you are updating data.
 
 To halt the looping the task.terminate_loop()
 
-Each time task.complete() is called (or
-workflow.complete_task_by_id(task.id) ), the task will again present
-as READY until either the cardinality is exausted, or
-task.terminate_loop() is called.
+Each time task.complete() is called (or workflow.complete_task_by_id(task.id) ), the task will again present as READY until either the cardinality is exausted, or task.terminate_loop() is called.
 
 
 
