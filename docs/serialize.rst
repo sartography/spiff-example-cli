@@ -84,7 +84,7 @@ the workflow. We do this by adding the following lines
         f.close()                                                #
 
 So, each time we do a step, we get the state from the workflow and write that out into the ExampleSaveRestore.js file
-. This data is just a big JSON string, and in some cases SpiffWorkflow uses a python construct known as a 'pickle' to
+. This data is just a big JSON string, and in some cases SpiffWorkflow uses a Python construct known as a 'pickle' to
 save more complicated data. (go ahead, look at it.  It won't make much sense, but you can get an idea of what it is
 doing)
 
@@ -139,7 +139,5 @@ doing)
     {'CurrentFamilyMember': {'FirstName': 'C', 'Birthdate': 'c'}, 'Family': {'Size': 3, 'Members': {1: {'FirstName': 'A', 'Birthdate': 'a'}, 2: {'FirstName': 'B', 'Birthdate': 'b'}, 3: {'FirstName': 'C'}}}, 'FamilyMember': {'FirstName': 'B'}}
     {'Family': {'Size': 3, 'Members': {1: {'FirstName': 'A', 'Birthdate': 'a'}, 2: {'FirstName': 'B', 'Birthdate': 'b'}, 3: {'FirstName': 'C', 'Birthdate': 'c'}}}, 'FamilyMember': {'FirstName': 'B'}}
 
-This is pretty verbose, but you can see where we were able to break the code, re-run the python file, and pick up
-exactly where we left off, and see that all of the data that we had previously is still the same as it was when we
-saved the file. Pretty Spiffy!!
+This is pretty verbose, but you can see where we were able to break the code, re-run the Python file, and pick up exactly where we left off, and see that all of the data that we had previously is still the same as it was when we saved the file. Pretty Spiffy!!
 

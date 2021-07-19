@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_0p4zkct" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.7.0">
-  <bpmn:process id="MultiInstanceArray" isExecutable="true">
+  <bpmn:process id="MultiInstance" isExecutable="true">
     <bpmn:startEvent id="StartEvent_1">
       <bpmn:outgoing>Flow_0bplvtg</bpmn:outgoing>
     </bpmn:startEvent>
@@ -59,7 +59,7 @@
     </bpmn:endEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
-    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MultiInstanceArray">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MultiInstance">
       <bpmndi:BPMNEdge id="Flow_0ncqf54_di" bpmnElement="Flow_0ncqf54">
         <di:waypoint x="700" y="110" />
         <di:waypoint x="802" y="110" />

@@ -31,7 +31,7 @@ The sequence flow is represented with a solid line connector. When the node at t
 More complicated Workflow
 -------------------------
 
-.. figure:: images/plgateway.png
+.. figure:: images/ExclusiveGateway.png
    :scale: 25%
    :align: center
 
@@ -40,7 +40,7 @@ More complicated Workflow
 
 In this example, the diamond shape is called a gateway. It represents a branch point in our flow.  This gateway is an exclusive data-based  gateway (also called an XOR gateway). With an exclusive gateway, you must take one path or the other based on some data condition. BPMN has other gateway types.
 
-The important point is that we can add a branch in the workflow **without** creating an explicit branch in our Python code.
+The important point is that we can use a gateway to add a branch in the workflow **without** creating an explicit branch in our Python code.
 
 
 .. sidebar:: BPMN Resources
@@ -52,15 +52,3 @@ The important point is that we can add a branch in the workflow **without** crea
 
   .. image:: images/bpmnbook.jpg
      :align: center
-
-
-Goals of a Good BPMN:
----------------------
-1. Correctness. This means semantic correctness – the  shapes and symbols are used correctly, as well as structural correctness, so that each activity corresponds 1:1 with a process instance.
-
-2. Clarity. The process logic should be clear from the diagrams alone, without prior  knowledge of how the process works or even of the terminology employed.
-
-3. Completeness. It should be possible to tell from a single glance what the instance represents, how the process  starts, where it can end, and what interactions there are with external entities.
-
-4. Consistency. Given the same set of process information, all modelers should  create (more or less) the same process model.
-

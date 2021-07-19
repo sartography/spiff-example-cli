@@ -4,7 +4,7 @@ from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
 
 def show_form(task):
-    model = {}
+
     form = task.task_spec.form
 
     if task.data is None:
@@ -18,11 +18,11 @@ def show_form(task):
         answer = input(prompt)
         if field.type == "long":
             answer = int(answer)
-        task.update_data_var(field.id,answer)
+        task.update_data_var(field.id, answer)
 
 parser = CamundaParser()
-parser.add_bpmn_file('Basicexample.bpmn')
-spec = parser.get_spec('Basicexample')
+parser.add_bpmn_file('BasicExample.bpmn')
+spec = parser.get_spec('BasicExample')
 
 workflow = BpmnWorkflow(spec)
 
@@ -31,8 +31,8 @@ ready_tasks = workflow.get_ready_user_tasks()
 while len(ready_tasks) > 0:
     for task in ready_tasks:
         if isinstance(task.task_spec, UserTask):
-           show_form(task)
-           print(task.data)
+            show_form(task)
+            print(task.data)
         else:
             print("Complete Task ", task.task_spec.name)
         workflow.complete_task_from_id(task.id)

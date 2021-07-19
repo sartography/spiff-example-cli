@@ -16,13 +16,10 @@ In this workflow are several new concepts:
 *  time events
 *  boundary events
 
-Swim Lanes
+Lanes
 -------------
 
-Swim lanes are a method in BPMN to distinguish roles for the workflow and who is responsible for which actions. In
-some cases this will be different business units, and in some cases this will be different individuals - it really
-depends on the nature of the workflow.  Within Camunda, this is done by choosing the 'Create pool/participant' option
-from the toolbar on the left hand side.
+Lanes are a method in BPMN to distinguish roles for the workflow and who is responsible for which actions. In some cases this will be different business units, and in some cases this will be different individuals - it really depends on the nature of the workflow.  Within Camunda, this is done by choosing the 'Create pool/participant' option from the toolbar on the left hand side.
 
 Subprocesses
 -------------
@@ -57,50 +54,33 @@ through a script activity.
 Messages allow us to control some workflow events. In the given example, if the boss says to interrupt work, a
 message is sent which is later 'caught' by the catch message event.
 
-There are a few ways to use a catch event, one is to use a start/catch event which starts a lane when a message is
-fired, another way is to have an in-line message catch event which stops the workflow until a message is caught, and
-the third is a boundary event (covered below).
+There are a few ways to use a catch event, one is to use a start/catch event which starts a lane when a message is fired, another way is to have an in-line message catch event which stops the workflow until a message is caught, and the third is a boundary event (covered below).
 
 Time Event
 -------------
 
-A time event allows us to create a pause in the workflow, either for a duration or for a specified date/time. A time
-event can be used in a similar fashion to the message events, that is they can be used as a delayed start event, as
-an interrupt to the workflow, or as a boundary event
+A time event allows us to create a pause in the workflow, either for a duration or for a specified date/time. A time event can be used in a similar fashion to the message events, that is they can be used as a delayed start event, as an interrupt to the workflow, or as a boundary event
 
 Boundary Events
 ----------------
 
-Boundary events are a way of stopping or interrupting a subprocess or a task. In the BPMN specification there are
-multiple events that are defined, but currently SpiffWorkflow only works with the Message and Timer events.
+Boundary events are a way of stopping or interrupting a subprocess or a task. In the BPMN specification there are multiple events that are defined, but currently SpiffWorkflow only works with the Message and Timer events.
 
-Our example workflow has an example of where a message event gets thrown and then as a boundary event, it interrupts
-the process that it is assigned to. Timer events would interrupt the process at a specified time rather than when a
-'Message Send' event gets thrown.
+Our example workflow has an example of where a message event gets thrown and then as a boundary event, it interrupts the process that it is assigned to. Timer events would interrupt the process at a specified time rather than when a 'Message Send' event gets thrown.
+
+Boundary events can also be non-interrupting.
 
 Process overview
 ----------------
 
 With all of these individual concepts defined, we will now explain how they work in concert.
 
-In the MessageBoundary workflow, we have two lanes, one for the Boss and one for the Worker. Later on, we will see
-how we can request tasks for only the Boss or the Worker
+In the MessageBoundary workflow, we have two lanes, one for the Boss and one for the Worker. Later on, we will see how we can request tasks for only the Boss or the Worker
 
-Once the workflow starts, the Boss is repeatedly asked if they would like to interrupt the work. Since the Boss has
-nothing better to do, they are happy to repeatedly answer this question!
+Once the workflow starts, the Boss is repeatedly asked if they would like to interrupt the work. Since the Boss has nothing better to do, they are happy to repeatedly answer this question!
 
-The worker alternates between doing work and taking a break - the break is only a few tents of a second, and is
-represented by a 'timer event' showing that the workflow is stopped by the defined length of time.
-because the worker is some kind of superhuman,they don't mind taking such a short break nor do they mind doing this
-forever, or until the boss says that they can stop.  (Actually, the short break is because we actually use this
-workflow as a test for SpiffWorkflow, and we don't want to wait around on the tests forever)
+The worker alternates between doing work and taking a break - the break is only a few tenths of a second, and is represented by a 'timer event' showing that the workflow is stopped by the defined length of time. Because the worker is some kind of superhuman,they don't mind taking such a short break nor do they mind doing this forever, or until the boss says that they can stop.  (Actually, the short break is because we actually use this workflow as a test for SpiffWorkflow, and we don't want to wait around on the tests forever)
 
-Once the boss says that 'yes' work should stop, there is a 'Message Throw event' that sends a message to the 'Catch
-Event'. Because the catch event is on the edge of a subprocess, this neverending flow of work is interrupted and the
-entire workflow comes to an end. There are also 'non-interrupting' events that don't interrupt the subworkflow, but
-will allow for an exception, such as a reason why something was delayed.
+Once the boss says that 'yes' work should stop, there is a 'Message Throw event' that sends a message to the 'Catch Event'. Because the catch event is on the boundary of a subprocess, this neverending flow of work is interrupted and the entire workflow comes to an end. There are also 'non-interrupting' events that don't interrupt the subworkflow, but will allow for an exception, such as a reason why something was delayed.
 
-
-Because there are only ever tasks that are ready for the Boss, we can run this entire workflow using the exact same
-code as we have with our other examples. Next, we will discuss how we can get more information about where we are at
-in the workflow, and how to get a list of tasks that are ready for each participant in a pool.
+Because there are only ever tasks that are ready for the Boss, we can run this entire workflow using the exact same code as we have with our other examples. Next, we will discuss how we can get more information about where we are at in the workflow, and how to get a list of tasks that are ready for each participant in a pool.
