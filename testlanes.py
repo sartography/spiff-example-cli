@@ -1,13 +1,6 @@
-from jinja2 import Template
-from SpiffWorkflow import Task as SpiffTask, Workflow
-from SpiffWorkflow.bpmn.BpmnScriptEngine import BpmnScriptEngine
 from SpiffWorkflow.bpmn.serializer.BpmnSerializer import BpmnSerializer
-from SpiffWorkflow.bpmn.specs.EndEvent import EndEvent
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
-from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
-from SpiffWorkflow.operators import Operator
-from SpiffWorkflow.serializer.xml import XmlSerializer
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
 
@@ -42,28 +35,8 @@ def printTaskTree(tree,currentID,data):
     print("\n\n\n")
     print("Current Tree")
     print("-------------")
-    lookup = {'COMPLETED':'* ',
-              'READY':'> ',
-              'LIKELY':'0 ',
-              'NOOP': '  '
-              }
     for x in tree:
-        if x['id'] == currentID:
-            print('>>', end='')
-        else:
-            print(lookup.get(x['state'],'O '),end='')
-        print("  "*x['indent'], end='')
-        print(x['description'], end = '')
-        if x['task_id'] is not None:
-            print(' ---> ',end='')
-            print(str(x['lane']),end='')
-        if x.get('is_decision') and x.get('backtracks') is not None:
-            print()
-            print('  ' * x['indent'] + '   Returns to '+x['backtracks'][1],end='')
-        elif x.get('is_decision') and x.get('child_count',0)==0:
-            print()
-            print('  '*x['indent']+'   Do Nothing', end='')
-        print()
+        print(x)
     print('\n\nCurrent Data')
     print('-----------------')
     print(str(data),end='')
@@ -76,11 +49,6 @@ def printTaskTree(tree,currentID,data):
             print('    ' + x.get_name())
     print('\n\n\n')
     
-
-
-
-
-
 workflow = BpmnWorkflow(spec)
 
 while not workflow.is_completed():
@@ -89,7 +57,7 @@ while not workflow.is_completed():
     ready_tasks = workflow.get_ready_user_tasks()
     while len(ready_tasks) > 0:
         for task in ready_tasks:
-            printTaskTree(workflow.get_nav_list(),task.task_spec.id,task.data)
+            printTaskTree(workflow.get_flat_nav_list(),task.task_spec.id,task.data)
             if isinstance(task.task_spec, UserTask):
                 show_form(task)
                 print("complete task")
@@ -99,7 +67,7 @@ while not workflow.is_completed():
             
         workflow.do_engine_steps()
         ready_tasks = workflow.get_ready_user_tasks()
-printTaskTree(workflow.get_nav_list(),task.task_spec.id,task.data)
+printTaskTree(workflow.get_flat_nav_list(),task.task_spec.id,task.data)
 print("All tasks in the workflow are now complete.")
 print("The following data was collected:")
 print(workflow.last_task.data)

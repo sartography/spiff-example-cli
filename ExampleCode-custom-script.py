@@ -1,5 +1,5 @@
+from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
-from SpiffWorkflow.bpmn.BpmnScriptEngine import BpmnScriptEngine
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
@@ -28,8 +28,7 @@ x = CamundaParser()
 x.add_bpmn_file('custom_script.bpmn')
 spec = x.get_spec('custom_script')
 
-script_engine = BpmnScriptEngine(scriptingAdditions={'my_custom_function':testScript})
-
+script_engine = PythonScriptEngine(scriptingAdditions={'my_custom_function':testScript})
 workflow = BpmnWorkflow(spec,script_engine=script_engine)
 
 workflow.do_engine_steps()
