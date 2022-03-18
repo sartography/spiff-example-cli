@@ -1,13 +1,2 @@
-amqp==2.6.1
-billiard==3.6.3.0
-celery==4.4.7
-configparser==5.0.0
-future==0.18.2
-kombu==4.6.11
-lxml==4.5.2
-#pkg-resources==0.0.0
-jinja2==2.11.2
-pytz==2020.1
-sphinx==3.2.1
-spiffworkflow==1.0
-vine==1.3.0
+SpiffWorkflow==1.1.3
+Jinja2==3.0.3
