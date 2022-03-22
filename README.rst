@@ -53,8 +53,8 @@ To execute the complete workflow:
 .. code:: bash
 
    ./run.py -p order_product \
-       -d bpmn/product_prices.bpmn bpmn/shipping_costs.dmn \
-       -b bpmn/multiinstance.bpmn bpmn/call_acitivity_multi.bpmn
+       -d bpmn/product_prices.dmn bpmn/shipping_costs.dmn \
+       -b bpmn/multiinstance.bpmn bpmn/call_activity_multi.bpmn
 
 To restore a saved workflow:
 
