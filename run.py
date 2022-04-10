@@ -22,7 +22,8 @@ from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskCo
 
 from custom_script_engine import CustomScriptEngine
 
-serializer = BpmnWorkflowSerializer.add_task_spec_converter_classes([ UserTaskConverter, BusinessRuleTaskConverter ])
+wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter([ UserTaskConverter, BusinessRuleTaskConverter ])
+serializer = BpmnWorkflowSerializer(wf_spec_converter)
 
 class Parser(BpmnDmnParser):
 
