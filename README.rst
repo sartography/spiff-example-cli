@@ -68,3 +68,5 @@ To see all program options:
 
    ./run.py --help
 
+## License
+GNU LESSER GENERAL PUBLIC LICENSE
