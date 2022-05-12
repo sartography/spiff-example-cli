@@ -7,7 +7,6 @@ import random
 from jinja2 import Template
 
 from SpiffWorkflow.task import Task
-from SpiffWorkflow.bpmn.serializer.BpmnSerializer import BpmnSerializer
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
 from SpiffWorkflow.bpmn.specs.ManualTask import ManualTask
 from SpiffWorkflow.bpmn.specs.ScriptTask import ScriptTask
@@ -17,7 +16,14 @@ from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
 from SpiffWorkflow.dmn.specs.BusinessRuleTask import BusinessRuleTask
 
+from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
+from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
+from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
+
 from custom_script_engine import CustomScriptEngine
+
+wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter([ UserTaskConverter, BusinessRuleTaskConverter ])
+serializer = BpmnWorkflowSerializer(wf_spec_converter)
 
 class Parser(BpmnDmnParser):
 
@@ -119,7 +125,7 @@ def run(workflow, step):
 
         if selected.lower() == 'd':
             filename = input('Enter filename: ')
-            state = BpmnSerializer().serialize_workflow(workflow, include_spec=True)
+            state = serializer.serialize_json(workflow)
             with open(filename, 'w') as dump:
                 dump.write(state)
         elif selected != '':
@@ -154,7 +160,7 @@ if __name__ == '__main__':
     try:
         if args.restore is not None:
             with open(args.restore) as state:
-                wf = BpmnSerializer().deserialize_workflow(state.read(), workflow_spec=None)
+                wf = serializer.deserialize_json(state.read())
         else:
             wf = parse(args.process, args.bpmn, args.dmn)
         run(wf, args.step)
