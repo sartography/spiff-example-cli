@@ -92,7 +92,7 @@
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">product_name in [ 'product_e', 'product_f', 'product_g' ]</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0uy2bcm" sourceRef="Activity_1mkqpod" targetRef="Activity_1x1kw47" />
-    <bpmn:userTask id="Activity_1mkqpod" name="Selct Product Style" camunda:formKey="">
+    <bpmn:userTask id="Activity_1mkqpod" name="Select Product Style" camunda:formKey="">
       <bpmn:extensionElements>
         <camunda:formData>
           <camunda:formField id="product_style" label="Sleeve Type" type="enum" defaultValue="short">
