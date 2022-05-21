@@ -71,7 +71,9 @@ To see all program options:
 Run in docker
 ^^^^^^^^^^^^^
 
-./bin/run_in_docker
+.. code:: bash
+
+   ./bin/run_in_docker
 
 ## License
 GNU LESSER GENERAL PUBLIC LICENSE
