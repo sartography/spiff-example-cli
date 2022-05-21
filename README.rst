@@ -68,5 +68,10 @@ To see all program options:
 
    ./run.py --help
 
+Run in docker
+^^^^^^^^^^^^^
+
+./bin/run_in_docker
+
 ## License
 GNU LESSER GENERAL PUBLIC LICENSE
