@@ -1,4 +1,4 @@
-SpiffExample
+spiff-example-cli
 ==============
 
 .. sidebar:: Note
@@ -14,14 +14,14 @@ Clone this repository
 
 .. code:: bash
 
-   git clone https://github.com/sartography/SpiffExample.git
+   git clone https://github.com/sartography/spiff-example-cli.git
 
 Set up virtual environment
 --------------------------
 
 .. code:: bash
 
-    cd SpiffExample
+    cd spiff-example-cli
     python3 -m venv venv
     source ./venv/bin/activate
 
