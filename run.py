@@ -3,6 +3,7 @@
 import argparse, sys, traceback
 import json
 import random
+import logging
 
 from jinja2 import Template
 
@@ -24,6 +25,19 @@ from custom_script_engine import CustomScriptEngine
 
 wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter([ UserTaskConverter, BusinessRuleTaskConverter ])
 serializer = BpmnWorkflowSerializer(wf_spec_converter)
+
+formatter = logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow)s:%(task_spec)s) %(message)s')
+handler = logging.StreamHandler()
+handler.setFormatter(formatter)
+logger = logging.getLogger('spiff')
+logger.addHandler(handler)
+
+metrics_fmt = logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(task_type)s:%(action)s) %(elapsed)2.4f')
+metrics_handler = logging.StreamHandler()
+metrics_handler.setFormatter(metrics_fmt)
+metrics = logging.getLogger('spiff.metrics')
+metrics.addHandler(metrics_handler)
+metrics.propagate = False
 
 class Parser(BpmnDmnParser):
 
@@ -157,9 +171,11 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dmn', dest='dmn', nargs='*', help='DMN files to load')
     parser.add_argument('-r', '--restore', dest='restore', metavar='FILE',  help='Restore state from %(metavar)s')
     parser.add_argument('-s', '--step', dest='step', action='store_true', help='Display state after each step')
+    parser.add_argument('-l', '--log-level', dest='log_level', metavar='LEVEL', help='Use log level %(metavar)s', default='WARN')
     args = parser.parse_args()
 
     try:
+        logger.setLevel(args.log_level)
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
