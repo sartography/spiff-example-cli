@@ -26,6 +26,8 @@ from custom_script_engine import CustomScriptEngine
 wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter([ UserTaskConverter, BusinessRuleTaskConverter ])
 serializer = BpmnWorkflowSerializer(wf_spec_converter)
 
+logging.addLevelName(15, 'DATA_LOG')
+
 formatter = logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow)s:%(task_spec)s) %(message)s')
 handler = logging.StreamHandler()
 handler.setFormatter(formatter)
@@ -38,6 +40,20 @@ metrics_handler.setFormatter(metrics_fmt)
 metrics = logging.getLogger('spiff.metrics')
 metrics.addHandler(metrics_handler)
 metrics.propagate = False
+
+def log_updates(rec):
+    with open('data.log', 'a') as fh:
+        fh.write(json.dumps({
+            'task_id': str(rec.task_id),
+            'timestamp': rec.created,
+            'data': rec.data,
+        }))
+        fh.write('\n')
+    return 0
+
+data_log = logging.getLogger('spiff.data')
+data_log.addFilter(log_updates)
+
 
 class Parser(BpmnDmnParser):
 
