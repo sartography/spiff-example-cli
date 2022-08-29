@@ -28,18 +28,17 @@ serializer = BpmnWorkflowSerializer(wf_spec_converter)
 
 logging.addLevelName(15, 'DATA_LOG')
 
-formatter = logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow)s:%(task_spec)s) %(message)s')
-handler = logging.StreamHandler()
-handler.setFormatter(formatter)
-logger = logging.getLogger('spiff')
-logger.addHandler(handler)
+def get_logger(name, fmt):
+    logger = logging.getLogger(name)
+    formatter = logging.Formatter(fmt)
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
 
-metrics_fmt = logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(task_type)s:%(action)s) %(elapsed)2.4f')
-metrics_handler = logging.StreamHandler()
-metrics_handler.setFormatter(metrics_fmt)
-metrics = logging.getLogger('spiff.metrics')
-metrics.addHandler(metrics_handler)
-metrics.propagate = False
+spiff_log = get_logger('spiff', '%(asctime)s [%(name)s:%(levelname)s] (%(workflow)s:%(task_spec)s) %(message)s')
+metrics_log = get_logger('spiff.metrics', '%(asctime)s [%(name)s:%(levelname)s] (%(task_type)s:%(action)s) %(elapsed)2.4f')
+metrics_log.propagate = False
 
 def log_updates(rec):
     with open('data.log', 'a') as fh:
@@ -191,7 +190,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     try:
-        logger.setLevel(args.log_level)
+        spiff_log.setLevel(args.log_level)
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
