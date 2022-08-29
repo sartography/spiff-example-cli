@@ -37,7 +37,7 @@ def parse(process, bpmn_files, dmn_files):
     if dmn_files:
         parser.add_dmn_files(dmn_files)
     top_level = parser.get_spec(process)
-    subprocesses = parser.get_process_specs()
+    subprocesses = parser.get_subprocess_specs(process)
     return BpmnWorkflow(top_level, subprocesses, script_engine=CustomScriptEngine)
 
 def select_option(prompt, options):
