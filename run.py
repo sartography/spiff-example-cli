@@ -2,7 +2,6 @@
 
 import argparse, sys, traceback
 import json
-import random
 import logging
 
 from jinja2 import Template
@@ -15,16 +14,17 @@ from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingE
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
-from SpiffWorkflow.dmn.specs.BusinessRuleTask import BusinessRuleTask
 
 from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
 from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
-from custom_script_engine import CustomScriptEngine
+from custom_script_engine import CustomScriptEngine as ScriptEngine
+
+from engine.custom_script import custom_data_converter
 
 wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter([ UserTaskConverter, BusinessRuleTaskConverter ])
-serializer = BpmnWorkflowSerializer(wf_spec_converter)
+serializer = BpmnWorkflowSerializer(wf_spec_converter, custom_data_converter)
 
 logging.addLevelName(15, 'DATA_LOG')
 
@@ -67,7 +67,7 @@ def parse(process, bpmn_files, dmn_files):
         parser.add_dmn_files(dmn_files)
     top_level = parser.get_spec(process)
     subprocesses = parser.get_subprocess_specs(process)
-    return BpmnWorkflow(top_level, subprocesses, script_engine=CustomScriptEngine)
+    return BpmnWorkflow(top_level, subprocesses, script_engine=ScriptEngine)
 
 def select_option(prompt, options):
 
@@ -158,7 +158,7 @@ def run(workflow, step):
             filename = input('Enter filename: ')
             state = serializer.serialize_json(workflow)
             with open(filename, 'w') as dump:
-                dump.write(state)
+                dump.write(state, indent=2, separators=[ ', ', ': ' ])
         elif selected != '':
             next_task = options[selected]
             if isinstance(next_task.task_spec, UserTask):

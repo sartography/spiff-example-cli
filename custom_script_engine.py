@@ -1,29 +1,34 @@
-from collections import namedtuple
-
 from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
+from SpiffWorkflow.util.deep_merge import DeepMerge
 
-ProductInfo = namedtuple('ProductInfo', ['color', 'size', 'style', 'price'])
+from engine.custom_script import lookup_product_info, lookup_shipping_cost
 
-INVENTORY = {
-    'product_a': ProductInfo(False, False, False, 15.00),
-    'product_b': ProductInfo(False, False, False, 15.00),
-    'product_c': ProductInfo(True, False, False, 25.00),
-    'product_d': ProductInfo(True, True, False, 20.00),
-    'product_e': ProductInfo(True, True, True, 25.00),
-    'product_f': ProductInfo(True, True, True, 30.00),
-    'product_g': ProductInfo(False, False, True, 25.00),
-}
-
-def lookup_product_info(product_name):
-    return INVENTORY[product_name]
-
-def lookup_shipping_cost(shipping_method):
-    return 25.00 if shipping_method == 'Overnight' else 5.00
+from engine import tasks
 
 additions = {
     'lookup_product_info': lookup_product_info,
     'lookup_shipping_cost': lookup_shipping_cost
 }
+CustomScriptEngine = PythonScriptEngine(scripting_additions=additions)
 
-CustomScriptEngine = PythonScriptEngine(scriptingAdditions=additions)
 
+class _CeleryScriptEngine(PythonScriptEngine):
+
+    def _evaluate(self, expression, context, external_methods=None):
+        return tasks.evaluate(expression, context, external_methods or {})
+
+    def _execute(self, script, context, external_methods=None):
+        result = tasks.execute.delay(script, context, external_methods or {})
+        return self.update_context(result, context)
+
+    def _is_complete(self, result, context):
+        return self.update_context(result, context)
+
+    def update_context(self, result, context):
+        if result.state == 'SUCCESS':
+            DeepMerge.merge(context, result.get())
+        else:
+            return result
+
+
+CeleryScriptEngine = _CeleryScriptEngine()
