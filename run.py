@@ -156,7 +156,7 @@ def print_state(workflow):
     task = workflow.last_task
     print("\nLast Task")
     print(format_task(task))
-    print(json.dumps(task.data, indent=2, separators=[", ", ": "]))
+    print(json.dumps(task.data, indent=2, separators=(", ", ": ")))
 
     display_types = (UserTask, ManualTask, ScriptTask, ThrowingEvent, CatchingEvent)
     all_tasks = [
@@ -227,7 +227,7 @@ def run(workflow, step):
             print_state(workflow)
 
     print("\nWorkflow Data")
-    print(json.dumps(workflow.data, indent=2, separators=[", ", ": "]))
+    print(json.dumps(workflow.data, indent=2, separators=(", ", ": ")))
 
 
 if __name__ == "__main__":
