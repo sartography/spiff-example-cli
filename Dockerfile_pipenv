@@ -1,0 +1,10 @@
+FROM cimg/python:3.10.4
+
+WORKDIR /app
+COPY Pipfile ./
+COPY Pipfile.lock ./
+RUN pipenv sync
+
+ADD . .
+
+CMD [ "python", "./run.py", "-p", "order_product", "-d", "bpmn/product_prices.dmn", "bpmn/shipping_costs.dmn", "-b", "bpmn/multiinstance.bpmn", "bpmn/call_activity_multi.bpmn" ]
