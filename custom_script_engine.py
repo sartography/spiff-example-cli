@@ -18,10 +18,26 @@ INVENTORY = {
 
 
 def lookup_product_info(product_name):
+    """
+    Look in the inventory for the product information.
+
+    :param product_name: name of the product.
+    :type product_name: str
+    :return: Information on the product.
+    :rtype: ProductInfo
+    """
     return INVENTORY[product_name]
 
 
 def lookup_shipping_cost(shipping_method):
+    """
+    Return the shipping cost based on the selected choice.
+
+    :param shipping_method: Method of shipping selected.
+    :type shipping_method: str
+    :return: Cost of the shipping.
+    :rtype: float
+    """
     return 25.00 if shipping_method == "Overnight" else 5.00
 
 
