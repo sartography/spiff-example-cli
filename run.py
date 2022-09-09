@@ -1,26 +1,27 @@
 #!/usr/bin/env python
 
-import argparse, sys, traceback
+# Standard Library
+import argparse
 import json
 import random
+import sys
+import traceback
 
+# Dependencies
+from custom_script_engine import CustomScriptEngine
 from jinja2 import Template
-
-from SpiffWorkflow.task import Task
-from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
+from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
+from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingEvent
 from SpiffWorkflow.bpmn.specs.ManualTask import ManualTask
 from SpiffWorkflow.bpmn.specs.ScriptTask import ScriptTask
-from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingEvent
+from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
+from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
-from SpiffWorkflow.dmn.specs.BusinessRuleTask import BusinessRuleTask
-
-from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
-from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
-
-from custom_script_engine import CustomScriptEngine
+from SpiffWorkflow.dmn.specs.BusinessRuleTask import BusinessRuleTask
+from SpiffWorkflow.task import Task
 
 wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter(
     [UserTaskConverter, BusinessRuleTaskConverter]

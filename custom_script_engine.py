@@ -1,5 +1,7 @@
+# Standard Library
 from collections import namedtuple
 
+# Dependencies
 from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
 
 ProductInfo = namedtuple("ProductInfo", ["color", "size", "style", "price"])
