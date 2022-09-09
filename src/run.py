@@ -34,7 +34,7 @@ serializer = BpmnWorkflowSerializer(wf_spec_converter)
 
 
 class Parser(BpmnDmnParser):
-    """Customized Parser for this example."""
+    """Customized Parser for this src."""
 
     OVERRIDE_PARSER_CLASSES = BpmnDmnParser.OVERRIDE_PARSER_CLASSES
     OVERRIDE_PARSER_CLASSES.update(CamundaParser.OVERRIDE_PARSER_CLASSES)

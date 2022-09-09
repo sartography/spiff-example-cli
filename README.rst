@@ -61,7 +61,7 @@ To execute the complete workflow:
 
 .. code:: bash
 
-   ./run.py -p order_product \
+   ./src/run.py -p order_product \
        -d bpmn/product_prices.dmn bpmn/shipping_costs.dmn \
        -b bpmn/multiinstance.bpmn bpmn/call_activity_multi.bpmn
 
@@ -69,17 +69,17 @@ To restore a saved workflow:
 
 .. code:: bash
 
-   ./run.py -r <saved_workflow_file>
+   ./src/run.py -r <saved_workflow_file>
 
 To see all program options:
 
 .. code:: bash
 
-   ./run.py --help
+   ./src/run.py --help
 
 On Windows, you may need to prepend the python executable to those commands.
-If using :code:`pip`, use :code:`python [command]`.
-If using :code:`pipenv` use :code:`pipenv run python [command]`.
+If using :code:`pip`, use :code:`python -m src.run [args]`.
+If using :code:`pipenv` use :code:`pipenv run python -m src.run [args]`.
 
 Run in docker
 ^^^^^^^^^^^^^
