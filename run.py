@@ -161,6 +161,9 @@ if __name__ == '__main__':
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
+                # We need to reset the script engine to the workflow.
+                # See https://github.com/sartography/spiff-example-cli/issues/13
+                wf.script_engine = CustomScriptEngine
         else:
             wf = parse(args.process, args.bpmn, args.dmn)
         run(wf, args.step)
