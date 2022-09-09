@@ -1,23 +1,22 @@
 spiff-example-cli
-==============
-
-.. sidebar:: Note
-
-   As of writing, this documentation has not been tried on Windows
+=================
 
 This is the documentation and example repository for the SpiffWorkflow BPMN workflow engine.
 Below is a brief outline on how to get started using this documentation - which in itself is designed as a tool for
 getting started with Spiffworkflow.
 
 Clone this repository
-------------------
+---------------------
 
 .. code:: bash
 
    git clone https://github.com/sartography/spiff-example-cli.git
 
+Using pip
+---------
+
 Set up virtual environment
---------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: bash
 
@@ -26,19 +25,29 @@ Set up virtual environment
     source ./venv/bin/activate
 
 Install Requirements
---------------------
+^^^^^^^^^^^^^^^^^^^^
 
 .. code:: bash
 
     pip3 install -r requirements.txt
+
+Using pipenv
+------------
+
+Install Requirements
+^^^^^^^^^^^^^^^^^^^^
+
+.. code:: bash
+
+    pipenv sync
 
 
 Using the Application
 ---------------------
 
 This application is intended to accompany the documentation for `SpiffWorkflow
-<https://spiffworkflow.readthedocs.io/en/latest/index.html>`_.  Further discussion of
-the models and application can be found there.
+<https://spiffworkflow.readthedocs.io/en/latest/index.html>`_.
+Further discussion of the models and application can be found there.
 
 Models
 ^^^^^^
@@ -68,6 +77,10 @@ To see all program options:
 
    ./run.py --help
 
+On Windows, you may need to prepend the python executable to those commands.
+If using :code:`pip`, use :code:`python [command]`.
+If using :code:`pipenv` use :code:`pipenv run python [command]`.
+
 Run in docker
 ^^^^^^^^^^^^^
 
@@ -75,5 +88,9 @@ Run in docker
 
    ./bin/run_in_docker
 
-## License
+It will use the pip installation method. If you want pipenv, replace the `Dockerfile`
+with the one named `Dockerfile_pipenv`.
+
+License
+-------
 GNU LESSER GENERAL PUBLIC LICENSE
