@@ -1,3 +1,4 @@
+"""Custom Script Engine for the example BPMN."""
 # Standard Library
 from collections import namedtuple
 

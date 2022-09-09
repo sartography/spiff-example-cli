@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+"""This module provides basic understanding on how to use SpiffWorkflow.
+
+Refer to the BPMN in this repository and the comments below.
+"""
 
 # Standard Library
 import argparse
