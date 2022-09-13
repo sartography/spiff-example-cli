@@ -2,7 +2,7 @@
 
 import argparse, sys, traceback
 import json
-import random
+import logging
 
 from jinja2 import Template
 
@@ -14,16 +14,45 @@ from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingE
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 from SpiffWorkflow.dmn.parser.BpmnDmnParser import BpmnDmnParser
-from SpiffWorkflow.dmn.specs.BusinessRuleTask import BusinessRuleTask
 
 from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
 from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
-from custom_script_engine import CustomScriptEngine
+from custom_script_engine import CustomScriptEngine as ScriptEngine
+
+from engine.custom_script import custom_data_converter
 
 wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter([ UserTaskConverter, BusinessRuleTaskConverter ])
-serializer = BpmnWorkflowSerializer(wf_spec_converter)
+serializer = BpmnWorkflowSerializer(wf_spec_converter, custom_data_converter)
+
+logging.addLevelName(15, 'DATA_LOG')
+
+def get_logger(name, fmt):
+    logger = logging.getLogger(name)
+    formatter = logging.Formatter(fmt)
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    return logger
+
+spiff_log = get_logger('spiff', '%(asctime)s [%(name)s:%(levelname)s] (%(workflow)s:%(task_spec)s) %(message)s')
+metrics_log = get_logger('spiff.metrics', '%(asctime)s [%(name)s:%(levelname)s] (%(task_type)s:%(action)s) %(elapsed)2.4f')
+metrics_log.propagate = False
+
+def log_updates(rec):
+    with open('data.log', 'a') as fh:
+        fh.write(json.dumps({
+            'task_id': str(rec.task_id),
+            'timestamp': rec.created,
+            'data': rec.data,
+        }))
+        fh.write('\n')
+    return 0
+
+data_log = logging.getLogger('spiff.data')
+data_log.addFilter(log_updates)
+
 
 class Parser(BpmnDmnParser):
 
@@ -36,7 +65,9 @@ def parse(process, bpmn_files, dmn_files):
     parser.add_bpmn_files(bpmn_files)
     if dmn_files:
         parser.add_dmn_files(dmn_files)
-    return BpmnWorkflow(parser.get_spec(process), script_engine=CustomScriptEngine)
+    top_level = parser.get_spec(process)
+    subprocesses = parser.get_subprocess_specs(process)
+    return BpmnWorkflow(top_level, subprocesses, script_engine=ScriptEngine)
 
 def select_option(prompt, options):
 
@@ -127,7 +158,7 @@ def run(workflow, step):
             filename = input('Enter filename: ')
             state = serializer.serialize_json(workflow)
             with open(filename, 'w') as dump:
-                dump.write(state)
+                dump.write(state, indent=2, separators=[ ', ', ': ' ])
         elif selected != '':
             next_task = options[selected]
             if isinstance(next_task.task_spec, UserTask):
@@ -158,9 +189,11 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--dmn', dest='dmn', nargs='*', help='DMN files to load')
     parser.add_argument('-r', '--restore', dest='restore', metavar='FILE',  help='Restore state from %(metavar)s')
     parser.add_argument('-s', '--step', dest='step', action='store_true', help='Display state after each step')
+    parser.add_argument('-l', '--log-level', dest='log_level', metavar='LEVEL', help='Use log level %(metavar)s', default='WARN')
     args = parser.parse_args()
 
     try:
+        spiff_log.setLevel(args.log_level)
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
