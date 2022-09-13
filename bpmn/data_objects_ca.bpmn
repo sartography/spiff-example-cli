@@ -15,9 +15,9 @@
     <bpmn:sequenceFlow id="Flow_0lxs5oz" sourceRef="Activity_1rkgwba" targetRef="Activity_1ttbd1j" />
     <bpmn:sequenceFlow id="Flow_073mtxq" sourceRef="Activity_18t9zti" targetRef="Event_17h0t5x" />
     <bpmn:sequenceFlow id="Flow_0h64mvn" sourceRef="Activity_1ttbd1j" targetRef="Activity_18t9zti" />
-    <bpmn:dataObjectReference id="DataObjectReference_0liabm1" name="dog_food" dataObjectRef="Dog Food" />
-    <bpmn:dataObject id="Dog Food" />
-    <bpmn:dataObjectReference id="DataObjectReference_1wrex3v" name="dog_food" dataObjectRef="Dog Food" />
+    <bpmn:dataObject id="dog_food" />
+    <bpmn:dataObjectReference id="DataObjectReference_1" name="dog_food" dataObjectRef="dog_food" />
+    <bpmn:dataObjectReference id="DataObjectReference_2" name="dog_food" dataObjectRef="dog_food" />
     <bpmn:scriptTask id="Activity_1ttbd1j" name="Skip the Cat">
       <bpmn:incoming>Flow_0lxs5oz</bpmn:incoming>
       <bpmn:outgoing>Flow_0h64mvn</bpmn:outgoing>
@@ -28,7 +28,7 @@ print("I'm the cat, and the dog_food variable is " + dog_food) </bpmn:script>
       <bpmn:incoming>Flow_0vgxmcw</bpmn:incoming>
       <bpmn:outgoing>Flow_0lxs5oz</bpmn:outgoing>
       <bpmn:dataOutputAssociation id="DataOutputAssociation_1h2y4ol">
-        <bpmn:targetRef>DataObjectReference_0liabm1</bpmn:targetRef>
+        <bpmn:targetRef>DataObjectReference_1</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
       <bpmn:script>dog_food="full_bowl"</bpmn:script>
     </bpmn:scriptTask>
@@ -37,7 +37,7 @@ print("I'm the cat, and the dog_food variable is " + dog_food) </bpmn:script>
       <bpmn:outgoing>Flow_073mtxq</bpmn:outgoing>
       <bpmn:property id="Property_0e3h1vf" name="__targetRef_placeholder" />
       <bpmn:dataInputAssociation id="DataInputAssociation_1bh1kum">
-        <bpmn:sourceRef>DataObjectReference_1wrex3v</bpmn:sourceRef>
+        <bpmn:sourceRef>DataObjectReference_2</bpmn:sourceRef>
         <bpmn:targetRef>Property_0e3h1vf</bpmn:targetRef>
       </bpmn:dataInputAssociation>
       <bpmn:script>print("Dog food received: " + dog_food)
@@ -73,7 +73,7 @@ contentment = "very high indeed!"</bpmn:script>
       <bpmndi:BPMNShape id="Event_17h0t5x_di" bpmnElement="Event_17h0t5x">
         <dc:Bounds x="672" y="542" width="36" height="36" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="DataObjectReference_0liabm1_di" bpmnElement="DataObjectReference_0liabm1">
+      <bpmndi:BPMNShape id="DataObjectReference_0liabm1_di" bpmnElement="DataObjectReference_1">
         <dc:Bounds x="282" y="395" width="36" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="277" y="371" width="46" height="14" />
@@ -112,7 +112,7 @@ contentment = "very high indeed!"</bpmn:script>
         <di:waypoint x="301" y="520" />
         <di:waypoint x="302" y="445" />
       </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="DataObjectReference_1wrex3v_di" bpmnElement="DataObjectReference_1wrex3v">
+      <bpmndi:BPMNShape id="DataObjectReference_1wrex3v_di" bpmnElement="DataObjectReference_2">
         <dc:Bounds x="562" y="395" width="36" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="557" y="371" width="46" height="14" />
