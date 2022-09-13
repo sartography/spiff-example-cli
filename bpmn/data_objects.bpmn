@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1qnx3d3" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="test_data_objects" name="Test Data Objects" isExecutable="true">
+    <bpmn:startEvent id="Event_0ejnq4c">
+      <bpmn:outgoing>Flow_0tyc4gh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0tyc4gh" sourceRef="Event_0ejnq4c" targetRef="Activity_1fdwrhl" />
+    <bpmn:sequenceFlow id="Flow_0q1alzw" sourceRef="Activity_1fdwrhl" targetRef="Activity_0u6en3a" />
+    <bpmn:sequenceFlow id="Flow_1f1tuat" sourceRef="Activity_0u6en3a" targetRef="Activity_0bbni41" />
+    <bpmn:endEvent id="Event_0oswe7x">
+      <bpmn:incoming>Flow_00d7kna</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_00d7kna" sourceRef="Activity_0bbni41" targetRef="Event_0oswe7x" />
+    <bpmn:scriptTask id="Activity_1fdwrhl" name="Set Dog Food Type">
+      <bpmn:incoming>Flow_0tyc4gh</bpmn:incoming>
+      <bpmn:outgoing>Flow_0q1alzw</bpmn:outgoing>
+      <bpmn:script>dog_food_type="steak and bacon"</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:callActivity id="Activity_0u6en3a" name="Call &#34;skip_the_cat&#34;" calledElement="skip_the_cat">
+      <bpmn:incoming>Flow_0q1alzw</bpmn:incoming>
+      <bpmn:outgoing>Flow_1f1tuat</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:scriptTask id="Activity_0bbni41" name="Verify Contentment">
+      <bpmn:incoming>Flow_1f1tuat</bpmn:incoming>
+      <bpmn:outgoing>Flow_00d7kna</bpmn:outgoing>
+      <bpmn:script>print("The call activity returned this contentment value:" + contentment) </bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="test_data_objects">
+      <bpmndi:BPMNEdge id="Flow_00d7kna_di" bpmnElement="Flow_00d7kna">
+        <di:waypoint x="660" y="120" />
+        <di:waypoint x="722" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1f1tuat_di" bpmnElement="Flow_1f1tuat">
+        <di:waypoint x="500" y="120" />
+        <di:waypoint x="560" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0q1alzw_di" bpmnElement="Flow_0q1alzw">
+        <di:waypoint x="340" y="120" />
+        <di:waypoint x="400" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0tyc4gh_di" bpmnElement="Flow_0tyc4gh">
+        <di:waypoint x="188" y="120" />
+        <di:waypoint x="240" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0ejnq4c_di" bpmnElement="Event_0ejnq4c">
+        <dc:Bounds x="152" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0oswe7x_di" bpmnElement="Event_0oswe7x">
+        <dc:Bounds x="722" y="102" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1fkcr6p_di" bpmnElement="Activity_1fdwrhl">
+        <dc:Bounds x="240" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00yya6p_di" bpmnElement="Activity_0u6en3a">
+        <dc:Bounds x="400" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_16m06j4_di" bpmnElement="Activity_0bbni41">
+        <dc:Bounds x="560" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

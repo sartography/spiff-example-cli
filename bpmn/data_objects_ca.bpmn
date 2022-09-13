@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1qnx3d3" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="skip_the_cat" name="Skip The Cat!" isExecutable="true">
+    <bpmn:ioSpecification>
+      <bpmn:dataInput id="DataInput-985933587-1" name="dog_food_type" />
+      <bpmn:dataOutput id="DataOutput-446876023-1" name="contentment" />
+    </bpmn:ioSpecification>
+    <bpmn:startEvent id="Event_0361j5v">
+      <bpmn:outgoing>Flow_0vgxmcw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0vgxmcw" sourceRef="Event_0361j5v" targetRef="Activity_1rkgwba" />
+    <bpmn:endEvent id="Event_17h0t5x">
+      <bpmn:incoming>Flow_073mtxq</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0lxs5oz" sourceRef="Activity_1rkgwba" targetRef="Activity_1ttbd1j" />
+    <bpmn:sequenceFlow id="Flow_073mtxq" sourceRef="Activity_18t9zti" targetRef="Event_17h0t5x" />
+    <bpmn:sequenceFlow id="Flow_0h64mvn" sourceRef="Activity_1ttbd1j" targetRef="Activity_18t9zti" />
+    <bpmn:dataObjectReference id="DataObjectReference_0liabm1" name="dog_food" dataObjectRef="Dog Food" />
+    <bpmn:dataObject id="Dog Food" />
+    <bpmn:dataObjectReference id="DataObjectReference_1wrex3v" name="dog_food" dataObjectRef="Dog Food" />
+    <bpmn:scriptTask id="Activity_1ttbd1j" name="Skip the Cat">
+      <bpmn:incoming>Flow_0lxs5oz</bpmn:incoming>
+      <bpmn:outgoing>Flow_0h64mvn</bpmn:outgoing>
+      <bpmn:script># No dog food here!
+print("I'm the cat, and the dog_food variable is " + dog_food) </bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_1rkgwba" name="Retrieve Dog Food">
+      <bpmn:incoming>Flow_0vgxmcw</bpmn:incoming>
+      <bpmn:outgoing>Flow_0lxs5oz</bpmn:outgoing>
+      <bpmn:dataOutputAssociation id="DataOutputAssociation_1h2y4ol">
+        <bpmn:targetRef>DataObjectReference_0liabm1</bpmn:targetRef>
+      </bpmn:dataOutputAssociation>
+      <bpmn:script>dog_food="full_bowl"</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:scriptTask id="Activity_18t9zti" name="Consume the Dog Food">
+      <bpmn:incoming>Flow_0h64mvn</bpmn:incoming>
+      <bpmn:outgoing>Flow_073mtxq</bpmn:outgoing>
+      <bpmn:property id="Property_0e3h1vf" name="__targetRef_placeholder" />
+      <bpmn:dataInputAssociation id="DataInputAssociation_1bh1kum">
+        <bpmn:sourceRef>DataObjectReference_1wrex3v</bpmn:sourceRef>
+        <bpmn:targetRef>Property_0e3h1vf</bpmn:targetRef>
+      </bpmn:dataInputAssociation>
+      <bpmn:script>print("Dog food received: " + dog_food)
+dog_food = "empty bowl"
+contentment = "very high indeed!"</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:textAnnotation id="TextAnnotation_0zdndbz">
+      <bpmn:text>using two Data References to the same data object to demonstrate this is possible. Though could have had two arrows to the same visual component here.</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_13domxe" sourceRef="DataObjectReference_1wrex3v" targetRef="TextAnnotation_0zdndbz" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="skip_the_cat">
+      <bpmndi:BPMNShape id="DataInput-985933587-1DI" bpmnElement="DataInput-985933587-1">
+        <dc:Bounds x="132" y="455" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="114" y="512" width="74" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataOutput-446876023-1DI" bpmnElement="DataOutput-446876023-1">
+        <dc:Bounds x="702" y="455" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="690" y="512" width="62" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0zdndbz_di" bpmnElement="TextAnnotation_0zdndbz">
+        <dc:Bounds x="660" y="290" width="179.99444032616753" height="98.58286230541142" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0361j5v_di" bpmnElement="Event_0361j5v">
+        <dc:Bounds x="179" y="542" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_17h0t5x_di" bpmnElement="Event_17h0t5x">
+        <dc:Bounds x="672" y="542" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="DataObjectReference_0liabm1_di" bpmnElement="DataObjectReference_0liabm1">
+        <dc:Bounds x="282" y="395" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="277" y="371" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00qbmpq_di" bpmnElement="Activity_1ttbd1j">
+        <dc:Bounds x="390" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1yvz1bm_di" bpmnElement="Activity_1rkgwba">
+        <dc:Bounds x="250" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_02uli0k_di" bpmnElement="Activity_18t9zti">
+        <dc:Bounds x="530" y="520" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Association_13domxe_di" bpmnElement="Association_13domxe">
+        <di:waypoint x="598" y="404" />
+        <di:waypoint x="660" y="349" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0vgxmcw_di" bpmnElement="Flow_0vgxmcw">
+        <di:waypoint x="215" y="560" />
+        <di:waypoint x="250" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0lxs5oz_di" bpmnElement="Flow_0lxs5oz">
+        <di:waypoint x="350" y="560" />
+        <di:waypoint x="390" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_073mtxq_di" bpmnElement="Flow_073mtxq">
+        <di:waypoint x="630" y="560" />
+        <di:waypoint x="672" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0h64mvn_di" bpmnElement="Flow_0h64mvn">
+        <di:waypoint x="490" y="560" />
+        <di:waypoint x="530" y="560" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="DataOutputAssociation_1h2y4ol_di" bpmnElement="DataOutputAssociation_1h2y4ol">
+        <di:waypoint x="301" y="520" />
+        <di:waypoint x="302" y="445" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="DataObjectReference_1wrex3v_di" bpmnElement="DataObjectReference_1wrex3v">
+        <dc:Bounds x="562" y="395" width="36" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="557" y="371" width="46" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="DataInputAssociation_1bh1kum_di" bpmnElement="DataInputAssociation_1bh1kum">
+        <di:waypoint x="580" y="445" />
+        <di:waypoint x="580" y="520" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

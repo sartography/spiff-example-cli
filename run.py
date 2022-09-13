@@ -149,7 +149,10 @@ def run(workflow, step):
 
 if __name__ == '__main__':
 
-    parser = argparse.ArgumentParser('Simple BPMN runner')
+    parser = argparse.ArgumentParser(description='Simple BPMN runner.', epilog='Call this either with -r to restore '
+                                                                               'an existing process, or use the other '
+                                                                               'options to start a new process from a'
+                                                                               ' BPMN file.')
     parser.add_argument('-p', '--process', dest='process', help='The top-level BPMN Process ID')
     parser.add_argument('-b', '--bpmn', dest='bpmn', nargs='+', help='BPMN files to load')
     parser.add_argument('-d', '--dmn', dest='dmn', nargs='*', help='DMN files to load')
@@ -161,6 +164,9 @@ if __name__ == '__main__':
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
+        elif not args.bpmn:
+            parser.print_help()
+            sys.exit(0)
         else:
             wf = parse(args.process, args.bpmn, args.dmn)
         run(wf, args.step)
