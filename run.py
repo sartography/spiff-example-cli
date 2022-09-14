@@ -158,7 +158,7 @@ def run(workflow, step):
             filename = input('Enter filename: ')
             state = serializer.serialize_json(workflow)
             with open(filename, 'w') as dump:
-                dump.write(state, indent=2, separators=[ ', ', ': ' ])
+                dump.write(state)
         elif selected != '':
             next_task = options[selected]
             if isinstance(next_task.task_spec, UserTask):
