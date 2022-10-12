@@ -1,0 +1,14 @@
+{
+  "title": "Retrieve Product",
+  "type": "object",
+  "required": [
+    "product_available"
+  ],
+  "properties": {
+    "product_available": {
+      "title": "Was the product available?",
+      "type": "string",
+      "default": "Y"
+    }
+  }
+}

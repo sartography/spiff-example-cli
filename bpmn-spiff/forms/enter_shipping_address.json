@@ -1,0 +1,13 @@
+{
+  "title": "Enter Shipping Address",
+  "type": "object",
+  "required": [
+    "shipping_address"
+  ],
+  "properties": {
+    "shipping_address": {
+      "title": "Shipping Address",
+      "type": "string"
+    }
+  }
+}

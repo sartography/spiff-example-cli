@@ -1,0 +1,27 @@
+{
+  "title": "Select Product Size",
+  "type": "object",
+  "required": [
+    "product_size"
+  ],
+  "properties": {
+    "product_size": {
+      "title": "Product Size",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "small",
+          "title": "S"
+        },
+        {
+          "const": "medium",
+          "title": "M"
+        },
+        {
+          "const": "large",
+          "title": "L"
+        }
+      ]
+    }
+  }
+}

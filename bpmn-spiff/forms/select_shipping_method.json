@@ -1,0 +1,23 @@
+{
+  "title": "Select Shipping Method",
+  "type": "object",
+  "required": [
+    "shipping_method"
+  ],
+  "properties": {
+    "shipping_method": {
+      "title": "Shipping Method",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "standard",
+          "title": "Standard"
+        },
+        {
+          "const": "overnight",
+          "title": "Overnight"
+        }
+      ]
+    }
+  }
+}

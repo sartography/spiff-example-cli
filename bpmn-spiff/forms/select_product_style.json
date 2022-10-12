@@ -1,0 +1,23 @@
+{
+  "title": "Select Product Style",
+  "type": "object",
+  "required": [
+    "product_style"
+  ],
+  "properties": {
+    "product_style": {
+      "title": "Product Style",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "short",
+          "title": "Short"
+        },
+        {
+          "const": "long",
+          "title": "Long"
+        }
+      ]
+    }
+  }
+}

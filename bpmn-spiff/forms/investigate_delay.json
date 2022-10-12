@@ -1,0 +1,13 @@
+{
+  "title": "Investigate Delay",
+  "type": "object",
+  "required": [
+    "reason_delayed"
+  ],
+  "properties": {
+    "reason_delayed": {
+      "title": "Why was the order delayed?",
+      "type": "string"
+    }
+  }
+}

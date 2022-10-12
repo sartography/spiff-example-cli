@@ -1,0 +1,14 @@
+{
+  "title": "Ship Product",
+  "type": "object",
+  "required": [
+    "product_shipped"
+  ],
+  "properties": {
+    "product_shipped": {
+      "title": "Was the product shipped?",
+      "type": "string",
+      "default": "Y"
+    }
+  }
+}

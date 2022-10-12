@@ -1,0 +1,14 @@
+{
+  "title": "Charge Customer",
+  "type": "object",
+  "required": [
+    "customer_charged"
+  ],
+  "properties": {
+    "customer_charged": {
+      "title": "Was the customer charged?",
+      "type": "string",
+      "default": "Y"
+    }
+  }
+}

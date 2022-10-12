@@ -1,0 +1,31 @@
+{
+  "title": "Select Product Color",
+  "type": "object",
+  "required": [
+    "product_color"
+  ],
+  "properties": {
+    "product_color": {
+      "title": "Product Color",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "white",
+          "title": "White"
+        },
+        {
+          "const": "black",
+          "title": "Black"
+        },
+        {
+          "const": "gray",
+          "title": "Gray"
+        },
+        {
+          "const": "navy",
+          "title": "Navy"
+        }
+      ]
+    }
+  }
+}
