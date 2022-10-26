@@ -1,0 +1,48 @@
+{
+  "title": "Select Product and Quantity",
+  "type": "object",
+  "required": [
+    "product_name",
+    "product_quantity"
+  ],
+  "properties": {
+    "product_name": {
+      "title": "Product Name",
+      "type": "string",
+      "oneOf": [
+        {
+          "const": "product_a",
+          "title": "A"
+        },
+        {
+          "const": "product_b",
+          "title": "B"
+        },
+        {
+          "const": "product_c",
+          "title": "C"
+        },
+        {
+          "const": "product_d",
+          "title": "D"
+        },
+        {
+          "const": "product_e",
+          "title": "E"
+        },
+        {
+          "const": "product_f",
+          "title": "F"
+        },
+        {
+          "const": "product_g",
+          "title": "G"
+        }
+      ]
+    },
+    "product_quantity": {
+      "title": "Quantity",
+      "type": "integer"
+    }
+  }
+}

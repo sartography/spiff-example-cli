@@ -5,3 +5,4 @@ venv
 docs/build
 docs/_build
 __pycache__
+*.log

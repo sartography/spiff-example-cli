@@ -1,2 +1,3 @@
 SpiffWorkflow==1.1.7
 Jinja2==3.0.3
+redis==4.3.4

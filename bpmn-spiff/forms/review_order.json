@@ -1,0 +1,14 @@
+{
+  "title": "Review Order",
+  "type": "object",
+  "required": [
+    "place_order"
+  ],
+  "properties": {
+    "place_order": {
+      "title": "Place Order?",
+      "type": "string",
+      "default": "N"
+    }
+  }
+}

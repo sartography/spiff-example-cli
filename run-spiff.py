@@ -1,15 +1,17 @@
 #!/usr/bin/env python
 
 import sys, traceback
+import os
+import json
 
 from SpiffWorkflow.bpmn.specs.ManualTask import ManualTask
 from SpiffWorkflow.bpmn.specs.ScriptTask import ScriptTask
 from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingEvent
 
-from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
-from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
+from SpiffWorkflow.spiff.parser import SpiffBpmnParser
+from SpiffWorkflow.spiff.specs.user_task import UserTask
 
-from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
+from SpiffWorkflow.spiff.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
 from engine.custom_script import custom_data_converter
@@ -25,24 +27,28 @@ from utils import (
     run,
 )
 
+forms_dir = 'bpmn-spiff/forms'
+
 def complete_user_task(task):
 
     display_task(task)
     if task.data is None:
         task.data = {}
 
-    for field in task.task_spec.form.fields:
-        if isinstance(field, EnumFormField):
-            option_map = dict([ (opt.name, opt.id) for opt in field.options ])
+    filename = task.task_spec.extensions['properties']['formJsonSchemaFilename']
+    schema = json.load(open(os.path.join(forms_dir, filename)))
+    for field, config in schema['properties'].items():
+        if 'oneOf' in config:
+            option_map = dict([ (v['title'], v['const']) for v in config['oneOf'] ])
             options = "(" + ', '.join(option_map) + ")"
-            prompt = f"{field.label} {options} "
+            prompt = f"{field} {options} "
             option = select_option(prompt, option_map.keys())
             response = option_map[option]
         else:
-            response = input(f"{field.label} ")
-            if field.type == "long":
+            response = input(f"{config['title']} ")
+            if config['type'] == 'integer':
                 response = int(response)
-        task.update_data_var(field.id, response)
+        task.data[field] = response
 
 handlers = {
     ManualTask: complete_manual_task,
@@ -61,11 +67,8 @@ if __name__ == '__main__':
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
-                # We need to reset the script engine to the workflow.
-                # See https://github.com/sartography/spiff-example-cli/issues/13
-                wf.script_engine = CustomScriptEngine
         else:
-            parser = CamundaParser()
+            parser = SpiffBpmnParser()
             wf = parse_workflow(parser, args.process, args.bpmn, args.dmn)
         run(wf, handlers, serializer, args.step, display_types)
     except Exception as exc:

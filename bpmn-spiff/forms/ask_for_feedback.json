@@ -1,0 +1,13 @@
+{
+  "title": "Customer Feedback",
+  "type": "object",
+  "required": [
+    "reason_cancelled"
+  ],
+  "properties": {
+    "reason_cancelled": {
+      "title": "Why did you cancel your order?",
+      "type": "string"
+    }
+  }
+}

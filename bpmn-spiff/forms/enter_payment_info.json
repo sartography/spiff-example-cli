@@ -1,0 +1,13 @@
+{
+  "title": "Enter Payment Info",
+  "type": "object",
+  "required": [
+    "card_number"
+  ],
+  "properties": {
+    "card_number": {
+      "title": "Card Number",
+      "type": "string"
+    }
+  }
+}
