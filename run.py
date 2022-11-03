@@ -23,6 +23,7 @@ from utils import (
     display_task,
     complete_manual_task,
     run,
+    ScriptEngine,
 )
 
 def complete_user_task(task):
@@ -61,9 +62,7 @@ if __name__ == '__main__':
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
-                # We need to reset the script engine to the workflow.
-                # See https://github.com/sartography/spiff-example-cli/issues/13
-                wf.script_engine = CustomScriptEngine
+                wf.script_engine = ScriptEngine
         else:
             parser = CamundaParser()
             wf = parse_workflow(parser, args.process, args.bpmn, args.dmn)

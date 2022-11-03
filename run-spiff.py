@@ -25,6 +25,7 @@ from utils import (
     display_task,
     complete_manual_task,
     run,
+    ScriptEngine
 )
 
 forms_dir = 'bpmn-spiff/forms'
@@ -67,6 +68,7 @@ if __name__ == '__main__':
         if args.restore is not None:
             with open(args.restore) as state:
                 wf = serializer.deserialize_json(state.read())
+                wf.script_engine = ScriptEngine
         else:
             parser = SpiffBpmnParser()
             wf = parse_workflow(parser, args.process, args.bpmn, args.dmn)
