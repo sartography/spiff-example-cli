@@ -8,10 +8,14 @@ from SpiffWorkflow.bpmn.specs.ManualTask import ManualTask
 from SpiffWorkflow.bpmn.specs.ScriptTask import ScriptTask
 from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingEvent
 
-from SpiffWorkflow.spiff.parser import SpiffBpmnParser
+from SpiffWorkflow.spiff.parser.process import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.user_task import UserTask
 
 from SpiffWorkflow.spiff.serializer.task_spec_converters import UserTaskConverter
+from SpiffWorkflow.spiff.serializer.task_spec_converters import (
+    IntermediateCatchEventConverter,
+    IntermediateThrowEventConverter,
+)
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
 from engine.custom_script import custom_data_converter
@@ -62,8 +66,13 @@ if __name__ == '__main__':
     args = arg_parser.parse_args()
 
     try:
-        configure_logging(args.log_level, 'data.log')
-        serializer = create_serializer([ UserTaskConverter, BusinessRuleTaskConverter ], custom_data_converter)
+        serializer = create_serializer([
+            UserTaskConverter,
+            BusinessRuleTaskConverter,
+            IntermediateCatchEventConverter,
+            IntermediateThrowEventConverter,
+        ], custom_data_converter)
+
         display_types = (UserTask, ManualTask, ScriptTask, ThrowingEvent, CatchingEvent)
         if args.restore is not None:
             with open(args.restore) as state:
@@ -73,6 +82,7 @@ if __name__ == '__main__':
             parser = SpiffBpmnParser()
             wf = parse_workflow(parser, args.process, args.bpmn, args.dmn)
         run(wf, handlers, serializer, args.step, display_types)
+
     except Exception as exc:
         sys.stderr.write(traceback.format_exc())
         sys.exit(1)

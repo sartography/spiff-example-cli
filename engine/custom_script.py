@@ -1,7 +1,7 @@
 import json
 from collections import namedtuple
 
-from SpiffWorkflow.bpmn.serializer import BpmnDataConverter
+from SpiffWorkflow.bpmn.serializer.workflow import BpmnDataConverter
 
 ProductInfo = namedtuple('ProductInfo', ['color', 'size', 'style', 'price'])
 

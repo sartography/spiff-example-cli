@@ -1,6 +1,7 @@
 from copy import copy
 
 import subprocess, time
+from datetime import timedelta
 
 from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
 from SpiffWorkflow.util.deep_merge import DeepMerge
@@ -12,7 +13,8 @@ from engine.celery import evaluate, execute
 
 additions = {
     'lookup_product_info': lookup_product_info,
-    'lookup_shipping_cost': lookup_shipping_cost
+    'lookup_shipping_cost': lookup_shipping_cost,
+    'timedelta': timedelta,
 }
 CustomScriptEngine = PythonScriptEngine(scripting_additions=additions)
 
