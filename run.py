@@ -10,6 +10,10 @@ from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
 from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
+from SpiffWorkflow.camunda.serializer.task_spec_converters import (
+    IntermediateCatchEventConverter,
+    IntermediateThrowEventConverter,
+)
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
 from engine.custom_script import custom_data_converter
@@ -57,7 +61,12 @@ if __name__ == '__main__':
 
     try:
         configure_logging(args.log_level, 'data.log')
-        serializer = create_serializer([ UserTaskConverter, BusinessRuleTaskConverter ], custom_data_converter)
+        serializer = create_serializer([
+            UserTaskConverter,
+            BusinessRuleTaskConverter,
+            IntermediateCatchEventConverter,
+            IntermediateThrowEventConverter,
+        ], custom_data_converter)
         display_types = (UserTask, ManualTask, ScriptTask, ThrowingEvent, CatchingEvent)
         if args.restore is not None:
             with open(args.restore) as state:
