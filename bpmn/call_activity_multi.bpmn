@@ -147,7 +147,7 @@ product_size = None
 product_style = None</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_10k8ds7" name="No" sourceRef="Gateway_088t9jj" targetRef="Event_10j4iim">
-      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">continue_shopping == 'N'</bpmn:conditionExpression>
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">continue_shopping.lower().startswith('n')</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
     <bpmn:sequenceFlow id="Flow_0xot77f" sourceRef="Activity_1evpuel" targetRef="Gateway_088t9jj" />
   </bpmn:process>
