@@ -9,10 +9,13 @@ from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingE
 from SpiffWorkflow.camunda.parser.CamundaParser import CamundaParser
 from SpiffWorkflow.camunda.specs.UserTask import EnumFormField, UserTask
 
-from SpiffWorkflow.camunda.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.camunda.serializer.task_spec_converters import (
+    UserTaskConverter,
+    StartEventConverter,
+    EndEventConverter,
     IntermediateCatchEventConverter,
     IntermediateThrowEventConverter,
+    BoundaryEventConverter,
 )
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
@@ -58,14 +61,20 @@ if __name__ == '__main__':
 
     arg_parser = create_arg_parser()
     args = arg_parser.parse_args()
+    args.process = 'order_product'
+    args.dmn = ['bpmn/product_prices.dmn', 'bpmn/shipping_costs.dmn']
+    args.bpmn =  ['bpmn/multiinstance.bpmn',  'bpmn/call_activity_multi.bpmn']
 
     try:
         configure_logging(args.log_level, 'data.log')
         serializer = create_serializer([
             UserTaskConverter,
-            BusinessRuleTaskConverter,
+            StartEventConverter,
+            EndEventConverter,
             IntermediateCatchEventConverter,
             IntermediateThrowEventConverter,
+            BoundaryEventConverter,
+            BusinessRuleTaskConverter,
         ], custom_data_converter)
         display_types = (UserTask, ManualTask, ScriptTask, ThrowingEvent, CatchingEvent)
         if args.restore is not None:
