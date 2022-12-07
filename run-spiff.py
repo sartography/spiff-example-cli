@@ -11,10 +11,22 @@ from SpiffWorkflow.bpmn.specs.events.event_types import CatchingEvent, ThrowingE
 from SpiffWorkflow.spiff.parser.process import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.user_task import UserTask
 
-from SpiffWorkflow.spiff.serializer.task_spec_converters import UserTaskConverter
 from SpiffWorkflow.spiff.serializer.task_spec_converters import (
+    NoneTaskConverter,
+    ManualTaskConverter,
+    UserTaskConverter,
+    ScriptTaskConverter,
+    ServiceTaskConverter,
+    SubworkflowTaskConverter,
+    TransactionSubpocessConverter,
+    CallActivityConverter,
+    StartEventConverter,
+    EndEventConverter,
     IntermediateCatchEventConverter,
     IntermediateThrowEventConverter,
+    BoundaryEventConverter,
+    SendTaskConverter,
+    ReceiveTaskConverter,
 )
 from SpiffWorkflow.dmn.serializer.task_spec_converters import BusinessRuleTaskConverter
 
@@ -68,6 +80,20 @@ if __name__ == '__main__':
     try:
         serializer = create_serializer([
             UserTaskConverter,
+            ManualTaskConverter,
+            UserTaskConverter,
+            ScriptTaskConverter,
+            ServiceTaskConverter,
+            SubworkflowTaskConverter,
+            TransactionSubpocessConverter,
+            CallActivityConverter,
+            StartEventConverter,
+            EndEventConverter,
+            IntermediateCatchEventConverter,
+            IntermediateThrowEventConverter,
+            BoundaryEventConverter,
+            SendTaskConverter,
+            ReceiveTaskConverter,
             BusinessRuleTaskConverter,
             IntermediateCatchEventConverter,
             IntermediateThrowEventConverter,
