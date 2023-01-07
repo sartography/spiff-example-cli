@@ -61,9 +61,6 @@ if __name__ == '__main__':
 
     arg_parser = create_arg_parser()
     args = arg_parser.parse_args()
-    args.process = 'order_product'
-    args.dmn = ['bpmn/product_prices.dmn', 'bpmn/shipping_costs.dmn']
-    args.bpmn =  ['bpmn/multiinstance.bpmn',  'bpmn/call_activity_multi.bpmn']
 
     try:
         configure_logging(args.log_level, 'data.log')
