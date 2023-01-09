@@ -107,6 +107,7 @@ if __name__ == '__main__':
         else:
             parser = SpiffBpmnParser()
             wf = parse_workflow(parser, args.process, args.bpmn, args.dmn)
+            wf.data['b_set_in_workflow_data'] = []
         run(wf, handlers, serializer, args.step, display_types)
 
     except Exception as exc:
