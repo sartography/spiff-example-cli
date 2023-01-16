@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="11.1.0">
+  <process id="Process_1" isExecutable="false">
+    <startEvent id="StartEvent_1y45yut" name="hunger noticed">
+      <outgoing>Flow_1tkt88y</outgoing>
+    </startEvent>
+    <endEvent id="Event_0tw8z2l">
+      <incoming>Flow_1hoznin</incoming>
+    </endEvent>
+    <subProcess id="Activity_0soryhi" name="Goal">
+      <incoming>Flow_1tkt88y</incoming>
+      <outgoing>Flow_1hoznin</outgoing>
+      <startEvent id="Event_14rjoz1">
+        <outgoing>Flow_0ak1idm</outgoing>
+      </startEvent>
+      <scriptTask id="Task_1hcentk" name="choose recipe">
+        <script>done = []</script>
+        <incoming>Flow_0ak1idm</incoming>
+        <outgoing>Flow_1jj23f8</outgoing>
+      </scriptTask>
+      <sequenceFlow id="Flow_0ak1idm" sourceRef="Event_14rjoz1" targetRef="Task_1hcentk" />
+      <endEvent id="Event_0dy6349">
+        <incoming>Flow_1jj23f8</incoming>
+      </endEvent>
+      <sequenceFlow id="Flow_1jj23f8" sourceRef="Task_1hcentk" targetRef="Event_0dy6349" />
+    </subProcess>
+    <sequenceFlow id="Flow_1tkt88y" sourceRef="StartEvent_1y45yut" targetRef="Activity_0soryhi" />
+    <sequenceFlow id="Flow_1hoznin" sourceRef="Activity_0soryhi" targetRef="Event_0tw8z2l" />
+  </process>
+  <bpmndi:BPMNDiagram id="BpmnDiagram_1">
+    <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNShape id="StartEvent_1y45yut_di" bpmnElement="StartEvent_1y45yut">
+        <omgdc:Bounds x="172" y="162" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds x="154" y="205" width="73" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tw8z2l_di" bpmnElement="Event_0tw8z2l">
+        <omgdc:Bounds x="752" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0soryhi_di" bpmnElement="Activity_0soryhi" isExpanded="true">
+        <omgdc:Bounds x="320" y="80" width="350" height="340" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_14rjoz1_di" bpmnElement="Event_14rjoz1">
+        <omgdc:Bounds x="360" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ndrxwj_di" bpmnElement="Task_1hcentk">
+        <omgdc:Bounds x="430" y="130" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1o4gayg" bpmnElement="Event_0dy6349">
+        <omgdc:Bounds x="572" y="162" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ak1idm_di" bpmnElement="Flow_0ak1idm">
+        <omgdi:waypoint x="396" y="180" />
+        <omgdi:waypoint x="413" y="180" />
+        <omgdi:waypoint x="413" y="170" />
+        <omgdi:waypoint x="430" y="170" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1jj23f8_di" bpmnElement="Flow_1jj23f8">
+        <omgdi:waypoint x="530" y="170" />
+        <omgdi:waypoint x="551" y="170" />
+        <omgdi:waypoint x="551" y="180" />
+        <omgdi:waypoint x="572" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1tkt88y_di" bpmnElement="Flow_1tkt88y">
+        <omgdi:waypoint x="208" y="180" />
+        <omgdi:waypoint x="320" y="180" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1hoznin_di" bpmnElement="Flow_1hoznin">
+        <omgdi:waypoint x="670" y="180" />
+        <omgdi:waypoint x="752" y="180" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

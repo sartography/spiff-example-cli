@@ -18,6 +18,50 @@ additions = {
 }
 CustomScriptEngine = PythonScriptEngine(scripting_additions=additions)
 
+class PlanSdkScriptEngine(PythonScriptEngine):
+    """
+    """
+    # logger = logging.getLogger(SPIFF_WF_TASK_LOGGER_NAME)
+
+    def create_task_exec_exception(self, task, err):
+        current_app.logger.info("in that bad boy")
+
+        if isinstance(err, WorkflowTaskExecException):
+            return err
+
+        detail = err.__class__.__name__
+        if len(err.args) > 0:
+            detail += ":" + str(err.args[0])
+        line_number = 0
+        error_line = ''
+        cl, exc, tb = sys.exc_info()
+        # Loop back through the stack trace to find the file called
+        # 'string' - which is the script we are executing, then use that
+        # to parse and pull out the offending line.
+        for frame_summary in traceback.extract_tb(tb):
+            if frame_summary.filename == '<string>':
+                line_number = frame_summary.lineno
+        return WorkflowTaskExecException(task, detail, err, line_number,
+                                         error_line)
+
+    def execute(self, task, script, external_methods=None, failure_method=None):
+        try:
+            current_app.logger.info("HOLLER")
+            current_app.logger.info("HOLLER")
+            current_app.logger.info("HOLLER")
+            current_app.logger.info("HOLLER")
+            current_app.logger.info("HOLLER")
+            current_app.logger.info("HOLLER")
+            current_app.logger.info("HOLLER about to _execute")
+            self._execute(script, task.data, external_methods or {})
+        except Exception as exc:
+            current_app.logger.warn("=====> got exception. now in except. GLOBALS: " + str(self.globals))
+            # if self.globals.get(FAILURE_TASK_METHOD_KEY):
+            #     self.globals[FAILURE_TASK_METHOD_KEY](task, exc)
+            # else:
+            raise exc
+
+
 RestrictedScriptEngine = PythonScriptEngine(default_globals=safe_globals, scripting_additions=additions)
 
 class _CeleryScriptEngine(PythonScriptEngine):

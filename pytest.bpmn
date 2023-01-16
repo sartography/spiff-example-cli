@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_0cwrrzn" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.1.2">
+  <bpmn:process id="PyTest" isExecutable="true">
+    <bpmn:subProcess id="SubProcess_0i3ekt5">
+      <bpmn:incoming>SequenceFlow_06en219</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_1f0uld0</bpmn:outgoing>
+      <bpmn:startEvent id="StartEvent_1" name="start">
+        <bpmn:outgoing>SequenceFlow_1qtfrcs</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:scriptTask id="getResourceParents" name="Get Parents" scriptFormat="python" camunda:asyncBefore="true">
+        <bpmn:incoming>SequenceFlow_1qtfrcs</bpmn:incoming>
+        <bpmn:outgoing>Flow_1czyh22</bpmn:outgoing>
+        <bpmn:script># parents = self.bpo.resources.get_dependents_with_filters(self.resource["id"], Recursive(True))
+# resource = self.resource
+
+raise Exception("Matt's issue")</bpmn:script>
+      </bpmn:scriptTask>
+      <bpmn:endEvent id="done" name="Done" camunda:asyncBefore="true">
+        <bpmn:incoming>Flow_1czyh22</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="SequenceFlow_1qtfrcs" sourceRef="StartEvent_1" targetRef="getResourceParents" />
+      <bpmn:sequenceFlow id="Flow_1czyh22" sourceRef="getResourceParents" targetRef="done" />
+    </bpmn:subProcess>
+    <bpmn:startEvent id="StartEvent_1pmv4m0">
+      <bpmn:outgoing>SequenceFlow_06en219</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_06en219" sourceRef="StartEvent_1pmv4m0" targetRef="SubProcess_0i3ekt5" />
+    <bpmn:endEvent id="EndEvent_02jjjoz">
+      <bpmn:incoming>SequenceFlow_1f0uld0</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_1f0uld0" sourceRef="SubProcess_0i3ekt5" targetRef="EndEvent_02jjjoz" />
+    <bpmn:boundaryEvent id="BoundaryEvent_00szwl6" attachedToRef="SubProcess_0i3ekt5">
+      <bpmn:outgoing>SequenceFlow_0cadpli</bpmn:outgoing>
+      <bpmn:errorEventDefinition errorRef="Error_0gfz1j0" camunda:errorCodeVariable="errorCode" camunda:errorMessageVariable="errorMessage" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0cadpli" sourceRef="BoundaryEvent_00szwl6" targetRef="Task_0dsylqc" />
+    <bpmn:endEvent id="EndEvent_154c03c">
+      <bpmn:incoming>SequenceFlow_0u5vjw8</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0u5vjw8" sourceRef="Task_0dsylqc" targetRef="EndEvent_154c03c" />
+    <bpmn:scriptTask id="Task_0dsylqc" name="Log Error" scriptFormat="python">
+      <bpmn:incoming>SequenceFlow_0cadpli</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0u5vjw8</bpmn:outgoing>
+      <bpmn:script>self.logger.warn("=====&gt; GLOBAL: " + str(self.golbals))</bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmn:signal id="Signal_1p44edu" name="unknown_exception" />
+  <bpmn:error id="Error_0gfz1j0" name="failure" errorCode="400" />
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="PyTest">
+      <bpmndi:BPMNShape id="SubProcess_0i3ekt5_di" bpmnElement="SubProcess_0i3ekt5" isExpanded="true">
+        <dc:Bounds x="277" y="81" width="816" height="256" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="311" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="318" y="202" width="22" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_14bbth2_di" bpmnElement="getResourceParents">
+        <dc:Bounds x="424" y="137" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_1r3oyr1_di" bpmnElement="done">
+        <dc:Bounds x="1037" y="159" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1042" y="202" width="27" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_1qtfrcs_di" bpmnElement="SequenceFlow_1qtfrcs">
+        <di:waypoint x="347" y="177" />
+        <di:waypoint x="424" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1czyh22_di" bpmnElement="Flow_1czyh22">
+        <di:waypoint x="524" y="177" />
+        <di:waypoint x="1037" y="177" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="StartEvent_1pmv4m0_di" bpmnElement="StartEvent_1pmv4m0">
+        <dc:Bounds x="156" y="191" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_02jjjoz_di" bpmnElement="EndEvent_02jjjoz">
+        <dc:Bounds x="1178" y="191" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_154c03c_di" bpmnElement="EndEvent_154c03c">
+        <dc:Bounds x="1311" y="399" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="ScriptTask_09dv8kj_di" bpmnElement="Task_0dsylqc">
+        <dc:Bounds x="1161" y="377" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BoundaryEvent_1hsqqpb_di" bpmnElement="BoundaryEvent_00szwl6">
+        <dc:Bounds x="1075" y="319" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_06en219_di" bpmnElement="SequenceFlow_06en219">
+        <di:waypoint x="192" y="209" />
+        <di:waypoint x="277" y="209" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_1f0uld0_di" bpmnElement="SequenceFlow_1f0uld0">
+        <di:waypoint x="1093" y="209" />
+        <di:waypoint x="1178" y="209" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0cadpli_di" bpmnElement="SequenceFlow_0cadpli">
+        <di:waypoint x="1093" y="355" />
+        <di:waypoint x="1093" y="417" />
+        <di:waypoint x="1161" y="417" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0u5vjw8_di" bpmnElement="SequenceFlow_0u5vjw8">
+        <di:waypoint x="1261" y="417" />
+        <di:waypoint x="1311" y="417" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
