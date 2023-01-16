@@ -114,8 +114,40 @@ def print_state(workflow, task, display_types):
         for idx, task in enumerate(all_tasks):
             print(format_task(task))
 
+def get_next_task(workflow):
+    engine_steps = list(
+        [t for t in workflow.get_tasks(TaskState.READY)
+            if workflow._is_engine_task(t.task_spec)])
+    next_task = engine_steps[0]
+    print(f"next_task: {next_task}")
+    return next_task
+
+def push_variables_to_workflow(task, task_variables):
+    """ Takes the input dictionary of variables and pushes them in the current task so they
+    become variables in the workflow.
+
+    :param dict task_variables: Dictionary of variables.
+    """
+    if not task:
+        self.logger.warn("Current task is not defined, so cannot push variables: " + str(task_variables))
+        return
+    if type(task_variables) is not dict:
+        self.logger.warn("Input variables are not a dictionary so cannot push them to workflow: " + str(task_variables))
+        return
+
+    print("Current Data: " + str(task.data))
+    print("VARS: " + json.dumps(task_variables))
+    print("Pushing variables into task.  Task: %s, Variables: %s" % (task.get_name(),
+                                                                                str(task_variables)))
+    task.update_data(task_variables)
+
+
+# Rock like: ./run-spiff.py -p just_script_process -b bpmn/just_script.bpmn
 def run(workflow, task_handlers, serializer, step, display_types):
 
+    task = get_next_task(workflow)
+    push_variables_to_workflow(task, {"sureenough": "yessir"})
+    task.complete()
     workflow.do_engine_steps()
 
     while not workflow.is_completed():
@@ -149,5 +181,5 @@ def run(workflow, task_handlers, serializer, step, display_types):
         if step:
             print_state(workflow, next_task, display_types)
 
-    print('\nWorkflow Data')
+    print('\nEnding Workflow Data')
     print(json.dumps(workflow.data, indent=2, separators=[ ', ', ': ' ]))
