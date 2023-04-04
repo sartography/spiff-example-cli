@@ -54,7 +54,9 @@ def configure_logging(log_level, filename):
 def create_serializer(task_types, data_converter=None):
 
     wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter(task_types)
-    return BpmnWorkflowSerializer(wf_spec_converter, data_converter)
+    serializer = BpmnWorkflowSerializer(wf_spec_converter, data_converter)
+    serializer.VERSION = 1.1
+    return serializer
 
 def parse_workflow(parser, process, bpmn_files, dmn_files, load_all=True):
 
