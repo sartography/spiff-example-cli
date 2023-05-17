@@ -22,7 +22,7 @@ parser = SpiffBpmnParser(validator=BpmnValidator())
 wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter(SPIFF_SPEC_CONFIG)
 serializer = BpmnWorkflowSerializer(wf_spec_converter, registry)
 
-forms_dir = 'bpmn/spiff/forms'
+forms_dir = 'bpmn/tutorial/forms'
 
 def display_instructions(task):
     text = task.task_spec.extensions.get('instructionsForEndUser')

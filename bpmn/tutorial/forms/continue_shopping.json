@@ -1,0 +1,14 @@
+{
+  "title": "Continue Shopping",
+  "type": "object",
+  "required": [
+    "continue_shopping"
+  ],
+  "properties": {
+    "continue_shopping": {
+      "title": "Select another product?",
+      "type": "string",
+      "default": "N"
+    }
+  }
+}

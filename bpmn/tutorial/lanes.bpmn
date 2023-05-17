@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ibnyhd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ibnyhd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:collaboration id="Collaboration_112beap">
     <bpmn:participant id="Participant_0syfhcb" name="Order Fulfillment" processRef="order_product" />
   </bpmn:collaboration>
@@ -29,21 +29,19 @@
     <bpmn:startEvent id="StartEvent_1" name="Begin Order">
       <bpmn:outgoing>Flow_19d1ca2</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_0gnvuqr" name="Select Product and Quantity" camunda:formKey="">
+    <bpmn:userTask id="Activity_0gnvuqr" name="Select Product and Quantity">
       <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="product_name" label="Product Name" type="enum">
-            <camunda:value id="product_a" name="A" />
-            <camunda:value id="product_b" name="B" />
-            <camunda:value id="product_c" name="C" />
-          </camunda:formField>
-          <camunda:formField id="product_quantity" label="Quantity" type="long" />
-        </camunda:formData>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="select_product_and_quantity.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_19d1ca2</bpmn:incoming>
       <bpmn:outgoing>Flow_0p31rh3</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:businessRuleTask id="Activity_0bxy81n" name="Look Up Product  Price" camunda:decisionRef="product_prices">
+    <bpmn:businessRuleTask id="Activity_0bxy81n" name="Look Up Product  Price">
+      <bpmn:extensionElements>
+        <spiffworkflow:calledDecisionId>product_prices</spiffworkflow:calledDecisionId>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0i67gc9</bpmn:incoming>
       <bpmn:incoming>Flow_0drurxm</bpmn:incoming>
       <bpmn:outgoing>Flow_1x7gmud</bpmn:outgoing>
@@ -55,14 +53,9 @@
     </bpmn:exclusiveGateway>
     <bpmn:userTask id="Activity_1xib4t6" name="Select Product Color">
       <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="product_color" label="Color" type="enum" defaultValue="white">
-            <camunda:value id="white" name="White" />
-            <camunda:value id="black" name="Black" />
-            <camunda:value id="gray" name="Gray" />
-            <camunda:value id="navy" name="Navy" />
-          </camunda:formField>
-        </camunda:formData>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="select_product_color.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1jfmezp</bpmn:incoming>
       <bpmn:outgoing>Flow_0i67gc9</bpmn:outgoing>
@@ -72,23 +65,20 @@
       <bpmn:outgoing>Flow_16po4do</bpmn:outgoing>
       <bpmn:outgoing>Flow_0emp5k2</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:userTask id="Activity_0gg5h3v" name="Select Shipping Method" camunda:formKey="">
+    <bpmn:userTask id="Activity_0gg5h3v" name="Select Shipping Method">
       <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="shipping_method" label="Shipping Method" type="enum" defaultValue="standard">
-            <camunda:value id="standard" name="Standard" />
-            <camunda:value id="overnight" name="Overnight" />
-          </camunda:formField>
-        </camunda:formData>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="select_shipping_method.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_16po4do</bpmn:incoming>
       <bpmn:outgoing>Flow_0di3wyr</bpmn:outgoing>
     </bpmn:userTask>
-    <bpmn:userTask id="Activity_0h4nuly" name="Enter Shipping Address" camunda:formKey="">
+    <bpmn:userTask id="Activity_0h4nuly" name="Enter Shipping Address">
       <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="shipping_address" label="Shipping Address" type="string" />
-        </camunda:formData>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="enter_shipping_address.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0emp5k2</bpmn:incoming>
       <bpmn:outgoing>Flow_0q6f23o</bpmn:outgoing>
@@ -98,7 +88,10 @@
       <bpmn:incoming>Flow_0q6f23o</bpmn:incoming>
       <bpmn:outgoing>Flow_062tuue</bpmn:outgoing>
     </bpmn:parallelGateway>
-    <bpmn:businessRuleTask id="Activity_0jnqqws" name="Look Up Shipping Cost" camunda:decisionRef="shipping_costs">
+    <bpmn:businessRuleTask id="Activity_0jnqqws" name="Look Up Shipping Cost">
+      <bpmn:extensionElements>
+        <spiffworkflow:calledDecisionId>shipping_costs</spiffworkflow:calledDecisionId>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_062tuue</bpmn:incoming>
       <bpmn:outgoing>Flow_0uc6vnt</bpmn:outgoing>
     </bpmn:businessRuleTask>
@@ -108,19 +101,20 @@
       <bpmn:script>order_total = product_quantity * product_price + shipping_cost</bpmn:script>
     </bpmn:scriptTask>
     <bpmn:manualTask id="Activity_0h1938t" name="Review Order">
-      <bpmn:documentation>Order Summary
+      <bpmn:extensionElements>
+        <spiffworkflow:instructionsForEndUser>Order Summary
 {{ product_name }}
 Quantity: {{ product_quantity }}
-Shipping Cost: {{ shipping_cost }}
-Order Total: {{ order_total }}</bpmn:documentation>
+Order Total: {{ order_total }}</spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0rd1dlt</bpmn:incoming>
       <bpmn:outgoing>Flow_0ke7chq</bpmn:outgoing>
     </bpmn:manualTask>
-    <bpmn:userTask id="Activity_0t2klx8" name="Enter Payment Info" camunda:formKey="">
+    <bpmn:userTask id="Activity_0t2klx8" name="Enter Payment Info">
       <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="card_number" label="Card Number" type="string" />
-        </camunda:formData>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="enter_payment_info.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0ke7chq</bpmn:incoming>
       <bpmn:outgoing>Flow_1nprqwr</bpmn:outgoing>
