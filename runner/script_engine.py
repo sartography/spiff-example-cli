@@ -1,4 +1,4 @@
-import subprocess, os
+import subprocess, os, json
 
 import datetime
 
@@ -8,7 +8,14 @@ from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
 from SpiffWorkflow.bpmn.PythonScriptEngineEnvironment import BasePythonScriptEngineEnvironment, TaskDataEnvironment
 from SpiffWorkflow.util.deep_merge import DeepMerge
 
-from runner.product_info import lookup_product_info, lookup_shipping_cost, loads, dumps
+from runner.product_info import (
+    lookup_product_info,
+    lookup_shipping_cost,
+    loads,
+    dumps,
+    product_info_to_dict,
+    product_info_from_dict
+)
 
 env_globals = {
     'lookup_product_info': lookup_product_info,
@@ -51,3 +58,26 @@ class SubprocessScriptingEnvironment(BasePythonScriptEngineEnvironment):
 
 executable = os.path.join(os.path.dirname(__file__), 'subprocess.py')
 subprocess_script_engine = PythonScriptEngine(environment=SubprocessScriptingEnvironment(executable))
+
+
+service_task_env = TaskDataEnvironment({
+    'product_info_from_dict': product_info_from_dict,
+    'datetime': datetime,
+})
+
+class ServiceTaskEngine(PythonScriptEngine):
+
+    def __init__(self):
+        super().__init__(environment=service_task_env)
+
+    def call_service(self, operation_name, operation_params, task_data):
+        if operation_name == 'lookup_product_info':
+            product_info = lookup_product_info(operation_params['product_name']['value'])
+            result = product_info_to_dict(product_info)
+        elif operation_name == 'lookup_shipping_cost':
+            result = lookup_shipping_cost(operation_params['shipping_method']['value'])
+        else:
+            raise Exception("Unknown Service!")
+        return json.dumps(result)
+
+service_task_engine = ServiceTaskEngine()
