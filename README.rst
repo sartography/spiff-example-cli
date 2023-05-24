@@ -73,7 +73,7 @@ Run in docker
 
 .. code:: bash
 
-   ./bin/run_in_docker
+   ./bin/run_in_docker --help
 
 ## License
 GNU LESSER GENERAL PUBLIC LICENSE
