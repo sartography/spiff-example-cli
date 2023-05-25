@@ -98,45 +98,41 @@ class SimpleBpmnRunner:
             self.workflow.refresh_waiting_tasks()
             engine_tasks = [t for t in self.workflow.get_tasks(TaskState.READY) if not t.task_spec.manual]
 
-    def run_workflow(self, step=False):
+    def pause(self, step):
 
-        while not self.workflow.is_completed():
+        tasks = self.workflow.get_tasks(TaskState.READY|TaskState.WAITING|TaskState.STARTED)
+        runnable = [t for t in tasks if t.state == TaskState.READY]
+        human_tasks = [t for t in runnable if t.task_spec.manual]
+        current_tasks = human_tasks if not step else runnable
 
-            if not step:
-                self.advance()
+        self.list_tasks(tasks, 'Ready and Waiting Tasks')
+        if len(current_tasks) > 0:
+            action = self.show_workflow_options(current_tasks)
+        else:
+            action = None
+            if len(tasks) > 0:
+                input("\nPress any key to update task list")
 
-            tasks = self.workflow.get_tasks(TaskState.READY|TaskState.WAITING)
-            runnable = [t for t in tasks if t.state == TaskState.READY]
-            human_tasks = [t for t in runnable if t.task_spec.manual]
-            current_tasks = human_tasks if not step else runnable
+        if action == 'r':
+            task = self.select_task(current_tasks)
+            handler = self.handlers.get(type(task.task_spec))
+            if handler is not None:
+                handler(task)
+            task.run()
+        elif action == 'p':
+            finished = [t for t in self.workflow.get_tasks(TaskState.FINISHED_MASK) if t.task_spec.bpmn_id is not None]
+            task = self.select_task(finished, 'View Task Details')
+            self.get_task_details(task)
+        elif action == 'a':
+            self.list_tasks([t for t in self.workflow.get_tasks() if t.task_spec.bpmn_id is not None], 'All Tasks')
+        elif action == 'f':
+            self.list_tasks([t for t in self.workflow.get_tasks(TaskState.FUTURE) if t.task_spec.bpmn_id is not None], 'Future Tasks')
+        elif action == 'd':
+            self.dump()
 
-            self.list_tasks(tasks, 'Ready and Waiting Tasks')
-            if len(current_tasks) > 0:
-                action = self.show_workflow_options(current_tasks)
-            else:
-                action = None
-                if len(tasks) > 0:
-                    input("\nPress any key to update task list")
+    def at_end(self):
 
-            if action == 'r':
-                task = self.select_task(current_tasks)
-                handler = self.handlers.get(type(task.task_spec))
-                if handler is not None:
-                    handler(task)
-                task.run()
-            elif action == 'p':
-                finished = [t for t in self.workflow.get_tasks(TaskState.FINISHED_MASK) if t.task_spec.bpmn_id is not None]
-                task = self.select_task(finished, 'View Task Details')
-                self.get_task_details(task)
-            elif action == 'a':
-                self.list_tasks([t for t in self.workflow.get_tasks() if t.task_spec.bpmn_id is not None], 'All Tasks')
-            elif action == 'f':
-                self.list_tasks([t for t in self.workflow.get_tasks(TaskState.FUTURE) if t.task_spec.bpmn_id is not None], 'Future Tasks')
-            elif action == 'd':
-                self.dump()
-
-            self.workflow.refresh_waiting_tasks()
-
+        action = None
         while action != 'q':
             action = self.show_prompt('\nSelect action: ', {
                 'a': 'List all tasks',
@@ -148,3 +144,13 @@ class SimpleBpmnRunner:
             elif action == 'v':
                 dct = self.serializer.data_converter.convert(self.workflow.data)
                 print('\n' + json.dumps(dct, indent=2, separators=[', ', ': ']))
+
+    def run_workflow(self, step=False):
+
+        while not self.workflow.is_completed():
+            if not step:
+                self.advance()
+            self.pause(step)
+            self.workflow.refresh_waiting_tasks()
+
+        self.at_end()
