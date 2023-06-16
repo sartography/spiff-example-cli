@@ -6,4 +6,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ADD . .
 
-ENTRYPOINT [ "python", "./run.py" ]
+ENTRYPOINT [ "python", "./spiff-bpmn-runner.py" ]

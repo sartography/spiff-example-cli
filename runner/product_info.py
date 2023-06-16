@@ -1,7 +1,7 @@
 import json
 from collections import namedtuple
 
-from SpiffWorkflow.bpmn.serializer.workflow import BpmnDataConverter
+from SpiffWorkflow.bpmn.serializer.helpers.dictionary import DictionaryConverter
 
 ProductInfo = namedtuple('ProductInfo', ['color', 'size', 'style', 'price'])
 
@@ -21,15 +21,6 @@ def lookup_product_info(product_name):
 def lookup_shipping_cost(shipping_method):
     return 25.00 if shipping_method == 'Overnight' else 5.00
 
-def get_globals(context, external_methods):
-    _context = {
-        'lookup_product_info': lookup_product_info,
-        'lookup_shipping_cost': lookup_shipping_cost,
-    }
-    _context.update(context)
-    _context.update(external_methods)
-    return _context
-
 def product_info_to_dict(obj):
     return {
         'color': obj.color,
@@ -41,14 +32,13 @@ def product_info_to_dict(obj):
 def product_info_from_dict(dct):
     return ProductInfo(**dct)
 
-custom_data_converter = BpmnDataConverter()
-custom_data_converter.register(ProductInfo, product_info_to_dict, product_info_from_dict)
+registry = DictionaryConverter()
+registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
 
 def dumps(obj):
-    dct = custom_data_converter.convert(obj)
+    dct = registry.convert(obj)
     return json.dumps(dct)
 
 def loads(s):
     dct = json.loads(s)
-    return custom_data_converter.restore(dct)
-
+    return registry.restore(dct)

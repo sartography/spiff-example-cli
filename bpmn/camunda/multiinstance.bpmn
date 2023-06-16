@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ibnyhd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
-  <bpmn:collaboration id="Collaboration_112beap">
+  <bpmn:collaboration id="order_collaboration">
     <bpmn:participant id="Participant_0syfhcb" name="Order Fulfillment" processRef="order_product" />
-    <bpmn:participant id="Participant_1mi7a2x" name="QA" processRef="qa_process" />
   </bpmn:collaboration>
   <bpmn:process id="order_product" name="Order Product" isExecutable="true">
     <bpmn:laneSet id="LaneSet_1egm1jz">
@@ -19,15 +18,15 @@
         <bpmn:flowNodeRef>Event_1xcx92w</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_165jb2o" name="Employee">
-        <bpmn:flowNodeRef>Activity_0gol5af</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1p0c9z2</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Gateway_1ohpjhg</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_00gtyea</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_136gk7h</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_0qk2468</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_05ljcvh</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_0p1446c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_0gol5af</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_0wdh5sd</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0p1446c</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_05ljcvh</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_0qk2468</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_136gk7h</bpmn:flowNodeRef>
       </bpmn:lane>
       <bpmn:lane id="Lane_1c3gw8l" name="Customer">
         <bpmn:flowNodeRef>StartEvent_1</bpmn:flowNodeRef>
@@ -37,9 +36,15 @@
         <bpmn:flowNodeRef>Event_02km2o9</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_1ncg4ro</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Activity_0ytnmfa</bpmn:flowNodeRef>
-        <bpmn:flowNodeRef>Event_1ailogh</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_1yahe0s</bpmn:flowNodeRef>
         <bpmn:flowNodeRef>Event_1pd719w</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_1ailogh</bpmn:flowNodeRef>
+      </bpmn:lane>
+      <bpmn:lane id="Lane_09mnh5n" name="QA">
+        <bpmn:flowNodeRef>Event_0avgftb</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1b9i014</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Activity_1mz873i</bpmn:flowNodeRef>
+        <bpmn:flowNodeRef>Event_143f6no</bpmn:flowNodeRef>
       </bpmn:lane>
     </bpmn:laneSet>
     <bpmn:startEvent id="StartEvent_1" name="Begin Order">
@@ -126,7 +131,7 @@
       <bpmn:scriptTask id="Activity_1ulwq7u" name="Calculate Order Total">
         <bpmn:incoming>Flow_0uc6vnt</bpmn:incoming>
         <bpmn:outgoing>Flow_0rd1dlt</bpmn:outgoing>
-        <bpmn:script>order_total = product_quantity * product_price + shipping_cost</bpmn:script>
+        <bpmn:script>order_total = sum([ p['product_quantity'] * p['product_price'] for p in products.values() ]) + shipping_cost</bpmn:script>
       </bpmn:scriptTask>
       <bpmn:sequenceFlow id="Flow_0i0d3q2" sourceRef="Event_1szbp6c" targetRef="Activity_0gnvuqr" />
       <bpmn:sequenceFlow id="Flow_16po4do" sourceRef="shipping_info_gateway" targetRef="Activity_0gg5h3v" />
@@ -145,10 +150,15 @@
       <bpmn:sequenceFlow id="Flow_05m2g52" sourceRef="Activity_0h1938t" targetRef="Gateway_1jso73n" />
       <bpmn:userTask id="Activity_0h1938t" name="Review Order" camunda:formKey="">
         <bpmn:documentation>Order Summary
-{{ product_name }}
-Quantity: {{ product_quantity }}
+{% for product in products.values() %}
+{{ product.product_name }}
+Quantity: {{ product.product_quantity }}
+Price: {{ product.product_price }}
+{% endfor %}
 Shipping Cost: {{ shipping_cost }}
-Order Total: {{ order_total }}</bpmn:documentation>
+Order Total: {{ order_total }}
+
+</bpmn:documentation>
         <bpmn:extensionElements>
           <camunda:formData>
             <camunda:formField id="place_order" label="Place Order" type="string" defaultValue="&#39;N&#39;" />
@@ -194,25 +204,27 @@ Order Total: {{ order_total }}</bpmn:documentation>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_1iq0o3k" name="Yes" sourceRef="Gateway_1a4xpcc" targetRef="Activity_1f2e8xi" />
       <bpmn:sequenceFlow id="Flow_0ld0n9z" name="No" sourceRef="Gateway_1a4xpcc" targetRef="Event_0ifbmar">
-        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">product_available == 'N'</bpmn:conditionExpression>
+        <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">any([ product['product_available'] == 'N' for product in products.values() ])</bpmn:conditionExpression>
       </bpmn:sequenceFlow>
       <bpmn:endEvent id="Event_0ifbmar" name="Product Unavailable">
         <bpmn:incoming>Flow_0ld0n9z</bpmn:incoming>
         <bpmn:errorEventDefinition id="ErrorEventDefinition_0curkln" errorRef="Error_03fn273" />
       </bpmn:endEvent>
       <bpmn:userTask id="Activity_1f76alf" name="Retrieve Product" camunda:formKey="">
+        <bpmn:documentation>Retrieve {{ product.product_quantity }} of {{ product.product_name }}</bpmn:documentation>
         <bpmn:extensionElements>
           <camunda:formData>
-            <camunda:formField id="product_available" label="Was the product available?" type="string" />
+            <camunda:formField id="product.product_available" label="Was the product available?" type="string" />
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1k1bdpv</bpmn:incoming>
         <bpmn:outgoing>Flow_0266l2t</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics camunda:collection="products" camunda:elementVariable="product" />
       </bpmn:userTask>
       <bpmn:userTask id="Activity_1f2e8xi" name="Ship Product" camunda:formKey="">
         <bpmn:extensionElements>
           <camunda:formData>
-            <camunda:formField id="product_shipped" label="Was the product shipped?" type="string" />
+            <camunda:formField id="product_shipped" label="Was the order shipped?" type="string" />
           </camunda:formData>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_1iq0o3k</bpmn:incoming>
@@ -232,7 +244,7 @@ Order Total: {{ order_total }}</bpmn:documentation>
         <bpmn:incoming>Flow_08d8k7v</bpmn:incoming>
         <bpmn:outgoing>Flow_1570y49</bpmn:outgoing>
         <bpmn:timerEventDefinition id="TimerEventDefinition_0hwvz0g">
-          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">timedelta(minutes=1)</bpmn:timeDuration>
+          <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">timedelta(seconds=10)</bpmn:timeDuration>
         </bpmn:timerEventDefinition>
       </bpmn:intermediateCatchEvent>
       <bpmn:sequenceFlow id="Flow_1570y49" sourceRef="Event_1lwrxto" targetRef="Activity_1f2e8xi" />
@@ -303,7 +315,7 @@ Order Total: {{ order_total }}</bpmn:documentation>
     <bpmn:boundaryEvent id="Event_05ljcvh" name="Order Delayed" cancelActivity="false" attachedToRef="Activity_0gol5af">
       <bpmn:outgoing>Flow_1ny6y69</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_1ll0ob4">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">timedelta(seconds=10)</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">timedelta(minutes=1)</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:boundaryEvent>
     <bpmn:boundaryEvent id="Event_0qk2468" name="Handle Product Unavailable" attachedToRef="Activity_0gol5af">
@@ -362,21 +374,9 @@ Order Total: {{ order_total }}</bpmn:documentation>
     <bpmn:boundaryEvent id="Event_1xcx92w" name="Order Cancelled" attachedToRef="Activity_0mi602x">
       <bpmn:signalEventDefinition id="SignalEventDefinition_1czakns" signalRef="Signal_1fz4fqn" />
     </bpmn:boundaryEvent>
-    <bpmn:endEvent id="Event_136gk7h" name="Order Completed">
-      <bpmn:incoming>Flow_0ajg6w9</bpmn:incoming>
-      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1aol8fe" />
-    </bpmn:endEvent>
-    <bpmn:endEvent id="Event_1ailogh" name="Order Cancelled by Customer">
-      <bpmn:incoming>Flow_0xe3ahu</bpmn:incoming>
-      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1eu7yei" />
-    </bpmn:endEvent>
-  </bpmn:process>
-  <bpmn:signal id="Signal_13tk3ao" name="customer_charged" />
-  <bpmn:signal id="Signal_1fz4fqn" name="order_cancelled" />
-  <bpmn:error id="Error_03fn273" name="product_unavailable" errorCode="1" />
-  <bpmn:escalation id="Escalation_1xxp2a9" name="product_not_shipped" escalationCode="1" />
-  <bpmn:message id="Message_1ngt47u" name="order_delayed" />
-  <bpmn:process id="qa_process" name="QA Order Delays" isExecutable="true">
+    <bpmn:sequenceFlow id="Flow_1o45y3l" sourceRef="Event_0avgftb" targetRef="Activity_1b9i014" />
+    <bpmn:sequenceFlow id="Flow_0rfdrxr" sourceRef="Activity_1b9i014" targetRef="Activity_1mz873i" />
+    <bpmn:sequenceFlow id="Flow_0y0t1it" sourceRef="Activity_1mz873i" targetRef="Event_143f6no" />
     <bpmn:startEvent id="Event_0avgftb" name="Begin QA Analysis">
       <bpmn:outgoing>Flow_1o45y3l</bpmn:outgoing>
       <bpmn:messageEventDefinition id="MessageEventDefinition_1s2ihho" messageRef="Message_1ngt47u" />
@@ -392,14 +392,27 @@ Order Total: {{ order_total }}</bpmn:documentation>
     <bpmn:endEvent id="Event_143f6no" name="End QA Analysis">
       <bpmn:incoming>Flow_0y0t1it</bpmn:incoming>
     </bpmn:endEvent>
-    <bpmn:sequenceFlow id="Flow_1o45y3l" sourceRef="Event_0avgftb" targetRef="Activity_1b9i014" />
-    <bpmn:sequenceFlow id="Flow_0rfdrxr" sourceRef="Activity_1b9i014" targetRef="Activity_1mz873i" />
-    <bpmn:sequenceFlow id="Flow_0y0t1it" sourceRef="Activity_1mz873i" targetRef="Event_143f6no" />
+    <bpmn:endEvent id="Event_136gk7h" name="Order Completed">
+      <bpmn:incoming>Flow_0ajg6w9</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1aol8fe" />
+    </bpmn:endEvent>
+    <bpmn:endEvent id="Event_1ailogh" name="Order Cancelled by Customer">
+      <bpmn:incoming>Flow_0xe3ahu</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_1eu7yei" />
+    </bpmn:endEvent>
   </bpmn:process>
+  <bpmn:signal id="Signal_13tk3ao" name="customer_charged" />
+  <bpmn:signal id="Signal_1fz4fqn" name="order_cancelled" />
+  <bpmn:error id="Error_03fn273" name="product_unavailable" errorCode="1" />
+  <bpmn:escalation id="Escalation_1xxp2a9" name="product_not_shipped" escalationCode="1" />
+  <bpmn:message id="Message_1ngt47u" name="order_delayed" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Collaboration_112beap">
       <bpmndi:BPMNShape id="Participant_0syfhcb_di" bpmnElement="Participant_0syfhcb" isHorizontal="true">
-        <dc:Bounds x="112" y="80" width="1858" height="1200" />
+        <dc:Bounds x="112" y="80" width="1858" height="1340" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Lane_09mnh5n_di" bpmnElement="Lane_09mnh5n" isHorizontal="true">
+        <dc:Bounds x="142" y="1270" width="1828" height="150" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_1c3gw8l_di" bpmnElement="Lane_1c3gw8l" isHorizontal="true">
         <dc:Bounds x="142" y="80" width="1828" height="447" />
@@ -408,8 +421,20 @@ Order Total: {{ order_total }}</bpmn:documentation>
         <dc:Bounds x="142" y="527" width="1828" height="383" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Lane_0uid8q6_di" bpmnElement="Lane_0uid8q6" isHorizontal="true">
-        <dc:Bounds x="142" y="910" width="1828" height="370" />
+        <dc:Bounds x="142" y="910" width="1828" height="360" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0y0t1it_di" bpmnElement="Flow_0y0t1it">
+        <di:waypoint x="540" y="1340" />
+        <di:waypoint x="592" y="1340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rfdrxr_di" bpmnElement="Flow_0rfdrxr">
+        <di:waypoint x="390" y="1340" />
+        <di:waypoint x="440" y="1340" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1o45y3l_di" bpmnElement="Flow_1o45y3l">
+        <di:waypoint x="240" y="1340" />
+        <di:waypoint x="290" y="1340" />
+      </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1ftgujt_di" bpmnElement="Flow_1ftgujt">
         <di:waypoint x="1478" y="980" />
         <di:waypoint x="1530" y="980" />
@@ -815,6 +840,24 @@ Order Total: {{ order_total }}</bpmn:documentation>
       <bpmndi:BPMNShape id="Activity_1t7u3g9_di" bpmnElement="Activity_0mi602x">
         <dc:Bounds x="720" y="1130" width="100" height="80" />
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1623n1b_di" bpmnElement="Event_0avgftb">
+        <dc:Bounds x="204" y="1322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="199" y="1365" width="48" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1b9i014_di" bpmnElement="Activity_1b9i014">
+        <dc:Bounds x="290" y="1300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1mz873i_di" bpmnElement="Activity_1mz873i">
+        <dc:Bounds x="440" y="1300" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_143f6no_di" bpmnElement="Event_143f6no">
+        <dc:Bounds x="592" y="1322" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="568" y="1365" width="84" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_1yjiex1_di" bpmnElement="Event_136gk7h">
         <dc:Bounds x="1852" y="649" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -865,39 +908,6 @@ Order Total: {{ order_total }}</bpmn:documentation>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Event_0au5pnz_di" bpmnElement="Event_1pd719w">
         <dc:Bounds x="1384" y="194" width="36" height="36" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Participant_1mi7a2x_di" bpmnElement="Participant_1mi7a2x" isHorizontal="true">
-        <dc:Bounds x="112" y="1310" width="600" height="250" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNEdge id="Flow_1o45y3l_di" bpmnElement="Flow_1o45y3l">
-        <di:waypoint x="220" y="1410" />
-        <di:waypoint x="270" y="1410" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0rfdrxr_di" bpmnElement="Flow_0rfdrxr">
-        <di:waypoint x="370" y="1410" />
-        <di:waypoint x="420" y="1410" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0y0t1it_di" bpmnElement="Flow_0y0t1it">
-        <di:waypoint x="520" y="1410" />
-        <di:waypoint x="572" y="1410" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNShape id="Event_1623n1b_di" bpmnElement="Event_0avgftb">
-        <dc:Bounds x="184" y="1392" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="179" y="1435" width="48" height="27" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1b9i014_di" bpmnElement="Activity_1b9i014">
-        <dc:Bounds x="270" y="1370" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_1mz873i_di" bpmnElement="Activity_1mz873i">
-        <dc:Bounds x="420" y="1370" width="100" height="80" />
-      </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_143f6no_di" bpmnElement="Event_143f6no">
-        <dc:Bounds x="572" y="1392" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="548" y="1435" width="84" height="14" />
-        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1qnx3d3" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="timer_start" isExecutable="true">
+    <bpmn:sequenceFlow id="Flow_032rj36" targetRef="any_task" />
+    <bpmn:endEvent id="Event_08yf43i">
+      <bpmn:incoming>Flow_0v2d6wi</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0v2d6wi" sourceRef="any_task" targetRef="Event_08yf43i" />
+    <bpmn:task id="any_task" name="Any Task">
+      <bpmn:extensionElements>
+        <spiffworkflow:instructionsForEndUser>Press Enter!</spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_032rj36</bpmn:incoming>
+      <bpmn:incoming>Flow_0exxc43</bpmn:incoming>
+      <bpmn:outgoing>Flow_0v2d6wi</bpmn:outgoing>
+    </bpmn:task>
+    <bpmn:startEvent id="Start_Event">
+      <bpmn:outgoing>Flow_032rj36</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0jgw0qx">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">"PT1D"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0exxc43" sourceRef="Start_Event" targetRef="any_task" />
+    <bpmn:startEvent id="Start_Event">
+      <bpmn:outgoing>Flow_0exxc43</bpmn:outgoing>
+      <bpmn:timerEventDefinition id="TimerEventDefinition_0404tuj">
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">"PT1D"</bpmn:timeDuration>
+      </bpmn:timerEventDefinition>
+    </bpmn:startEvent>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="timer_start">
+      <bpmndi:BPMNShape id="Event_08yf43i_di" bpmnElement="Event_08yf43i">
+        <dc:Bounds x="412" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10qtrw3_di" bpmnElement="any_task">
+        <dc:Bounds x="260" y="200" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_00iwkj1_di" bpmnElement="Start_Event">
+        <dc:Bounds x="152" y="222" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0v2d6wi_di" bpmnElement="Flow_0v2d6wi">
+        <di:waypoint x="360" y="240" />
+        <di:waypoint x="412" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0exxc43_di" bpmnElement="Flow_0exxc43">
+        <di:waypoint x="188" y="240" />
+        <di:waypoint x="260" y="240" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

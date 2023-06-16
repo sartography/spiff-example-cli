@@ -30,10 +30,12 @@
     </bpmn:scriptTask>
     <bpmn:sequenceFlow id="Flow_0rd1dlt" sourceRef="Activity_1ulwq7u" targetRef="Activity_0h1938t" />
     <bpmn:manualTask id="Activity_0h1938t" name="Review Order">
-      <bpmn:documentation>Order Summary
+      <bpmn:extensionElements>
+        <spiffworkflow:instructionsForEndUser>Order Summary
 {{ product_name }}
 Quantity: {{ product_quantity }}
-Order Total: {{ order_total }}</bpmn:documentation>
+Order Total: {{ order_total }}</spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
       <bpmn:incoming>Flow_0rd1dlt</bpmn:incoming>
       <bpmn:outgoing>Flow_1aftqy6</bpmn:outgoing>
     </bpmn:manualTask>
@@ -44,29 +46,6 @@ Order Total: {{ order_total }}</bpmn:documentation>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="order_product">
-      <bpmndi:BPMNEdge id="Flow_1aftqy6_di" bpmnElement="Flow_1aftqy6">
-        <di:waypoint x="850" y="117" />
-        <di:waypoint x="912" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_0rd1dlt_di" bpmnElement="Flow_0rd1dlt">
-        <di:waypoint x="690" y="117" />
-        <di:waypoint x="750" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_03cch6u_di" bpmnElement="Flow_03cch6u">
-        <di:waypoint x="530" y="117" />
-        <di:waypoint x="590" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_1m9aack_di" bpmnElement="Flow_1m9aack">
-        <di:waypoint x="370" y="117" />
-        <di:waypoint x="430" y="117" />
-      </bpmndi:BPMNEdge>
-      <bpmndi:BPMNEdge id="Flow_19d1ca2_di" bpmnElement="Flow_19d1ca2">
-        <di:waypoint x="215" y="117" />
-        <di:waypoint x="270" y="117" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="224" y="159" width="37" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNEdge>
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
         <dc:Bounds x="179" y="99" width="36" height="36" />
         <bpmndi:BPMNLabel>
@@ -91,6 +70,29 @@ Order Total: {{ order_total }}</bpmn:documentation>
           <dc:Bounds x="905" y="142" width="52" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_19d1ca2_di" bpmnElement="Flow_19d1ca2">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="224" y="159" width="37" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1m9aack_di" bpmnElement="Flow_1m9aack">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="430" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03cch6u_di" bpmnElement="Flow_03cch6u">
+        <di:waypoint x="530" y="117" />
+        <di:waypoint x="590" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0rd1dlt_di" bpmnElement="Flow_0rd1dlt">
+        <di:waypoint x="690" y="117" />
+        <di:waypoint x="750" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1aftqy6_di" bpmnElement="Flow_1aftqy6">
+        <di:waypoint x="850" y="117" />
+        <di:waypoint x="912" y="117" />
+      </bpmndi:BPMNEdge>
     </bpmndi:BPMNPlane>
   </bpmndi:BPMNDiagram>
 </bpmn:definitions>

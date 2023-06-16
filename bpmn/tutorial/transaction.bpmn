@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ibnyhd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ibnyhd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
   <bpmn:collaboration id="Collaboration_112beap">
     <bpmn:participant id="Participant_0syfhcb" name="Order Fulfillment" processRef="order_product" />
   </bpmn:collaboration>
@@ -22,11 +22,11 @@
     <bpmn:startEvent id="StartEvent_1" name="Begin Order">
       <bpmn:outgoing>Flow_10i21xl</bpmn:outgoing>
     </bpmn:startEvent>
-    <bpmn:userTask id="Activity_0t2klx8" name="Enter Payment Info" camunda:formKey="">
+    <bpmn:userTask id="Activity_0t2klx8" name="Enter Payment Info">
       <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="card_number" label="Card Number" type="string" />
-        </camunda:formData>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="enter_payment_info.json" />
+        </spiffworkflow:properties>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_07c9v4j</bpmn:incoming>
       <bpmn:outgoing>Flow_1nprqwr</bpmn:outgoing>
@@ -46,23 +46,20 @@
         <bpmn:outgoing>Flow_16po4do</bpmn:outgoing>
         <bpmn:outgoing>Flow_0emp5k2</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:userTask id="Activity_0gg5h3v" name="Select Shipping Method" camunda:formKey="">
+      <bpmn:userTask id="Activity_0gg5h3v" name="Select Shipping Method">
         <bpmn:extensionElements>
-          <camunda:formData>
-            <camunda:formField id="shipping_method" label="Shipping Method" type="enum" defaultValue="standard">
-              <camunda:value id="standard" name="Standard" />
-              <camunda:value id="overnight" name="Overnight" />
-            </camunda:formField>
-          </camunda:formData>
+          <spiffworkflow:properties>
+            <spiffworkflow:property name="formJsonSchemaFilename" value="select_shipping_method.json" />
+          </spiffworkflow:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_16po4do</bpmn:incoming>
         <bpmn:outgoing>Flow_0di3wyr</bpmn:outgoing>
       </bpmn:userTask>
-      <bpmn:userTask id="Activity_0h4nuly" name="Enter Shipping Address" camunda:formKey="">
+      <bpmn:userTask id="Activity_0h4nuly" name="Enter Shipping Address">
         <bpmn:extensionElements>
-          <camunda:formData>
-            <camunda:formField id="shipping_address" label="Shipping Address" type="string" />
-          </camunda:formData>
+          <spiffworkflow:properties>
+            <spiffworkflow:property name="formJsonSchemaFilename" value="enter_shipping_address.json" />
+          </spiffworkflow:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0emp5k2</bpmn:incoming>
         <bpmn:outgoing>Flow_0q6f23o</bpmn:outgoing>
@@ -72,7 +69,10 @@
         <bpmn:incoming>Flow_0di3wyr</bpmn:incoming>
         <bpmn:outgoing>Flow_062tuue</bpmn:outgoing>
       </bpmn:parallelGateway>
-      <bpmn:businessRuleTask id="Activity_0jnqqws" name="Look Up Shipping Cost" camunda:decisionRef="shipping_costs">
+      <bpmn:businessRuleTask id="Activity_0jnqqws" name="Look Up Shipping Cost">
+        <bpmn:extensionElements>
+          <spiffworkflow:calledDecisionId>shipping_costs</spiffworkflow:calledDecisionId>
+        </bpmn:extensionElements>
         <bpmn:incoming>Flow_062tuue</bpmn:incoming>
         <bpmn:outgoing>Flow_0uc6vnt</bpmn:outgoing>
       </bpmn:businessRuleTask>
@@ -96,16 +96,15 @@
         <bpmn:outgoing>Flow_1x6xt92</bpmn:outgoing>
       </bpmn:exclusiveGateway>
       <bpmn:sequenceFlow id="Flow_05m2g52" sourceRef="Activity_0h1938t" targetRef="Gateway_1jso73n" />
-      <bpmn:userTask id="Activity_0h1938t" name="Review Order" camunda:formKey="">
-        <bpmn:documentation>Order Summary
+      <bpmn:userTask id="Activity_0h1938t" name="Review Order">
+        <bpmn:extensionElements>
+          <spiffworkflow:instructionsForEndUser>Order Summary
 {{ product_name }}
 Quantity: {{ product_quantity }}
-Shipping Cost: {{ shipping_cost }}
-Order Total: {{ order_total }}</bpmn:documentation>
-        <bpmn:extensionElements>
-          <camunda:formData>
-            <camunda:formField id="place_order" label="Place Order" type="string" defaultValue="&#39;N&#39;" />
-          </camunda:formData>
+Order Total: {{ order_total }}</spiffworkflow:instructionsForEndUser>
+          <spiffworkflow:properties>
+            <spiffworkflow:property name="formJsonSchemaFilename" value="review_order.json" />
+          </spiffworkflow:properties>
         </bpmn:extensionElements>
         <bpmn:incoming>Flow_0rd1dlt</bpmn:incoming>
         <bpmn:outgoing>Flow_05m2g52</bpmn:outgoing>
@@ -132,12 +131,12 @@ Order Total: {{ order_total }}</bpmn:documentation>
       <bpmn:cancelEventDefinition id="CancelEventDefinition_0vl468z" />
     </bpmn:boundaryEvent>
     <bpmn:sequenceFlow id="Flow_1pqw9yz" sourceRef="Event_1pd719w" targetRef="Activity_1ncg4ro" />
-    <bpmn:userTask id="Activity_1ncg4ro" name="Ask for Feedback" camunda:formKey="">
-      <bpmn:extensionElements>
-        <camunda:formData>
-          <camunda:formField id="reason_cancelled" label="Why did you cancel your order?" type="string" />
-        </camunda:formData>
-      </bpmn:extensionElements>
+    <bpmn:userTask id="Activity_1ncg4ro" name="Ask for Feedback">
+        <bpmn:extensionElements>
+          <spiffworkflow:properties>
+            <spiffworkflow:property name="formJsonSchemaFilename" value="ask_for_feedback.json" />
+          </spiffworkflow:properties>
+        </bpmn:extensionElements>
       <bpmn:incoming>Flow_1pqw9yz</bpmn:incoming>
       <bpmn:outgoing>Flow_0xe3ahu</bpmn:outgoing>
     </bpmn:userTask>
