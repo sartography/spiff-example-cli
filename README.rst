@@ -52,21 +52,21 @@ To execute the complete workflow:
 
 .. code:: bash
 
-   ./run.py -p order_product \
-       -d bpmn/product_prices.dmn bpmn/shipping_costs.dmn \
-       -b bpmn/multiinstance.bpmn bpmn/call_activity_multi.bpmn
+   ./spiff-bpmn-runner.py -p order_product \
+       -d bpmn/tutorial/product_prices.dmn bpmn/tutorial/shipping_costs.dmn \
+       -b bpmn/tutorial/top_level_multi.bpmn bpmn/tutorial/call_activity_multi.bpmn
 
 To restore a saved workflow:
 
 .. code:: bash
 
-   ./run.py -r <saved_workflow_file>
+   ./spiff-bpmn-runner.py -r <saved_workflow_file>
 
 To see all program options:
 
 .. code:: bash
 
-   ./run.py --help
+   ./spiff-bpmn-runner.py --help
 
 Run in docker
 ^^^^^^^^^^^^^
