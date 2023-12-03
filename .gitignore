@@ -6,3 +6,4 @@ docs/build
 docs/_build
 __pycache__
 *.log
+*.db
