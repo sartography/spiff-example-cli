@@ -18,7 +18,7 @@ logger = logging.getLogger('spiff_engine')
 logger.setLevel(logging.INFO)
 
 
-class CursesApp:
+class CursesUI:
 
     def __init__(self, window, engine):
 
@@ -103,7 +103,6 @@ class CursesApp:
                 self.state.draw()
             elif ch == curses.ascii.ESC:
                 if self._state in ['log_view', 'view_workflow']:
-                    logger.info(self.state._previous_state)
                     self.state = self.state._previous_state
                 else:
                     self.state = 'main_menu'

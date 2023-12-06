@@ -1,10 +1,9 @@
-import curses, curses.ascii
 import os, json
 import logging
 
 from jinja2 import Template
 
-from curses_app.user_input import Field
+from ..curses_ui.user_input import Field
 
 forms_dir = 'bpmn/tutorial/forms'
 

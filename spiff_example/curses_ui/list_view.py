@@ -59,7 +59,7 @@ class ListView(Content):
             self.delete_action(item_id)
             self._items.pop(self.selected)
             self.item_ids.pop(self.selected)
-            if self.selected == len(self._item_ids):
+            if self.selected == len(self.item_ids):
                 self.selected = max(0, self.selected - 1)
             self.draw()
 
