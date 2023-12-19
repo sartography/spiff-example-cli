@@ -45,8 +45,8 @@ class SqliteSerializer(BpmnWorkflowSerializer):
         super().__init__(**kwargs)
         self.dbname = dbname
 
-    def create_workflow_spec(self, spec):
-        return self.execute(self._create_workflow_spec, spec)
+    def create_workflow_spec(self, spec, dependency=False):
+        return self.execute(self._create_workflow_spec, spec, dependency)
 
     def set_spec_dependencies(self, parent_id, child_ids):
         return self.execute(self._set_spec_dependencies, parent_id, child_ids)
@@ -75,14 +75,18 @@ class SqliteSerializer(BpmnWorkflowSerializer):
     def delete_workflow(self, wf_id):
         return self.execute(self._delete_workflow, wf_id)
 
-    def _create_workflow_spec(self, cursor, spec):
-
-        cursor.execute("select id from spec_library where filename=? and name=?", (spec.file, spec.name))
-        if not cursor.fetchone():
+    def _create_workflow_spec(self, cursor, spec, dependency):
+        cursor.execute("select id from workflow_spec where serialization->>'file'=? and serialization->>'name'=?", (spec.file, spec.name))
+        spec_id = cursor.fetchone()
+        if spec_id is None:
             dct = self.to_dict(spec)
             spec_id = uuid4()
             cursor.execute("insert into workflow_spec (id, serialization) values (?, ?)", (spec_id, dct))
             return spec_id
+        elif dependency:
+            # At the top level, I want to know whether or not the spec was found to avoid duplication
+            # However, for dependencies, I need the id
+            return spec_id[0]
 
     def _set_spec_dependencies(self, cursor, parent_id, child_ids):
         values = map(lambda child_id: (parent_id, child_id), child_ids)
