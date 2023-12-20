@@ -189,6 +189,7 @@ create view if not exists spec_library as
 
 create table if not exists instance (
   id uuid primary key references _workflow (id) on delete cascade,
+  bullshit text,
   spec_name text,
   active_tasks int,
   started timestamp,
@@ -198,10 +199,11 @@ create table if not exists instance (
 
 create trigger if not exists create_instance instead of insert on workflow
 begin
-  insert into instance (id, spec_name, active_tasks, started)
+  insert into instance (id, spec_name, active_tasks, started) select * from (
     select new.id, name, count(value), current_timestamp
       from (select name from spec_library where id=new.workflow_spec_id), json_each(new.serialization->>'tasks')
-      where value->>'state' between 8 and 32;
+      where value->>'state' between 8 and 32
+  ) where new.serialization->>'typename'='BpmnWorkflow';
 end;
 
 create trigger if not exists update_instance instead of update on workflow

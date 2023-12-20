@@ -16,6 +16,12 @@ class ListView(Content):
         self.selected = 0
         self.selected_attr = curses.color_pair(6) | curses.A_BOLD
 
+        self.menu = [
+            '[ENTER] run',
+            '[d] delete'
+        ] + self.menu
+
+
     @property
     def items(self):
         return self._items

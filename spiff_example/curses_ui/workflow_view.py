@@ -28,9 +28,10 @@ class WorkflowView:
         self.left = Content(app.left)
         self.right = Content(app.right)
 
-        self.save = app.engine.serializer.update_workflow
+        self.engine = app.engine
         self.complete_task = app.complete_task
         self._show_filters = app.show_filters
+
 
         self.workflow = None
         self.workflow_id = None
@@ -46,8 +47,7 @@ class WorkflowView:
         self.screen = self.left.screen
         self.menu = [
             '[l]ist/tree view',
-            '[t]task info',
-            '[w]orkflow info',
+            '[w]orkflow/task data view',
             '[f]ilter tasks',
             '[r]efresh tasks',
             '[s]ave workflow state',
@@ -80,11 +80,15 @@ class WorkflowView:
         self.left.screen.erase()
         if len(self.tasks) > 0:
             self.left.content_height = len(self.tasks)
+            self.left.resize()
             for idx, task in enumerate(self.tasks):
                 indent = 2 * task.depth
                 color = self.styles.get(task.state, 0)
                 attr = color | curses.A_BOLD if idx == self.selected else color
-                task_info = f' {task.task_spec.name} [{TaskState.get_name(task.state)}]'
+                name = task.task_spec.bpmn_name or task.task_spec.name
+                lane = f'({task.task_spec.lane}) ' if task.task_spec.lane is not None else ''
+                state = TaskState.get_name(task.state)
+                task_info = f'{lane}{name} [{state}]'
                 if self.task_view == 'list':
                     self.left.screen.addstr(idx, 0, task_info, attr)
                 else:
@@ -93,21 +97,19 @@ class WorkflowView:
                 self.show_task()
             self.left.screen.move(self.selected, 0)
         else:
+            self.info_view = 'workflow'
             self.left.content_height = self.left.region.height - 1
+            self.left.resize()
             self.left.screen.addstr(0, 0, 'No tasks available')
         self.left.screen.noutrefresh(self.left.first_visible, 0, *self.left.region.box)
 
     def update_info(self):
-        if self.info_view == 'workflow':
-            self.show_workflow()
-        elif len(self.tasks) > 0:
+        if self.info_view == 'task' and len(self.tasks) > 0:
             self.show_task()
         else:
-            self.right.screen.erase()
-            self.right.screen.noutrefresh(self.right.first_visible, 0, *self.right.region.box)
+            self.show_workflow()
 
     def show_task(self):
-        self.info_view = 'task'
         task = self.tasks[self.selected]
         info = {
             'Name': task.task_spec.name,
@@ -119,14 +121,13 @@ class WorkflowView:
         self._show_details(info, task.data)
 
     def show_workflow(self):
-        self.info_view = 'workflow'
         info = {
             'Spec': self.workflow.spec.name,
             'Ready tasks': len(self.workflow.get_tasks(state=TaskState.READY)),
             'Waiting tasks': len(self.workflow.get_tasks(state=TaskState.WAITING)),
             'Finished tasks': len(self.workflow.get_tasks(state=TaskState.FINISHED_MASK)),
             'Total tasks': len(self.workflow.get_tasks()),
-            'Waiting subprocesses': len([sp for sp in self.workflow.subprocesses if not sp.is_completed()]),
+            'Waiting subprocesses': len([sp for sp in self.workflow.subprocesses.values() if not sp.is_completed()]),
             'Total subprocesses': len(self.workflow.subprocesses)
         }
         self._show_details(info, self.workflow.data)
@@ -134,7 +135,6 @@ class WorkflowView:
     def _show_details(self, info, data=None):
 
         self.right.screen.erase()
-        self.right.screen.noutrefresh(self.right.first_visible, 0, *self.right.region.box)
 
         lines = len(info)
         if data is not None:
@@ -177,17 +177,19 @@ class WorkflowView:
         if chr(ch).lower() == 'l':
             self.task_view = 'tree' if self.task_view == 'list' else 'list'
             self.update_task_tree()
-        elif chr(ch).lower() == 't':
-            self.show_task()
         elif chr(ch).lower() == 'w':
-            self.show_workflow()
+            self.info_view = 'workflow' if self.info_view == 'task' else 'task'
+            self.update_info()
         elif chr(ch).lower() == 'f':
             self.show_filters()
         elif chr(ch).lower() == 'r':
-            self.workflow.refresh_waiting_tasks()
+            if self.step is False:
+                self.engine.run_ready_events(self.workflow)
+            else:
+                self.workflow.refresh_waiting_tasks()
             self.update_task_tree()
         elif chr(ch).lower() == 's':
-            self.save(self.workflow, self.workflow_id)
+            self.engine.update_workflow(self.workflow, self.workflow_id)
         elif ch == curses.ascii.TAB:
             if self.scroll == 'right':
                 self.scroll = 'left'

@@ -3,7 +3,9 @@ import logging
 
 from SpiffWorkflow.bpmn.parser.ValidationException import ValidationException
 from SpiffWorkflow.bpmn.specs.mixins.subworkflow_task import SubWorkflowTask
+from SpiffWorkflow.bpmn.specs.mixins.events.event_types import CatchingEvent
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
+from SpiffWorkflow.util.task import TaskState
 
 
 logger = logging.getLogger('spiff_engine')
@@ -103,3 +105,17 @@ class BpmnEngine:
     def delete_workflow(self, wf_id):
         self.serializer.delete_workflow(wf_id)
         logger.info(f'Deleted workflow with id {wf_id}')
+
+    def run_until_user_input_required(self, workflow):
+        task = workflow.get_next_task(state=TaskState.READY, manual=False)
+        while task is not None:
+            task.run()
+            self.run_ready_events(workflow)
+            task = workflow.get_next_task(state=TaskState.READY, manual=False)
+
+    def run_ready_events(self, workflow):
+        workflow.refresh_waiting_tasks()
+        task = workflow.get_next_task(state=TaskState.READY, spec_class=CatchingEvent)
+        while task is not None:
+            task.run()
+            task = workflow.get_next_task(state=TaskState.READY, spec_class=CatchingEvent)

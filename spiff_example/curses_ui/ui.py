@@ -3,8 +3,6 @@ import sys
 import logging
 from datetime import datetime
 
-from SpiffWorkflow.util.task import TaskState
-
 from .content import Region, Content
 
 from .menu import Menu
@@ -41,10 +39,10 @@ class CursesUI:
 
         self._states = {
             'main_menu': Menu(self.top, [
-                ('Add spec', self.add_spec),
-                ('List specs', self.list_specs),
-                ('Resume workflow', self.resume_workflow),
-                ('List workflows', self.list_workflows),
+                ('Add spec', lambda: self.set_state('add_spec')),
+                ('Start Workflow', lambda: self.set_state('start_workflow')),
+                ('Resume workflow', lambda: self.set_state('resume_workflow')),
+                ('List workflows', lambda: self.set_state('list_workflows')),
                 ('Quit', self.quit),
             ]),
             'add_spec': SpecView(self.left, self.right, self.engine.add_spec),
@@ -91,6 +89,12 @@ class CursesUI:
         curses.doupdate()
 
     def set_state(self, state):  # For callbacks on different screens
+        if state == 'start_workflow':
+            self._switch_to_list('start_workflow', self.engine.list_specs())
+        elif state == 'resume_workflow':
+            self._switch_to_list('resume_workflow', self.engine.list_workflows())
+        elif state == 'list_workflows':
+            self._switch_to_list('list_workflows', self.engine.list_workflows(True))
         self.state = state
 
     def run(self):
@@ -103,7 +107,9 @@ class CursesUI:
                 self.state.draw()
             elif ch == curses.ascii.ESC:
                 if self._state in ['log_view', 'view_workflow']:
-                    self.state = self.state._previous_state
+                    self.set_state(self.state._previous_state)
+                elif self._state == 'user_input':
+                    self.set_state('view_workflow')
                 else:
                     self.state = 'main_menu'
             elif chr(ch) == ';':
@@ -116,21 +122,9 @@ class CursesUI:
                     logger.error(str(exc), exc_info=True)
             curses.doupdate()
 
-    def add_spec(self):
-        self.state = 'add_spec'
-
-    def list_specs(self):
-        self._switch_to_list('start_workflow', self.engine.list_specs())
-
     def start_workflow(self, spec_id):
         wf_id = self.engine.start_workflow(spec_id)
         self.set_workflow(wf_id, False, run_view)
-
-    def resume_workflow(self):
-        self._switch_to_list('resume_workflow', self.engine.list_workflows())
-
-    def list_workflows(self):
-        self._switch_to_list('list_workflows', self.engine.list_workflows(True))
 
     def _switch_to_list(self, state, items):
         self._states[state].items = items
@@ -152,10 +146,7 @@ class CursesUI:
 
     def _run_workflow(self):
         if not self._states['view_workflow'].step:
-            task = self._states['view_workflow'].workflow.get_next_task(state=TaskState.READY, manual=False)
-            while task is not None:
-                task.run()
-                task = self._states['view_workflow'].workflow.get_next_task(state=TaskState.READY, manual=False)
+            self.engine.run_until_user_input_required(self._states['view_workflow'].workflow)
         self.state = 'view_workflow'
 
     def show_filters(self, fields):
@@ -171,7 +162,6 @@ class CursesUI:
 
         handler = self.engine.handler(task)
         if handler is not None:
-            logger.info(task.task_spec.name)
             instructions, fields = handler.get_configuration()
             def on_complete(results):
                 handler.on_complete(results)
