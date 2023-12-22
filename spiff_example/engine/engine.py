@@ -5,6 +5,7 @@ from SpiffWorkflow.bpmn.parser.ValidationException import ValidationException
 from SpiffWorkflow.bpmn.specs.mixins.subworkflow_task import SubWorkflowTask
 from SpiffWorkflow.bpmn.specs.mixins.events.event_types import CatchingEvent
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
+from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
 from SpiffWorkflow.util.task import TaskState
 
 
@@ -12,10 +13,11 @@ logger = logging.getLogger('spiff_engine')
 
 class BpmnEngine:
     
-    def __init__(self, parser, serializer, handlers=None):
+    def __init__(self, parser, serializer, handlers=None, script_engine=None):
 
         self.parser = parser
         self.serializer = serializer
+        self._script_engine = script_engine or PythonScriptEngine()
         self._handlers = handlers or {}
 
     def handler(self, task):
@@ -87,13 +89,15 @@ class BpmnEngine:
 
     def start_workflow(self, spec_id):
         spec, sp_specs = self.serializer.get_workflow_spec(spec_id)
-        wf = BpmnWorkflow(spec, sp_specs)
+        wf = BpmnWorkflow(spec, sp_specs, script_engine=self._script_engine)
         wf_id = self.serializer.create_workflow(wf, spec_id)
         logger.info(f'Created workflow with id {wf_id}')
         return wf_id
 
     def get_workflow(self, wf_id):
-        return self.serializer.get_workflow(wf_id)
+        wf = self.serializer.get_workflow(wf_id)
+        wf.script_engine = self._script_engine
+        return wf
 
     def update_workflow(self, workflow, wf_id):
         logger.info(f'Saved workflow {wf_id}')

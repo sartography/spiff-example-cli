@@ -1,6 +1,9 @@
+import json
 import sqlite3
 import logging
 import datetime
+
+from collections import namedtuple
 
 from SpiffWorkflow.spiff.parser.process import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
@@ -10,6 +13,7 @@ from SpiffWorkflow.bpmn.specs.bpmn_process_spec import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
 from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
 from SpiffWorkflow.bpmn.PythonScriptEngineEnvironment import TaskDataEnvironment
+from SpiffWorkflow.bpmn.serializer.helpers.registry import DefaultRegistry
 
 from ..serializer.sqlite import (
     SqliteSerializer,
@@ -23,16 +27,45 @@ from .curses_handlers import UserTaskHandler, ManualTaskHandler
 logger = logging.getLogger('spiff_engine')
 logger.setLevel(logging.INFO)
 
+ProductInfo = namedtuple('ProductInfo', ['color', 'size', 'style', 'price'])
+INVENTORY = {
+    'product_a': ProductInfo(False, False, False, 15.00),
+    'product_b': ProductInfo(False, False, False, 15.00),
+    'product_c': ProductInfo(True, False, False, 25.00),
+    'product_d': ProductInfo(True, True, False, 20.00),
+    'product_e': ProductInfo(True, True, True, 25.00),
+    'product_f': ProductInfo(True, True, True, 30.00),
+    'product_g': ProductInfo(False, False, True, 25.00),
+}
+
+def lookup_product_info(product_name):
+    return INVENTORY[product_name]
+
+def lookup_shipping_cost(shipping_method):
+    return 25.00 if shipping_method == 'Overnight' else 5.00
+
+def product_info_to_dict(obj):
+    return {
+        'color': obj.color,
+        'size': obj.size,
+        'style': obj.style,
+        'price': obj.price,
+    }
+
+def product_info_from_dict(dct):
+    return ProductInfo(**dct)
+
 SPIFF_CONFIG[BpmnWorkflow] = WorkflowConverter
 SPIFF_CONFIG[BpmnSubWorkflow] = SubworkflowConverter
 SPIFF_CONFIG[BpmnProcessSpec] = WorkflowSpecConverter
 
-dbname = 'spiff.db'
+registry = SqliteSerializer.configure(SPIFF_CONFIG)
+registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
 
+dbname = 'spiff.db'
 with sqlite3.connect(dbname) as db:
     SqliteSerializer.initialize(db)
 
-registry = SqliteSerializer.configure(SPIFF_CONFIG)
 serializer = SqliteSerializer(dbname, registry=registry)
 
 parser = SpiffBpmnParser()
@@ -43,7 +76,11 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
-script_env = TaskDataEnvironment({'datetime': datetime })
+script_env = TaskDataEnvironment({
+    'datetime': datetime,
+    'lookup_product_info': lookup_product_info,
+    'lookup_shipping_cost': lookup_shipping_cost,
+})
 script_engine = PythonScriptEngine(script_env)
 
 engine = BpmnEngine(parser, serializer, handlers, script_engine)
