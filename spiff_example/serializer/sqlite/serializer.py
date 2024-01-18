@@ -6,6 +6,7 @@ from uuid import uuid4, UUID
 from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
 from SpiffWorkflow.bpmn.serializer.default.workflow import BpmnWorkflowConverter, BpmnSubWorkflowConverter
 from SpiffWorkflow.bpmn.serializer.default.process_spec import BpmnProcessSpecConverter
+from SpiffWorkflow.bpmn.specs.mixins.subworkflow_task import SubWorkflowTask
 
 logger = logging.getLogger(__name__)
 
@@ -45,11 +46,30 @@ class SqliteSerializer(BpmnWorkflowSerializer):
         super().__init__(**kwargs)
         self.dbname = dbname
 
-    def create_workflow_spec(self, spec, dependency=False):
-        return self.execute(self._create_workflow_spec, spec, dependency)
+    def create_workflow_spec(self, spec, dependencies):
+        spec_id, new = self.execute(self._create_workflow_spec, spec)
+        if new and len(dependencies) > 0:
+            pairs = self.get_spec_dependencies(spec_id, spec, dependencies)
+            # This handles the case where the participant requires an event to be kicked off
+            added = list(map(lambda p: p[1], pairs))
+            for name, child in dependencies.items():
+                child_id, new_child = self.execute(self._create_workflow_spec, child)
+                if new_child:
+                    pairs |= self.get_spec_dependencies(child_id, child, dependencies)
+                pairs.add((spec_id, child_id))
+            self.execute(self._set_spec_dependencies, pairs)
+        return spec_id
 
-    def set_spec_dependencies(self, parent_id, child_ids):
-        return self.execute(self._set_spec_dependencies, parent_id, child_ids)
+    def get_spec_dependencies(self, parent_id, parent, dependencies):
+        # There ought to be an option in the parser to do this
+        pairs = set()
+        for task_spec in filter(lambda ts: isinstance(ts, SubWorkflowTask), parent.task_specs.values()):
+            child = dependencies.get(task_spec.spec)
+            child_id, new = self.execute(self._create_workflow_spec, child)
+            pairs.add((parent_id, child_id))
+            if new:
+                pairs |= self.get_spec_dependencies(child_id, child, dependencies)
+        return pairs
 
     def get_workflow_spec(self, spec_id, include_dependencies=True):
         return self.execute(self._get_workflow_spec, spec_id, include_dependencies)
@@ -75,21 +95,21 @@ class SqliteSerializer(BpmnWorkflowSerializer):
     def delete_workflow(self, wf_id):
         return self.execute(self._delete_workflow, wf_id)
 
-    def _create_workflow_spec(self, cursor, spec, dependency):
-        cursor.execute("select id from workflow_spec where serialization->>'file'=? and serialization->>'name'=?", (spec.file, spec.name))
-        spec_id = cursor.fetchone()
-        if spec_id is None:
+    def _create_workflow_spec(self, cursor, spec):
+        cursor.execute(
+            "select id, false from workflow_spec where serialization->>'file'=? and serialization->>'name'=?",
+            (spec.file, spec.name)
+        )
+        row = cursor.fetchone()
+        if row is None:
             dct = self.to_dict(spec)
             spec_id = uuid4()
             cursor.execute("insert into workflow_spec (id, serialization) values (?, ?)", (spec_id, dct))
-            return spec_id
-        elif dependency:
-            # At the top level, I want to know whether or not the spec was found to avoid duplication
-            # However, for dependencies, I need the id
-            return spec_id[0]
+            return spec_id, True
+        else:
+            return row
 
-    def _set_spec_dependencies(self, cursor, parent_id, child_ids):
-        values = map(lambda child_id: (parent_id, child_id), child_ids)
+    def _set_spec_dependencies(self, cursor, values):
         cursor.executemany("insert into _spec_dependency (parent_id, child_id) values (?, ?)", values)
 
     def _get_workflow_spec(self, cursor, spec_id, include_dependencies):

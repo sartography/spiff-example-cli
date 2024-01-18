@@ -2,7 +2,6 @@ import curses
 import logging
 
 from SpiffWorkflow.bpmn.parser.ValidationException import ValidationException
-from SpiffWorkflow.bpmn.specs.mixins.subworkflow_task import SubWorkflowTask
 from SpiffWorkflow.bpmn.specs.mixins.events.event_types import CatchingEvent
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
 from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
@@ -29,56 +28,32 @@ class BpmnEngine:
         self.add_files(bpmn_files, dmn_files)
         try:
             spec = self.parser.get_spec(process_id)
-            spec_id = self.serializer.create_workflow_spec(spec)
-            if spec_id is not None:
-                subprocess_specs = self.parser.get_subprocess_specs(process_id)
-                self.add_dependencies(spec_id, spec, subprocess_specs)
-                logger.info(f'Added {process_id} with id {spec_id}')
-            return spec_id
+            dependencies = self.parser.get_subprocess_specs(process_id)
         except ValidationException as exc:
             # Clear the process parsers so the files can be re-added
             # There's probably plenty of other stuff that should be here
             # However, our parser makes me mad so not investigating further at this time
             self.parser.process_parsers = {}
             raise exc
+        spec_id = self.serializer.create_workflow_spec(spec, dependencies)
+        logger.info(f'Added {process_id} with id {spec_id}')
+        return spec_id
 
     def add_collaboration(self, collaboration_id, bpmn_files, dmn_files=None):
         self.add_files(bpmn_files, dmn_files)
         try:
-            spec, subprocess_specs = self.parser.get_collaboration(collaboration_id)
-            spec.file = ''
-            spec_id = self.serializer.create_workflow_spec(spec)
-            if spec_id is not None:
-                self.add_dependencies(spec_id, spec, subprocess_specs)
-                logger.info(f'Added {collaboration_id} with id {spec_id}')
-            for participant in self.parser.collaborations[collaboration_id]:
-                # This handles the case where the participant requires an event to be kicked off
-                participant_id = self.serializer.create_workflow_spec(subprocess_specs[participant],subprocess_specs)
-                if spec_id is not None:
-                    self.serializer.set_spec_dependencies(spec_id, [participant_id])
-            return spec_id
+            spec, dependencies = self.parser.get_collaboration(collaboration_id)
         except ValidationException as exc:
             self.parser.process_parsers = {}
             raise exc
+        spec_id = self.serializer.create_workflow_spec(spec, dependencies)
+        logger.info(f'Added {collaboration_id} with id {spec_id}')
+        return spec_id
 
     def add_files(self, bpmn_files, dmn_files):
         self.parser.add_bpmn_files(bpmn_files)
         if dmn_files is not None:
             self.parser.add_dmn_files(dmn_files)
-
-    def add_dependencies(self, spec_id, spec, subprocess_specs):
-        specs = [(spec_id, spec)]
-        while len(specs) > 0:
-            current_id, current = specs.pop(0)
-            dependencies = []
-            for task_spec in filter(lambda ts: isinstance(ts, SubWorkflowTask), current.task_specs.values()):
-                sp_spec = subprocess_specs.get(task_spec.spec)
-                sp_id = self.serializer.create_workflow_spec(sp_spec, dependency=True)
-                specs.append((sp_id, sp_spec))
-                dependencies.append(sp_id)
-            if len(dependencies) > 0:
-                self.serializer.set_spec_dependencies(current_id, dependencies)
-                logger.info(f'Added {len(dependencies)} dependencies for {spec.name}')
 
     def list_specs(self):
         return self.serializer.list_specs()
