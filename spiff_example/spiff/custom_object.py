@@ -2,14 +2,15 @@ import json
 import logging
 import datetime
 
+from collections import namedtuple
+
 from SpiffWorkflow.spiff.parser.process import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
 from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow, BpmnSubWorkflow
 from SpiffWorkflow.bpmn.specs.bpmn_process_spec import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
-from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
-from SpiffWorkflow.bpmn.PythonScriptEngineEnvironment import TaskDataEnvironment
+from SpiffWorkflow.bpmn.script_engine import PythonScriptEngine, TaskDataEnvironment
 
 from ..serializer.file import FileSerializer
 from ..engine import BpmnEngine

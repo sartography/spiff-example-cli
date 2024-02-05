@@ -3,9 +3,9 @@ import logging
 
 from SpiffWorkflow.bpmn.parser.ValidationException import ValidationException
 from SpiffWorkflow.bpmn.specs.mixins.events.event_types import CatchingEvent
-from SpiffWorkflow.bpmn.workflow import BpmnWorkflow
-from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
-from SpiffWorkflow.util.task import TaskState
+from SpiffWorkflow.bpmn import BpmnWorkflow
+from SpiffWorkflow.bpmn.script_engine import PythonScriptEngine
+from SpiffWorkflow import TaskState
 
 
 logger = logging.getLogger('spiff_engine')

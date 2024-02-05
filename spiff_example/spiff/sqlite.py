@@ -2,14 +2,14 @@ import sqlite3
 import logging
 import datetime
 
-from SpiffWorkflow.spiff.parser.process import SpiffBpmnParser
+from SpiffWorkflow.spiff.parser import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
-from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
-from SpiffWorkflow.bpmn.workflow import BpmnWorkflow, BpmnSubWorkflow
-from SpiffWorkflow.bpmn.specs.bpmn_process_spec import BpmnProcessSpec
-from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
-from SpiffWorkflow.bpmn.PythonScriptEngine import PythonScriptEngine
-from SpiffWorkflow.bpmn.PythonScriptEngineEnvironment import TaskDataEnvironment
+from SpiffWorkflow.spiff.serializer import DEFAULT_CONFIG
+from SpiffWorkflow.bpmn import BpmnWorkflow
+from SpiffWorkflow.bpmn.util.subworkflow import BpmnSubWorkflow
+from SpiffWorkflow.bpmn.specs import BpmnProcessSpec
+from SpiffWorkflow.bpmn.specs.mixins import NoneTaskMixin as NoneTask
+from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment, PythonScriptEngine
 
 from ..serializer.sqlite import (
     SqliteSerializer,
@@ -23,16 +23,16 @@ from .curses_handlers import UserTaskHandler, ManualTaskHandler
 logger = logging.getLogger('spiff_engine')
 logger.setLevel(logging.INFO)
 
-SPIFF_CONFIG[BpmnWorkflow] = WorkflowConverter
-SPIFF_CONFIG[BpmnSubWorkflow] = SubworkflowConverter
-SPIFF_CONFIG[BpmnProcessSpec] = WorkflowSpecConverter
+DEFAULT_CONFIG[BpmnWorkflow] = WorkflowConverter
+DEFAULT_CONFIG[BpmnSubWorkflow] = SubworkflowConverter
+DEFAULT_CONFIG[BpmnProcessSpec] = WorkflowSpecConverter
 
 dbname = 'spiff.db'
 
 with sqlite3.connect(dbname) as db:
     SqliteSerializer.initialize(db)
 
-registry = SqliteSerializer.configure(SPIFF_CONFIG)
+registry = SqliteSerializer.configure(DEFAULT_CONFIG)
 serializer = SqliteSerializer(dbname, registry=registry)
 
 parser = SpiffBpmnParser()

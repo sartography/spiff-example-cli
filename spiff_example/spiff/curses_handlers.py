@@ -58,6 +58,6 @@ class UserTaskHandler(TaskHandler):
         return [self.create_field(name, config) for name, config in schema['properties'].items()]
 
     def on_complete(self, results):
-        self.task.update_data(results)
+        self.task.set_data(**results)
         super().on_complete(results)
 
