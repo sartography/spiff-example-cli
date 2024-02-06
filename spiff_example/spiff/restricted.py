@@ -1,6 +1,8 @@
 import logging
 import datetime
 
+from RestrictedPython import safe_globals
+
 from SpiffWorkflow.spiff.parser import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
 from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
@@ -32,8 +34,7 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
-script_env = TaskDataEnvironment({'datetime': datetime })
-
+script_env = TaskDataEnvironment(safe_globals)
 script_engine = PythonScriptEngine(script_env)
 
 engine = BpmnEngine(parser, serializer, handlers, script_engine)

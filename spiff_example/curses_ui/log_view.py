@@ -5,6 +5,9 @@ from datetime import datetime
 
 from .content import Content
 
+logger = logging.getLogger('root')
+
+
 class LogHandler(logging.Handler):
 
     def __init__(self, write):
@@ -17,7 +20,7 @@ class LogHandler(logging.Handler):
 
 class LogView(Content):
 
-    def __init__(self, region, logger):
+    def __init__(self, region):
 
         super().__init__(region)
 
@@ -44,7 +47,10 @@ class LogView(Content):
         self.resize()
 
         dt = datetime.fromtimestamp(record.created).strftime('%Y-%m-%d %H:%M:%S.%f')
-        message = f'{dt} [{record.name}:{record.levelname}] {record.msg}'
+        if record.name == 'spiff':
+            message = f'{dt} [{record.name}:{record.levelname}] ({record.workflow_spec}:{record.task_spec}) {record.msg}'
+        else:
+            message = f'{dt} [{record.name}:{record.levelname}] {record.msg}'
         self.screen.addstr(f'\n{message}', self.styles.get(record.levelname, 0))
         for line in trace:
             self.screen.addstr(f'\n{line}')

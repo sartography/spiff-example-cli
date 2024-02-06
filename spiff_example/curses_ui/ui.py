@@ -12,8 +12,7 @@ from .workflow_view import WorkflowView, default_view, run_view
 from .spec_view import SpecView
 from .user_input import UserInput, Field
 
-logger = logging.getLogger('spiff_engine')
-logger.setLevel(logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class CursesUI:
@@ -46,7 +45,7 @@ class CursesUI:
                 ('Quit', self.quit),
             ]),
             'add_spec': SpecView(self.left, self.right, self.engine.add_spec),
-            'log_view': LogView(self.bottom, logger),
+            'log_view': LogView(self.bottom),
             'start_workflow': ListView(
                 self.top,
                 ['Name', 'Filename'],

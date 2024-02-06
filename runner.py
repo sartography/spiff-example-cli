@@ -6,7 +6,7 @@ import sys, traceback
 from argparse import ArgumentParser
 
 from spiff_example.curses_ui import CursesUI
-from spiff_example.cli import add_subparsers
+from spiff_example.cli import add_subparsers, configure_logging
 
 if __name__ == '__main__':
 
@@ -22,6 +22,7 @@ if __name__ == '__main__':
         if args.subcommand is None:
             curses.wrapper(CursesUI, config.engine)
         else:
+            configure_logging()
             args.func(config.engine, args)
     except Exception as exc:
         sys.stderr.write(traceback.format_exc())

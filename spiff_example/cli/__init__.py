@@ -1,1 +1,1 @@
-from .subcommands import add_subparsers
+from .subcommands import add_subparsers, configure_logging

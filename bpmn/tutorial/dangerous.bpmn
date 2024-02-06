@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_0ibnyhd" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="4.11.1" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.15.0">
+  <bpmn:process id="end_it_all" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0m91lb4</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_0m91lb4" sourceRef="StartEvent_1" targetRef="collect_info" />
+    <bpmn:scriptTask id="collect_info" name="Collect Info">
+      <bpmn:incoming>Flow_0m91lb4</bpmn:incoming>
+      <bpmn:outgoing>Flow_14oh26j</bpmn:outgoing>
+      <bpmn:script>from os import getpid
+pid = getpid()</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="Flow_14oh26j" sourceRef="collect_info" targetRef="confirm" />
+    <bpmn:userTask id="confirm" name="Confirm">
+      <bpmn:extensionElements>
+        <spiffworkflow:properties>
+          <spiffworkflow:property name="formJsonSchemaFilename" value="dangerous.json" />
+        </spiffworkflow:properties>
+        <spiffworkflow:instructionsForEndUser>Process ID: {{ pid }}</spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_14oh26j</bpmn:incoming>
+      <bpmn:outgoing>Flow_030s9hw</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="Gateway_0dq17uq" default="Flow_1mp6zm4">
+      <bpmn:incoming>Flow_030s9hw</bpmn:incoming>
+      <bpmn:outgoing>Flow_1mp6zm4</bpmn:outgoing>
+      <bpmn:outgoing>Flow_0jsq853</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:sequenceFlow id="Flow_030s9hw" sourceRef="confirm" targetRef="Gateway_0dq17uq" />
+    <bpmn:endEvent id="Event_1gxr06r">
+      <bpmn:incoming>Flow_1mp6zm4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1mp6zm4" sourceRef="Gateway_0dq17uq" targetRef="Event_1gxr06r" />
+    <bpmn:sequenceFlow id="Flow_0jsq853" sourceRef="Gateway_0dq17uq" targetRef="end_it">
+      <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">kill_it == 'Y'</bpmn:conditionExpression>
+    </bpmn:sequenceFlow>
+    <bpmn:endEvent id="Event_1f51fmu">
+      <bpmn:incoming>Flow_0uef7p4</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0uef7p4" sourceRef="end_it" targetRef="Event_1f51fmu" />
+    <bpmn:scriptTask id="end_it" name="End It">
+      <bpmn:incoming>Flow_0jsq853</bpmn:incoming>
+      <bpmn:outgoing>Flow_0uef7p4</bpmn:outgoing>
+      <bpmn:script>from os import kill
+from signal import SIGKILL
+kill(pid, SIGKILL)</bpmn:script>
+    </bpmn:scriptTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="end_it_all">
+      <bpmndi:BPMNEdge id="Flow_14oh26j_di" bpmnElement="Flow_14oh26j">
+        <di:waypoint x="370" y="117" />
+        <di:waypoint x="420" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m91lb4_di" bpmnElement="Flow_0m91lb4">
+        <di:waypoint x="215" y="117" />
+        <di:waypoint x="270" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_030s9hw_di" bpmnElement="Flow_030s9hw">
+        <di:waypoint x="520" y="117" />
+        <di:waypoint x="575" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1mp6zm4_di" bpmnElement="Flow_1mp6zm4">
+        <di:waypoint x="625" y="117" />
+        <di:waypoint x="862" y="117" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0jsq853_di" bpmnElement="Flow_0jsq853">
+        <di:waypoint x="600" y="142" />
+        <di:waypoint x="600" y="230" />
+        <di:waypoint x="690" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0uef7p4_di" bpmnElement="Flow_0uef7p4">
+        <di:waypoint x="790" y="230" />
+        <di:waypoint x="862" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_19ubvxe_di" bpmnElement="collect_info">
+        <dc:Bounds x="270" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0epjwdj_di" bpmnElement="confirm">
+        <dc:Bounds x="420" y="77" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0dq17uq_di" bpmnElement="Gateway_0dq17uq" isMarkerVisible="true">
+        <dc:Bounds x="575" y="92" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1f51fmu_di" bpmnElement="Event_1f51fmu">
+        <dc:Bounds x="862" y="212" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1gxr06r_di" bpmnElement="Event_1gxr06r">
+        <dc:Bounds x="862" y="99" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0fakvwk_di" bpmnElement="end_it">
+        <dc:Bounds x="690" y="190" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

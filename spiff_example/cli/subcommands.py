@@ -1,8 +1,17 @@
-import sys, logging
+import sys
 import json
+import logging
 
-logger = logging.getLogger('spiff_engine')
-logger.setLevel(logging.INFO)
+def configure_logging():
+    spiff_logger = logging.getLogger('spiff')
+    spiff_handler = logging.StreamHandler()
+    spiff_handler.setFormatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s')
+    spiff_logger.addHandler(spiff_handler)
+
+    metrics_logger = logging.getLogger('spiff.metrics')
+    metrics_handler = logging.StreamHandler()
+    metrics_handler.setFormatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(elasped)s')
+    metrics_logger.addHandler(metrics_handler)
 
 def add(engine, args):
     if args.process is not None:

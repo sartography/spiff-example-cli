@@ -1,0 +1,13 @@
+{
+  "title": "Kill This Process?",
+  "type": "object",
+  "required": [
+    "kill_it"
+  ],
+  "properties": {
+    "kill_it": {
+      "title": "Kill it?",
+      "type": "string"
+    }
+  }
+}

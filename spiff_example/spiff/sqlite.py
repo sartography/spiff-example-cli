@@ -23,6 +23,9 @@ from .curses_handlers import UserTaskHandler, ManualTaskHandler
 logger = logging.getLogger('spiff_engine')
 logger.setLevel(logging.INFO)
 
+spiff_logger = logging.getLogger('spiff')
+spiff_logger.setLevel(logging.INFO)
+
 DEFAULT_CONFIG[BpmnWorkflow] = WorkflowConverter
 DEFAULT_CONFIG[BpmnSubWorkflow] = SubworkflowConverter
 DEFAULT_CONFIG[BpmnProcessSpec] = WorkflowSpecConverter
