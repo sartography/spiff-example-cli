@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 ADD . .
 
-ENTRYPOINT [ "./interactive-runner.py" ]
+ENTRYPOINT [ "./runner.py -e spiff_example.spiff.file" ]
