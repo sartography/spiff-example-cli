@@ -43,30 +43,34 @@ the models and application can be found there.
 Models
 ^^^^^^
 
-Example BPMN and DMN files can be found in the :code:`bpmn` directory of this repository.
+Example BPMN and DMN files can be found in the `bpmn` directory of this repository.
+There are several versions of a product ordering process of variying complexity located in the
+`bpmn/tutorial` directory of the repo which contain most of the elements that SpiffWorkflow supports.  These
+diagrams can be viewed in any BPMN editor, but many of them have custom extensions created with
+`bpmn-js-spiffworflow <https://github.com/sartography/bpmn-js-spiffworkflow>`_.
 
-Running a Workflow
-^^^^^^^^^^^^^^^^^^
+Loading Workflows
+^^^^^^^^^^^^^^^^^
 
-To execute the complete workflow:
+To add a workflow via the command line and store serialized specs in JSON files:
 
-.. code:: bash
+.. code-block:: console
 
-   ./spiff-bpmn-runner.py -p order_product \
-       -d bpmn/tutorial/product_prices.dmn bpmn/tutorial/shipping_costs.dmn \
-       -b bpmn/tutorial/top_level_multi.bpmn bpmn/tutorial/call_activity_multi.bpmn
+   ./runner.py -e spiff_example.spiff.file add \
+      -p order_product \
+      -b bpmn/tutorial/{top_level,call_activity}.bpmn \
+      -d bpmn/tutorial/{product_prices,shipping_costs}.dmn
 
-To restore a saved workflow:
+Running Workflows
+^^^^^^^^^^^^^^^^^
 
-.. code:: bash
+To run the curses application using serialized JSON files:
 
-   ./spiff-bpmn-runner.py -r <saved_workflow_file>
+.. code-block:: console
 
-To see all program options:
+   ./runner.py -e spiff_example.spiff.file
 
-.. code:: bash
-
-   ./spiff-bpmn-runner.py --help
+Select the 'Start Workflow' screen and start the process.
 
 Run in docker
 ^^^^^^^^^^^^^
