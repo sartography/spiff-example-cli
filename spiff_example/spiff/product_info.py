@@ -1,10 +1,6 @@
-import json
 from collections import namedtuple
 
-from SpiffWorkflow.bpmn.serializer.helpers.dictionary import DictionaryConverter
-
 ProductInfo = namedtuple('ProductInfo', ['color', 'size', 'style', 'price'])
-
 INVENTORY = {
     'product_a': ProductInfo(False, False, False, 15.00),
     'product_b': ProductInfo(False, False, False, 15.00),
@@ -32,13 +28,4 @@ def product_info_to_dict(obj):
 def product_info_from_dict(dct):
     return ProductInfo(**dct)
 
-registry = DictionaryConverter()
-registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
 
-def dumps(obj):
-    dct = registry.convert(obj)
-    return json.dumps(dct)
-
-def loads(s):
-    dct = json.loads(s)
-    return registry.restore(dct)

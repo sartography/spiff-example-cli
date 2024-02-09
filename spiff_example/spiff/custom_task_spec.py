@@ -1,17 +1,18 @@
-from SpiffWorkflow.bpmn.specs.event_definitions import TimerEventDefinition, NoneEventDefinition
-from SpiffWorkflow.bpmn.specs.mixins.events.start_event import StartEvent
-from SpiffWorkflow.spiff.specs.spiff_task import SpiffBpmnTask
+from SpiffWorkflow.bpmn.specs.event_definitions import NoneEventDefinition
+from SpiffWorkflow.bpmn.specs.event_definitions.timer import TimerEventDefinition
+from SpiffWorkflow.bpmn.specs.mixins import StartEventMixin
+from SpiffWorkflow.spiff.specs import SpiffBpmnTask
 
-from SpiffWorkflow.bpmn.serializer.workflow import BpmnWorkflowSerializer
-from SpiffWorkflow.bpmn.serializer.task_spec import StartEventConverter
+from SpiffWorkflow.bpmn.serializer import BpmnWorkflowSerializer
+from SpiffWorkflow.bpmn.serializer.default import EventConverter
 from SpiffWorkflow.spiff.serializer.task_spec import SpiffBpmnTaskConverter
-from SpiffWorkflow.spiff.serializer.config import SPIFF_SPEC_CONFIG
+from SpiffWorkflow.spiff.serializer import DEFAULT_CONFIG
 
+from SpiffWorkflow.spiff.parser import SpiffBpmnParser
 from SpiffWorkflow.spiff.parser.event_parsers import StartEventParser
-from SpiffWorkflow.spiff.parser.process import SpiffBpmnParser
 from SpiffWorkflow.bpmn.parser.util import full_tag
 
-class CustomStartEvent(StartEvent, SpiffBpmnTask):
+class CustomStartEvent(StartEventMixin, SpiffBpmnTask):
 
     def __init__(self, wf_spec, bpmn_id, event_definition, **kwargs):
 
@@ -21,7 +22,6 @@ class CustomStartEvent(StartEvent, SpiffBpmnTask):
         else:
             super().__init__(wf_spec, bpmn_id, event_definition, **kwargs)
             self.timer_event = None
-
 
 class CustomStartEventConverter(SpiffBpmnTaskConverter):
 
@@ -36,14 +36,10 @@ class CustomStartEventConverter(SpiffBpmnTaskConverter):
             dct['event_definition'] = self.registry.convert(spec.event_definition)
         return dct
 
-    
-SPIFF_SPEC_CONFIG['task_specs'].remove(StartEventConverter)
-SPIFF_SPEC_CONFIG['task_specs'].append(CustomStartEventConverter)
-
-wf_spec_converter = BpmnWorkflowSerializer.configure_workflow_spec_converter(SPIFF_SPEC_CONFIG)
-serializer = BpmnWorkflowSerializer(wf_spec_converter)
-
+DEFAULT_CONFIG['task_specs'].remove(StartEventConverter)
+DEFAULT_CONFIG['task_specs'].append(CustomStartEventConverter)
+registry = BpmnWorkflowSerializer.configure(DEFAULT_CONFIG)
+serializer = BpmnWorkflowSerializer(registry)
 
 parser = SpiffBpmnParser()
 parser.OVERRIDE_PARSER_CLASSES[full_tag('startEvent')] = (StartEventParser, CustomStartEvent)
-
