@@ -7,7 +7,7 @@ from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
 from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
 from SpiffWorkflow.bpmn.specs.bpmn_process_spec import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
-from SpiffWorkflow.bpmn.script_engine import PythonScriptEngine, TaskDataEnvironment
+from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
 from ..serializer.file import FileSerializer
 from ..engine import BpmnEngine
@@ -41,15 +41,13 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
-service_task_env = TaskDataEnvironment({
-    'product_info_from_dict': product_info_from_dict,
-    'datetime': datetime,
-})
-
-class ServiceTaskEngine(PythonScriptEngine):
+class ServiceTaskEnvironment(TaskDataEnvironment):
 
     def __init__(self):
-        super().__init__(environment=service_task_env)
+        super().__init__({
+            'product_info_from_dict': product_info_from_dict,
+            'datetime': datetime,
+        })
 
     def call_service(self, operation_name, operation_params, task_data):
         if operation_name == 'lookup_product_info':
@@ -61,6 +59,6 @@ class ServiceTaskEngine(PythonScriptEngine):
             raise Exception("Unknown Service!")
         return json.dumps(result)
 
-script_engine = ServiceTaskEngine()
+script_env = ServiceTaskEnvironment()
 
-engine = BpmnEngine(parser, serializer, handlers, script_engine)
+engine = BpmnEngine(parser, serializer, handlers, script_env)

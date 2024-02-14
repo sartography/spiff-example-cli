@@ -12,11 +12,11 @@ logger = logging.getLogger('spiff_engine')
 
 class BpmnEngine:
     
-    def __init__(self, parser, serializer, handlers=None, script_engine=None):
+    def __init__(self, parser, serializer, handlers=None, script_env=None):
 
         self.parser = parser
         self.serializer = serializer
-        self._script_engine = script_engine or PythonScriptEngine()
+        self._script_engine = PythonScriptEngine(script_env)
         self._handlers = handlers or {}
 
     def handler(self, task):

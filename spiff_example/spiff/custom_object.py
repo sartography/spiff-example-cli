@@ -7,7 +7,7 @@ from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
 from SpiffWorkflow.bpmn.workflow import BpmnWorkflow, BpmnSubWorkflow
 from SpiffWorkflow.bpmn.specs.bpmn_process_spec import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
-from SpiffWorkflow.bpmn.script_engine import PythonScriptEngine, TaskDataEnvironment
+from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
 from ..serializer.file import FileSerializer
 from ..engine import BpmnEngine
@@ -48,6 +48,4 @@ script_env = TaskDataEnvironment({
     'lookup_product_info': lookup_product_info,
     'lookup_shipping_cost': lookup_shipping_cost,
 })
-script_engine = PythonScriptEngine(script_env)
-
-engine = BpmnEngine(parser, serializer, handlers, script_engine)
+engine = BpmnEngine(parser, serializer, handlers, script_env)
