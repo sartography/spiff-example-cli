@@ -5,7 +5,7 @@ import logging
 def configure_logging():
     spiff_logger = logging.getLogger('spiff')
     spiff_handler = logging.StreamHandler()
-    spiff_handler.setFormatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s')
+    spiff_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s'))
     spiff_logger.addHandler(spiff_handler)
 
     metrics_logger = logging.getLogger('spiff.metrics')

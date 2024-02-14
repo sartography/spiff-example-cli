@@ -3,7 +3,7 @@ from jinja2 import Template
 from SpiffWorkflow.util.deep_merge import DeepMerge
 from SpiffWorkflow.camunda.specs.user_task import EnumFormField
 
-from ..curses_ui.user_input import Field
+from ..curses_ui.user_input import Field, Option, SimpleField
 
 class TaskHandler:
 
@@ -44,18 +44,13 @@ class UserTaskHandler(TaskHandler):
 
     def create_field(self, field):
         if isinstance(field, EnumFormField):
-            option_map = dict((opt.name, opt.id) for opt in field.options)
-            label = field.label + ' (' + ', '.join(option_map) + ')'
-            def validate(value):
-                if value not in option_map:
-                    raise Exception(f'Invalid option: {value}')
-                else:
-                    return option_map[value]
-            field = Field(field.id, label, lambda v: v, validate, '')
+            options = dict((opt.name, opt.id) for opt in field.options)
+            label = field.label + ' (' + ', '.join(options) + ')'
+            field = Option(options, field.id, label, '')
         elif field.type == 'long':
-            field = Field(field.id, field.label, lambda v: str(v) if v is not None else '', int, None)
+            field = SimpleField(int, field.id, field.label, '')
         else:
-            field = Field(field.id, field.label, str, str, '')
+            field = Field(field.id, field.label, '')
         return field
 
     def get_fields(self):

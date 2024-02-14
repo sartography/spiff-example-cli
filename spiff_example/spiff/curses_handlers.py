@@ -3,7 +3,7 @@ import logging
 
 from jinja2 import Template
 
-from ..curses_ui.user_input import Field
+from ..curses_ui.user_input import SimpleField, Option, JsonField
 
 forms_dir = 'bpmn/tutorial/forms'
 
@@ -38,18 +38,19 @@ class UserTaskHandler(TaskHandler):
 
     def create_field(self, name, config):
         if 'oneOf' in config:
-            option_map = dict([ (v['title'], v['const']) for v in config['oneOf'] ])
-            label = f'{config["title"]} ' + '(' + ', '.join(option_map) + ')'
-            def validate(value):
-                if value not in option_map:
-                    raise Exception(f'Invalid option: {value}')
-                else:
-                    return option_map[value]
-            field = Field(name, label, lambda v: v, validate, '')
+            options = dict([ (v['title'], v['const']) for v in config['oneOf'] ])
+            label = f'{config["title"]} ' + '(' + ', '.join(options) + ')'
+            field = Option(options, name, label, '')
+        elif config['type'] == 'string':
+            field = SimpleField(str, name, config['title'], None)
         elif config['type'] == 'integer':
-            field = Field(name, config['title'], lambda v: str(v) if v is not None else '', int, None)
+            field = SimpleField(int, name, config['title'], None)
+        elif config['type'] == 'number':
+            field = SimpleField(float, name, config['title'], None)
+        elif config['type'] == 'boolean':
+            field = SimpleField(bool, name, config['title'], None)
         else:
-            field = Field(name, config['title'], str, str, '')
+            field = JsonField(name, config['title'], None)
         return field
 
     def get_fields(self):

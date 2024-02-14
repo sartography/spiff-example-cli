@@ -115,6 +115,14 @@ class SpecView:
                 self.bpmn_files = []
                 self.dmn_files = []
                 self.draw()
+        elif curses.ascii.unctrl(ch) == '^E':
+            line = self.right.screen.instr(y, 0, self.right.region.width).decode('utf-8').rstrip()
+            self.right.screen.move(y, len(line))
+        elif curses.ascii.unctrl(ch) == '^A':
+            self.right.screen.move(y, 0)
+        elif curses.ascii.unctrl(ch) == '^U':
+            self.right.screen.move(y, 0)
+            self.right.screen.clrtoeol()
         elif curses.ascii.isprint(ch):
             self.right.screen.echochar(ch)
         self.left.screen.noutrefresh(0, 0, *self.left.region.box)
