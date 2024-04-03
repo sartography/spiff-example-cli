@@ -4,12 +4,16 @@ from .content import Content
 
 class Menu(Content):
 
-    def __init__(self, region, menu_items):
+    def __init__(self, ui):
 
-        super().__init__(region)
-
+        super().__init__(ui.top)
         self.current_option = 0
-        self.options, self.handlers  = zip(*menu_items)
+        self.options, self.handlers  = zip(*[
+            ('Add spec', lambda: ui.set_state('add_spec')),
+            ('Start Workflow', lambda: ui.set_state('spec_list')),
+            ('View workflows', lambda: ui.set_state('workflow_list')),
+            ('Quit', ui.quit),
+        ])
         self.menu = None
 
     def draw(self):

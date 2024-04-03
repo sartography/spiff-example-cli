@@ -4,11 +4,11 @@ from .content import Content
 
 class SpecView:
 
-    def __init__(self, left, right, add_spec):
+    def __init__(self, ui):
 
-        self.left = Content(left)
-        self.right = Content(right)
-        self.add_spec = add_spec
+        self.left = Content(ui.left)
+        self.right = Content(ui.right)
+        self.add_spec = ui.engine.add_spec
 
         self.bpmn_id = None
         self.bpmn_files = []

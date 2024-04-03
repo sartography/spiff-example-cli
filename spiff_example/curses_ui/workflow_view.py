@@ -1,41 +1,32 @@
 import curses, curses.ascii
 import json
-
 from datetime import datetime
 
 from SpiffWorkflow.util.task import TaskState
 
 from .content import Content
-from .user_input import Field
+from .task_filter_view import TaskFilterView
 
 default_view = {
-    'state': TaskState.ANY_MASK,
-    'spec_name': None,
-    'updated_ts': 0,
-}
-
-run_view = {
     'state': TaskState.READY|TaskState.WAITING,
     'spec_name': None,
     'updated_ts': 0,
 }
 
-
 class WorkflowView:
 
-    def __init__(self, app):
+    def __init__(self, ui):
 
-        self.left = Content(app.left)
-        self.right = Content(app.right)
+        self.left = Content(ui.left)
+        self.right = Content(ui.right)
 
-        self.engine = app.engine
-        self.complete_task = app.complete_task
-        self._show_filters = app.show_filters
-
+        self.engine = ui.engine
+        self.task_filter_view = TaskFilterView(ui)
+        self.complete_task = ui.complete_task
 
         self.workflow = None
         self.workflow_id = None
-        self.current_filter = default_view
+        self.current_filter = default_view.copy()
         self.step = True
         self.task_view = 'list'
         self.info_view = 'task'
@@ -49,7 +40,8 @@ class WorkflowView:
             '[l]ist/tree view',
             '[w]orkflow/task data view',
             '[f]ilter tasks',
-            '[r]efresh tasks',
+            '[u]pdate waiting tasks',
+            '[r]un/step execution',
             '[s]ave workflow state',
         ]
 
@@ -157,21 +149,6 @@ class WorkflowView:
 
         self.right.screen.noutrefresh(self.right.first_visible, 0, *self.right.region.box)
 
-    def show_filters(self):
-        values = self.current_filter
-        fields = [
-            Field('state', 'State', TaskState.get_name, TaskState.get_value, values['state']),
-            Field('spec_name', 'Task spec', lambda v: v or '', lambda v: None if v == '' else v, values['spec_name']),
-            Field(
-                'updated_ts',
-                'Updated on or after',
-                lambda v: datetime.fromtimestamp(v).isoformat(),
-                lambda v: datetime.fromisoformat(v).timestamp(),
-                values['updated_ts'],
-            ),
-        ]
-        self._show_filters(fields)
-
     def handle_key(self, ch, y, x):
 
         if chr(ch).lower() == 'l':
@@ -181,13 +158,15 @@ class WorkflowView:
             self.info_view = 'workflow' if self.info_view == 'task' else 'task'
             self.update_info()
         elif chr(ch).lower() == 'f':
-            self.show_filters()
-        elif chr(ch).lower() == 'r':
+            self.task_filter_view.show(self.current_filter)
+        elif chr(ch).lower() == 'u':
             if self.step is False:
                 self.engine.run_ready_events(self.workflow)
             else:
                 self.workflow.refresh_waiting_tasks()
             self.update_task_tree()
+        elif chr(ch).lower() == 'r':
+            self.step = not self.step
         elif chr(ch).lower() == 's':
             self.engine.update_workflow(self.workflow, self.workflow_id)
         elif ch == curses.ascii.TAB:

@@ -53,16 +53,15 @@ class Option(Field):
 
 class UserInput:
 
-    def __init__(self, left, right):
+    def __init__(self, ui):
 
-        self.left = Content(left)
-        self.right = Content(right)
+        self.left = Content(ui.left)
+        self.right = Content(ui.right)
         self.screen = self.right.screen
 
+        self.on_complete = lambda results: results
         self.instructions = ''
-
         self.fields = []
-        self.on_complete = None
 
         self.current_field = 0
         self.offsets = []

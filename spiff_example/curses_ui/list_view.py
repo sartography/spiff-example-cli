@@ -21,7 +21,6 @@ class ListView(Content):
             '[d] delete'
         ] + self.menu
 
-
     @property
     def items(self):
         return self._items
@@ -68,4 +67,18 @@ class ListView(Content):
             if self.selected == len(self.item_ids):
                 self.selected = max(0, self.selected - 1)
             self.draw()
+
+
+class SpecListView(ListView):
+    def __init__(self, ui):
+        super().__init__(ui.top, ['Name', 'Filename'], ui.start_workflow, ui.engine.delete_workflow_spec)
+
+class WorkflowListView(ListView):
+    def __init__(self, ui):
+        super().__init__(
+            ui.top,
+            ['Spec', 'Active tasks', 'Started', 'Updated', 'Ended'],
+            ui.view_workflow,
+            ui.engine.delete_workflow,
+        )
 

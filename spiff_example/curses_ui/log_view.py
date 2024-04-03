@@ -20,9 +20,9 @@ class LogHandler(logging.Handler):
 
 class LogView(Content):
 
-    def __init__(self, region):
+    def __init__(self, ui):
 
-        super().__init__(region)
+        super().__init__(ui.bottom)
 
         logger.addHandler(LogHandler(self.write))
         self.styles = {
