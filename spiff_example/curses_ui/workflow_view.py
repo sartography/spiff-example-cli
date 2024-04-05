@@ -5,13 +5,8 @@ from datetime import datetime
 from SpiffWorkflow.util.task import TaskState
 
 from .content import Content
-from .task_filter_view import TaskFilterView
+from .task_filter_view import TaskFilterView, step_view
 
-default_view = {
-    'state': TaskState.READY|TaskState.WAITING,
-    'spec_name': None,
-    'updated_ts': 0,
-}
 
 class WorkflowView:
 
@@ -21,17 +16,14 @@ class WorkflowView:
         self.right = Content(ui.right)
 
         self.engine = ui.engine
+        self.handlers = ui.handlers
         self.task_filter_view = TaskFilterView(ui)
-        self.complete_task = ui.complete_task
 
-        self.workflow = None
-        self.workflow_id = None
-        self.current_filter = default_view.copy()
-        self.step = True
+        self.instance = None
+
         self.task_view = 'list'
         self.info_view = 'task'
         self.scroll = 'left'
-        self.tasks = []
         self.selected = 0
         self._previous_state = None
 
@@ -41,24 +33,20 @@ class WorkflowView:
             '[w]orkflow/task data view',
             '[f]ilter tasks',
             '[u]pdate waiting tasks',
-            '[r]un/step execution',
+            '[g]reedy/step execution',
             '[s]ave workflow state',
         ]
 
         self.styles = {
-            TaskState.MAYBE: curses.color_pair(4),
-            TaskState.LIKELY: curses.color_pair(4),
-            TaskState.FUTURE: curses.color_pair(6),
-            TaskState.WAITING: curses.color_pair(3),
-            TaskState.READY: curses.color_pair(2),
-            TaskState.STARTED: curses.color_pair(6),
-            TaskState.ERROR: curses.color_pair(1),
-            TaskState.CANCELLED: curses.color_pair(5),
+            'MAYBE': curses.color_pair(4),
+            'LIKELY': curses.color_pair(4),
+            'FUTURE': curses.color_pair(6),
+            'WAITING': curses.color_pair(3),
+            'READY': curses.color_pair(2),
+            'STARTED': curses.color_pair(6),
+            'ERROR': curses.color_pair(1),
+            'CANCELLED': curses.color_pair(5),
         }
-
-    def set_workflow(self, workflow, wf_id):
-        self.workflow = workflow
-        self.workflow_id = wf_id
 
     def draw(self):
         self.update_task_tree()
@@ -66,21 +54,20 @@ class WorkflowView:
 
     def update_task_tree(self):
 
-        self.tasks = [t for t in self.workflow.get_tasks(**self.current_filter)]
-        if self.selected > len(self.tasks) - 1:
+        if self.selected > len(self.instance.filtered_tasks) - 1:
             self.selected = 0
         self.left.screen.erase()
-        if len(self.tasks) > 0:
-            self.left.content_height = len(self.tasks)
+        if len(self.instance.filtered_tasks) > 0:
+            self.left.content_height = len(self.instance.filtered_tasks)
             self.left.resize()
-            for idx, task in enumerate(self.tasks):
-                indent = 2 * task.depth
-                color = self.styles.get(task.state, 0)
+            for idx, task in enumerate(self.instance.filtered_tasks):
+                task_info = self.instance.get_task_display_info(task)
+                indent = 2 * task_info['depth']
+                color = self.styles.get(task_info['state'], 0)
                 attr = color | curses.A_BOLD if idx == self.selected else color
-                name = task.task_spec.bpmn_name or task.task_spec.name
-                lane = f'({task.task_spec.lane}) ' if task.task_spec.lane is not None else ''
-                state = TaskState.get_name(task.state)
-                task_info = f'{lane}{name} [{state}]'
+                name = task_info['name']
+                lane = task_info['lane'] or ''
+                task_info = f'{lane}{name} [{task_info["state"]}]'
                 if self.task_view == 'list':
                     self.left.screen.addstr(idx, 0, task_info, attr)
                 else:
@@ -96,13 +83,13 @@ class WorkflowView:
         self.left.screen.noutrefresh(self.left.first_visible, 0, *self.left.region.box)
 
     def update_info(self):
-        if self.info_view == 'task' and len(self.tasks) > 0:
+        if self.info_view == 'task' and len(self.instance.filtered_tasks) > 0:
             self.show_task()
         else:
             self.show_workflow()
 
     def show_task(self):
-        task = self.tasks[self.selected]
+        task = self.instance.filtered_tasks[self.selected]
         info = {
             'Name': task.task_spec.name,
             'Bpmn ID': task.task_spec.bpmn_id or '',
@@ -114,15 +101,15 @@ class WorkflowView:
 
     def show_workflow(self):
         info = {
-            'Spec': self.workflow.spec.name,
-            'Ready tasks': len(self.workflow.get_tasks(state=TaskState.READY)),
-            'Waiting tasks': len(self.workflow.get_tasks(state=TaskState.WAITING)),
-            'Finished tasks': len(self.workflow.get_tasks(state=TaskState.FINISHED_MASK)),
-            'Total tasks': len(self.workflow.get_tasks()),
-            'Waiting subprocesses': len([sp for sp in self.workflow.subprocesses.values() if not sp.is_completed()]),
-            'Total subprocesses': len(self.workflow.subprocesses)
+            'Spec': self.instance.name,
+            'Ready tasks': len(self.instance.ready_tasks),
+            'Waiting tasks': len(self.instance.waiting_tasks),
+            'Finished tasks': len(self.instance.finished_tasks),
+            'Total tasks': len(self.instance.tasks),
+            'Running subprocesses': len(self.instance.running_subprocesses),
+            'Total subprocesses': len(self.instance.subprocesses)
         }
-        self._show_details(info, self.workflow.data)
+        self._show_details(info, self.instance.data)
 
     def _show_details(self, info, data=None):
 
@@ -149,6 +136,13 @@ class WorkflowView:
 
         self.right.screen.noutrefresh(self.right.first_visible, 0, *self.right.region.box)
 
+    def complete_task(self, task):
+        handler = self.handlers.get(task.task_spec.__class__)
+        if handler is not None:
+            handler.show(task)
+        else:
+            self.instance.run_task(task)
+
     def handle_key(self, ch, y, x):
 
         if chr(ch).lower() == 'l':
@@ -158,17 +152,19 @@ class WorkflowView:
             self.info_view = 'workflow' if self.info_view == 'task' else 'task'
             self.update_info()
         elif chr(ch).lower() == 'f':
-            self.task_filter_view.show(self.current_filter)
+            self.task_filter_view.show(self.instance.task_filter)
         elif chr(ch).lower() == 'u':
-            if self.step is False:
-                self.engine.run_ready_events(self.workflow)
-            else:
-                self.workflow.refresh_waiting_tasks()
+            self.instance.run_ready_events()
+            if self.instance.step is False:
+                self.instance.run_until_user_input_required()
             self.update_task_tree()
-        elif chr(ch).lower() == 'r':
-            self.step = not self.step
+        elif chr(ch).lower() == 'g':
+            self.instance.step = not self.instance.step
+            if self.instance.step:
+                self.instance.update_task_filter(step_view.copy())
+                self.update_task_tree()
         elif chr(ch).lower() == 's':
-            self.engine.update_workflow(self.workflow, self.workflow_id)
+            self.engine.update_workflow(self.instance)
         elif ch == curses.ascii.TAB:
             if self.scroll == 'right':
                 self.scroll = 'left'
@@ -180,7 +176,7 @@ class WorkflowView:
                 self.right.screen.move(0, 0)
                 curses.curs_set(1)
         elif ch == curses.KEY_DOWN:
-            if self.scroll == 'left' and self.selected < len(self.tasks) - 1:
+            if self.scroll == 'left' and self.selected < len(self.instance.filtered_tasks) - 1:
                 self.selected += 1
                 self.left.scroll_down(y)
                 self.update_task_tree()
@@ -196,8 +192,8 @@ class WorkflowView:
                 self.right.scroll_up(y)
                 self.right.screen.noutrefresh(self.right.first_visible, 0, *self.right.region.box)
         elif ch == curses.ascii.NL:
-            if self.scroll == 'left' and len(self.tasks) > 0:
-                task = self.tasks[self.selected]
+            if self.scroll == 'left' and len(self.instance.filtered_tasks) > 0:
+                task = self.instance.filtered_tasks[self.selected]
                 if task.state == TaskState.READY:
                     self.complete_task(task)
                     self.draw()

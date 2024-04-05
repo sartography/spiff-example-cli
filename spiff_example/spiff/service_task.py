@@ -61,4 +61,4 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
 
 script_env = ServiceTaskEnvironment()
 
-engine = BpmnEngine(parser, serializer, handlers, script_env)
+engine = BpmnEngine(parser, serializer, script_env)

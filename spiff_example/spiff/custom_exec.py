@@ -73,5 +73,5 @@ class SubprocessScriptingEnvironment(BasePythonScriptEngineEnvironment):
 executable = 'spiff_example.spiff.subprocess_engine'
 script_env = SubprocessScriptingEnvironment(executable, serializer)
 
-engine = BpmnEngine(parser, serializer, handlers, script_env)
+engine = BpmnEngine(parser, serializer, script_env)
 

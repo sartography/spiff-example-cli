@@ -18,7 +18,8 @@ class ListView(Content):
 
         self.menu = [
             '[ENTER] run',
-            '[d] delete'
+            '[s]tep',
+            '[d]elete',
         ] + self.menu
 
     @property
@@ -52,7 +53,10 @@ class ListView(Content):
     def handle_key(self, ch, y, x):
         if ch == curses.ascii.NL:
             item_id = self.item_ids[self.selected]
-            self.select_action(item_id)
+            self.select_action(item_id, step=False)
+        elif chr(ch).lower() == 's':
+            item_id = self.item_ids[self.selected]
+            self.select_action(item_id, step=True)
         elif ch == curses.KEY_DOWN and self.selected < len(self.items) - 1:
             self.selected += 1
             self.draw()
@@ -78,7 +82,7 @@ class WorkflowListView(ListView):
         super().__init__(
             ui.top,
             ['Spec', 'Active tasks', 'Started', 'Updated', 'Ended'],
-            ui.view_workflow,
+            ui.run_workflow,
             ui.engine.delete_workflow,
         )
 

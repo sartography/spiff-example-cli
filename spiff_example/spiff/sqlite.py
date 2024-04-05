@@ -48,4 +48,4 @@ handlers = {
 
 script_env = TaskDataEnvironment({'datetime': datetime })
 
-engine = BpmnEngine(parser, serializer, handlers, script_env)
+engine = BpmnEngine(parser, serializer, script_env)

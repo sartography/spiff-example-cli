@@ -20,7 +20,7 @@ if __name__ == '__main__':
 
     try:
         if args.subcommand is None:
-            curses.wrapper(CursesUI, config.engine)
+            curses.wrapper(CursesUI, config.engine, config.handlers)
         else:
             configure_logging()
             args.func(config.engine, args)

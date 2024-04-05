@@ -36,4 +36,4 @@ handlers = {
 
 script_env = TaskDataEnvironment(safe_globals)
 
-engine = BpmnEngine(parser, serializer, handlers, script_env)
+engine = BpmnEngine(parser, serializer, script_env)

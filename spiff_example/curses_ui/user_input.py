@@ -68,15 +68,6 @@ class UserInput:
 
         self.menu = ['[ESC] to cancel']
 
-    def configure(self, instructions, fields, on_complete):
-
-        self.instructions = instructions
-        self.fields = fields
-        self.on_complete = on_complete
-        self.offsets = []
-        self.current_field = 0
-        self.results = {}
-
     def draw(self, itemno=None):
 
         self.left.screen.erase()

@@ -48,4 +48,4 @@ script_env = TaskDataEnvironment({
     'lookup_product_info': lookup_product_info,
     'lookup_shipping_cost': lookup_shipping_cost,
 })
-engine = BpmnEngine(parser, serializer, handlers, script_env)
+engine = BpmnEngine(parser, serializer, script_env)

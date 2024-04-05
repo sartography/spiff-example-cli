@@ -11,18 +11,20 @@ from .list_view import SpecListView, WorkflowListView
 from .workflow_view import WorkflowView
 from .spec_view import SpecView
 from .user_input import UserInput, Field
+from .task_filter_view import greedy_view, step_view
 
 logger = logging.getLogger(__name__)
 
 
 class CursesUI:
 
-    def __init__(self, window, engine):
+    def __init__(self, window, engine, handlers):
 
         for i in range(1, int(curses.COLOR_PAIRS / 256)):
             curses.init_pair(i, i, 0)
 
         self.engine = engine
+        self.handlers = dict((spec, handler(self)) for spec, handler in handlers.items())
 
         self.window = window
         self.window.attron(curses.COLOR_WHITE)
@@ -42,7 +44,7 @@ class CursesUI:
             'log_view': LogView(self),
             'spec_list': SpecListView(self),
             'workflow_list': WorkflowListView(self),
-            'view_workflow': WorkflowView(self),
+            'workflow_view': WorkflowView(self),
             'user_input': UserInput(self),
         }
         self.resize()
@@ -81,10 +83,10 @@ class CursesUI:
                 self.resize()
                 self.state.draw()
             elif ch == curses.ascii.ESC:
-                if self._state in ['log_view', 'view_workflow']:
+                if self._state in ['log_view', 'workflow_view']:
                     self.set_state(self.state._previous_state)
                 elif self._state == 'user_input':
-                    self.set_state('view_workflow')
+                    self.set_state('workflow_view')
                 else:
                     self.state = 'main_menu'
             elif chr(ch) == ';':
@@ -97,45 +99,26 @@ class CursesUI:
                     logger.error(str(exc), exc_info=True)
             curses.doupdate()
 
-    def start_workflow(self, spec_id):
-        wf_id = self.engine.start_workflow(spec_id)
-        self.set_workflow(wf_id, False)
+    def start_workflow(self, spec_id, step):
+        instance = self.engine.start_workflow(spec_id)
+        self.set_workflow(instance, step, 'spec_list')
+
+    def run_workflow(self, wf_id, step):
+        instance = self.engine.get_workflow(wf_id)
+        self.set_workflow(instance, step, 'workflow_list')
+
+    def set_workflow(self, instance, step, prev_state):
+        instance.step = step
+        instance.update_task_filter(step_view if step else greedy_view)
+        if not step:
+            instance.run_until_user_input_required()
+        self._states['workflow_view'].instance = instance
+        self._states['workflow_view']._previous_state = prev_state
+        self.state = 'workflow_view'
 
     def _switch_to_list(self, state, items):
         self._states[state].items = items
         self.state = state
-
-    def run_workflow(self, wf_id):
-        self.set_workflow(wf_id, False)
-
-    def view_workflow(self, wf_id):
-        self.set_workflow(wf_id, True)
-
-    def set_workflow(self, wf_id, step):
-        workflow = self.engine.get_workflow(wf_id)
-        self._states['view_workflow'].set_workflow(workflow, wf_id)
-        self._states['view_workflow'].step = step
-        self._states['view_workflow']._previous_state = 'workflow_list'
-        self._run_workflow()
-
-    def _run_workflow(self):
-        if not self._states['view_workflow'].step:
-            self.engine.run_until_user_input_required(self._states['view_workflow'].workflow)
-        self.state = 'view_workflow'
-
-    def complete_task(self, task):
-
-        handler = self.engine.handler(task)
-        if handler is not None:
-            instructions, fields = handler.get_configuration()
-            def on_complete(results):
-                handler.on_complete(results)
-                self._run_workflow()
-            self._states['user_input'].configure(instructions, fields, on_complete)
-            self.state = 'user_input'
-        else:
-            task.run()
-            self._run_workflow()
 
     def quit(self):
         sys.exit(0)

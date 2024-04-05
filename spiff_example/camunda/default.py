@@ -41,4 +41,4 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
-engine = BpmnEngine(parser, serializer, handlers)
+engine = BpmnEngine(parser, serializer)

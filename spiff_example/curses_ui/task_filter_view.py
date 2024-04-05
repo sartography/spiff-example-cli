@@ -4,6 +4,18 @@ from SpiffWorkflow import TaskState
 
 from .user_input import UserInput, Field, SimpleField
 
+greedy_view = {
+    'state': TaskState.READY|TaskState.WAITING,
+    'spec_name': None,
+    'updated_ts': 0,
+}
+
+step_view = {
+    'state': TaskState.ANY_MASK,
+    'spec_name': None,
+    'updated_ts': 0
+}
+
 
 class TaskStateField(Field):
     def to_str(self, value): return TaskState.get_name(value)
@@ -28,8 +40,8 @@ class TaskFilterView:
         user_input.instructions = ''
 
         def on_complete(results):
-            self.ui._states['view_workflow'].current_filter = results
-            self.ui.state = 'view_workflow'
+            self.ui._states['workflow_view'].instance.update_task_filter(results)
+            self.ui.state = 'workflow_view'
         user_input.on_complete = on_complete
 
         self.ui.state = 'user_input'
