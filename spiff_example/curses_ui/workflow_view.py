@@ -5,7 +5,7 @@ from datetime import datetime
 from SpiffWorkflow.util.task import TaskState
 
 from .content import Content
-from .task_filter_view import TaskFilterView, step_view
+from .task_filter_view import TaskFilterView
 
 
 class WorkflowView:
@@ -15,7 +15,6 @@ class WorkflowView:
         self.left = Content(ui.left)
         self.right = Content(ui.right)
 
-        self.engine = ui.engine
         self.handlers = ui.handlers
         self.task_filter_view = TaskFilterView(ui)
 
@@ -25,15 +24,14 @@ class WorkflowView:
         self.info_view = 'task'
         self.scroll = 'left'
         self.selected = 0
-        self._previous_state = None
 
         self.screen = self.left.screen
         self.menu = [
             '[l]ist/tree view',
             '[w]orkflow/task data view',
+            '[g]reedy/step execution',
             '[f]ilter tasks',
             '[u]pdate waiting tasks',
-            '[g]reedy/step execution',
             '[s]ave workflow state',
         ]
 
@@ -161,10 +159,10 @@ class WorkflowView:
         elif chr(ch).lower() == 'g':
             self.instance.step = not self.instance.step
             if self.instance.step:
-                self.instance.update_task_filter(step_view.copy())
+                self.instance.update_task_filter({'state': TaskState.ANY_MASK})
                 self.update_task_tree()
         elif chr(ch).lower() == 's':
-            self.engine.update_workflow(self.instance)
+            self.instance.save()
         elif ch == curses.ascii.TAB:
             if self.scroll == 'right':
                 self.scroll = 'left'

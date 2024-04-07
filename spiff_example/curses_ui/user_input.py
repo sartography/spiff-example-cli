@@ -99,6 +99,12 @@ class UserInput:
         curses.curs_set(1)
         curses.ungetch(curses.KEY_LEFT)
 
+    def clear(self):
+        self.instructions = ''
+        self.fields = []
+        self.offsets = []
+        self.current_field = 0
+
     def handle_key(self, ch, y, x):
 
         if ch == curses.KEY_BACKSPACE:

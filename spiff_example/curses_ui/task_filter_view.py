@@ -32,6 +32,7 @@ class TaskFilterView:
 
     def show(self, task_filter):
         user_input = self.ui._states['user_input']
+        user_input.clear()
         user_input.fields = [
             TaskStateField('state', 'State', task_filter['state']),
             SimpleField(str, 'spec_name', 'Task spec', task_filter['spec_name']),

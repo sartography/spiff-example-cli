@@ -9,9 +9,9 @@ class Menu(Content):
         super().__init__(ui.top)
         self.current_option = 0
         self.options, self.handlers  = zip(*[
-            ('Add spec', lambda: ui.set_state('add_spec')),
-            ('Start Workflow', lambda: ui.set_state('spec_list')),
-            ('View workflows', lambda: ui.set_state('workflow_list')),
+            ('Add spec', lambda: setattr(ui, 'state', 'add_spec')),
+            ('Start Workflow', lambda: setattr(ui, 'state', 'spec_list')),
+            ('View workflows', lambda: setattr(ui, 'state', 'workflow_list')),
             ('Quit', ui.quit),
         ])
         self.menu = None

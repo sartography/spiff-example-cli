@@ -4,12 +4,9 @@ from SpiffWorkflow.util.deep_merge import DeepMerge
 from SpiffWorkflow.camunda.specs.user_task import EnumFormField
 
 from ..curses_ui.user_input import Field, Option, SimpleField
+from ..curses_ui.human_task_handler import TaskHandler
 
-class TaskHandler:
-
-    def __init__(self, ui):
-        self.ui = ui
-        self.task = None
+class CamundaTaskHandler(TaskHander):
 
     def set_instructions(self, task):
         text = f'{self.task.task_spec.bpmn_name}'
@@ -18,18 +15,6 @@ class TaskHandler:
             text += template.render(self.task.data)
         text += '\n\n'
         self.ui._states['user_input'].instructions = text
-
-    def on_complete(self, results):
-        self.ui._states['user_input'].fields = []
-        instance = self.ui._states['workflow_view'].instance
-        instance.run_task(self.task, results)
-        self.ui.state = 'workflow_view'
-
-    def show(self, task):
-        self.task = task
-        self.set_instructions(task)
-        self.ui._states['user_input'].on_complete = self.on_complete
-        self.ui.state = 'user_input'
 
 
 class ManualTaskHandler(TaskHandler):
@@ -50,11 +35,7 @@ class UserTaskHandler(TaskHandler):
                 field = Field(field.id, field.label, '')
             self.ui._states['user_input'].fields.append(field)
 
-    def show(self, task):
-        self.set_fields(task)
-        super().show(task)
-
-    def update_data(self, dct, name, value):
+   def update_data(self, dct, name, value):
         path = name.split('.')
         current = dct
         for component in path[:-1]:
@@ -68,4 +49,4 @@ class UserTaskHandler(TaskHandler):
         for name, value in results.items():
             self.update_data(dct, name, value)
         DeepMerge.merge(self.task.data, dct)
-        super().on_complete(results)
+        super().on_complete({})

@@ -62,7 +62,7 @@ class Instance:
 
     def update_task_filter(self, task_filter=None):
         if task_filter is not None:
-            self.task_filter = task_filter
+            self.task_filter.update(task_filter)
         self.filtered_tasks = [t for t in self.workflow.get_tasks(**self.task_filter)]
 
     def run_task(self, task, data=None):

@@ -4,14 +4,11 @@ import logging
 from jinja2 import Template
 
 from ..curses_ui.user_input import SimpleField, Option, JsonField
+from ..curses_ui.human_task_handler import TaskHandler
 
 forms_dir = 'bpmn/tutorial/forms'
 
-class TaskHandler:
-
-    def __init__(self, ui):
-        self.ui = ui
-        self.task = None
+class SpiffTaskHandler(TaskHandler):
 
     def set_instructions(self, task):
         user_input = self.ui._states['user_input']
@@ -22,22 +19,10 @@ class TaskHandler:
             user_input.instructions += template.render(self.task.data)
         user_input.instructions += '\n\n'
 
-    def on_complete(self, results):
-        self.ui._states['user_input'].fields = []
-        instance = self.ui._states['workflow_view'].instance
-        instance.run_task(self.task, results)
-        self.ui.state = 'workflow_view'
-
-    def show(self, task):
-        self.task = task
-        self.set_instructions(task)
-        self.ui._states['user_input'].on_complete = self.on_complete
-        self.ui.state = 'user_input'
-
-class ManualTaskHandler(TaskHandler):
+class ManualTaskHandler(SpiffTaskHandler):
     pass
 
-class UserTaskHandler(TaskHandler):
+class UserTaskHandler(SpiffTaskHandler):
 
     def set_fields(self, task):
 
@@ -60,8 +45,4 @@ class UserTaskHandler(TaskHandler):
             else:
                 field = JsonField(name, config['title'], None)
             user_input.fields.append(field)
-
-    def show(self, task):
-        self.set_fields(task)
-        super().show(task)
 

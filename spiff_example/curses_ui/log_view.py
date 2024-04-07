@@ -31,8 +31,6 @@ class LogView(Content):
         }
         self.menu = ['[ESC] return to previous screen']
 
-        self.previous_state = None
-
     def write(self, record):
 
         y, x = curses.getsyx()

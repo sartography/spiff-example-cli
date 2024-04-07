@@ -49,6 +49,7 @@ class CursesUI:
         }
         self.resize()
         self._state = None
+        self._escape_state = 'main_menu'
         self.state = 'main_menu'
         self.run()
 
@@ -58,21 +59,22 @@ class CursesUI:
 
     @state.setter
     def state(self, state):
+        if state == 'log_view':
+            self._escape_state = self._state
+        elif state == 'user_input':
+            self._escape_state = 'workflow_view'
+        else:
+            self._escape_state = 'main_menu'
         self._state = state
         self.menu_content.screen.erase()
         if self.state.menu is not None:
             for action in self.state.menu:
                 self.menu_content.screen.addstr(f'{action}  ')
         self.menu_content.screen.noutrefresh(0, 0, *self.menu.box)
+        if self._state in ['spec_list', 'workflow_list']:
+            self.state.refresh()
         self.state.draw()
         curses.doupdate()
-
-    def set_state(self, state):  # For callbacks on different screens
-        if state == 'spec_list':
-            self._switch_to_list('spec_list', self.engine.list_specs())
-        elif state == 'workflow_list':
-            self._switch_to_list('workflow_list', self.engine.list_workflows(True))
-        self.state = state
 
     def run(self):
 
@@ -83,14 +85,8 @@ class CursesUI:
                 self.resize()
                 self.state.draw()
             elif ch == curses.ascii.ESC:
-                if self._state in ['log_view', 'workflow_view']:
-                    self.set_state(self.state._previous_state)
-                elif self._state == 'user_input':
-                    self.set_state('workflow_view')
-                else:
-                    self.state = 'main_menu'
+                self.state = self._escape_state
             elif chr(ch) == ';':
-                self._states['log_view']._previous_state = self._state
                 self.state = 'log_view'
             else:
                 try:
@@ -109,16 +105,12 @@ class CursesUI:
 
     def set_workflow(self, instance, step, prev_state):
         instance.step = step
-        instance.update_task_filter(step_view if step else greedy_view)
+        instance.update_task_filter(step_view.copy() if step else greedy_view.copy())
         if not step:
             instance.run_until_user_input_required()
         self._states['workflow_view'].instance = instance
         self._states['workflow_view']._previous_state = prev_state
         self.state = 'workflow_view'
-
-    def _switch_to_list(self, state, items):
-        self._states[state].items = items
-        self.state = state
 
     def quit(self):
         sys.exit(0)
