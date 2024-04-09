@@ -15,20 +15,21 @@ if __name__ == '__main__':
     subparsers = parent.add_subparsers(dest='method')
 
     shared = argparse.ArgumentParser('Context', add_help=False)
-    shared.add_argument('-g', '--globals', dest='globals')
-    shared.add_argument('-l', '--locals', dest='locals', required=True)
+    shared.add_argument('-c', '--context', dest='context', required=True)
+    shared.add_argument('-x', '--external-context', dest='external')
 
     eval_args = subparsers.add_parser('eval', parents=[shared])
-    eval_args.add_argument('-e', '--expr', dest='expr', type=str, required=True)
+    eval_args.add_argument('expr', type=str)
 
     exec_args = subparsers.add_parser('exec', parents=[shared])
-    exec_args.add_argument('-s', '--script', dest='script', type=str, required=True)
+    exec_args.add_argument('script', type=str)
 
     args = parent.parse_args()
+    local_ctx = registry.restore(json.loads(args.context))
     global_ctx = globals()
-    if args.globals is not None:
-        global_ctx.update(registry.restore(json.loads(args.globals)))
-    local_ctx = registry.restore(json.loads(args.locals))
+    global_ctx.update(local_ctx)
+    if args.external is not None:
+        global_ctx.update(registry.restore(json.loads(args.external)))
     if args.method == 'eval':
         result = eval(args.expr, global_ctx, local_ctx)
     elif args.method == 'exec':

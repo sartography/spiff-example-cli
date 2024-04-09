@@ -5,7 +5,6 @@ import os, subprocess
 from SpiffWorkflow.spiff.parser import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
 from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
-from SpiffWorkflow.bpmn.specs.bpmn_process_spec import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
 from SpiffWorkflow.bpmn.script_engine.python_environment import BasePythonScriptEngineEnvironment
 from SpiffWorkflow.util.deep_merge import DeepMerge
@@ -51,18 +50,18 @@ class SubprocessScriptingEnvironment(BasePythonScriptEngineEnvironment):
         self.serializer = serializer
 
     def evaluate(self, expression, context, external_context=None):
-        output = self.run(['eval', '-e', expression], context, external_context)
+        output = self.run(['eval', expression], context, external_context)
         return self.parse_output(output)
 
     def execute(self, script, context, external_context=None):
-        output = self.run(['exec', '-s', script], context, external_context)
+        output = self.run(['exec', script], context, external_context)
         DeepMerge.merge(context, self.parse_output(output))
         return True
 
     def run(self, args, context, external_context):
-        cmd = ['python', '-m', self.executable] + args + ['-l', json.dumps(registry.convert(context))]
+        cmd = ['python', '-m', self.executable] + args + ['-c', json.dumps(registry.convert(context))]
         if external_context is not None:
-            cmd.extend(['-g', json.dumps(registry.convert(external_context))])
+            cmd.extend(['-x', json.dumps(registry.convert(external_context))])
         return subprocess.run(cmd, capture_output=True)
 
     def parse_output(self, output):

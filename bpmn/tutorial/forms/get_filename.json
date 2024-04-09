@@ -1,0 +1,13 @@
+{
+  "title": "Open File?",
+  "type": "object",
+  "required": [
+    "filename"
+  ],
+  "properties": {
+    "filename": {
+      "title": "Filename",
+      "type": "string"
+    }
+  }
+}
