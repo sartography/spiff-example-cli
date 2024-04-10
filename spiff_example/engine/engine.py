@@ -14,11 +14,13 @@ logger = logging.getLogger('spiff_engine')
 
 class BpmnEngine:
     
-    def __init__(self, parser, serializer, script_env=None):
+    def __init__(self, parser, serializer, script_env=None, instance_cls=None):
 
         self.parser = parser
         self.serializer = serializer
+        # Ideally this would be recreated for each instance
         self._script_engine = PythonScriptEngine(script_env)
+        self.instance_cls = instance_cls or Instance
 
     def add_spec(self, process_id, bpmn_files, dmn_files):
         self.add_files(bpmn_files, dmn_files)
@@ -63,12 +65,12 @@ class BpmnEngine:
         wf = BpmnWorkflow(spec, sp_specs, script_engine=self._script_engine)
         wf_id = self.serializer.create_workflow(wf, spec_id)
         logger.info(f'Created workflow with id {wf_id}')
-        return Instance(wf_id, wf, save=self.update_workflow)
+        return self.instance_cls(wf_id, wf, save=self.update_workflow)
 
     def get_workflow(self, wf_id):
         wf = self.serializer.get_workflow(wf_id)
         wf.script_engine = self._script_engine
-        return Instance(wf_id, wf, save=self.update_workflow)
+        return self.instance_cls(wf_id, wf, save=self.update_workflow)
 
     def update_workflow(self, instance):
         logger.info(f'Saved workflow {instance.wf_id}')

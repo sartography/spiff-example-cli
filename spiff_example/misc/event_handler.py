@@ -43,9 +43,6 @@ class EventHandlingServiceTask(ServiceTask):
             return True
         except FileNotFoundError as exc:
             event_definition = ErrorEventDefinition('file_not_found', code='1')
-            boundary = my_task.workflow.top_workflow.get_next_task(spec_name='Event_16a31zf')
-            ed = boundary.task_spec.event_definition
-            logger.info(f'{ed.code} {event_definition.code}')
             event = BpmnEvent(event_definition, payload=params['filename'])
             my_task.workflow.top_workflow.catch(event)
             return False
