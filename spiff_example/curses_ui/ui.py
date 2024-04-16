@@ -15,6 +15,9 @@ from .task_filter_view import greedy_view, step_view
 
 logger = logging.getLogger(__name__)
 
+class CursesUIError(Exception):
+    pass
+
 
 class CursesUI:
 
@@ -27,6 +30,10 @@ class CursesUI:
         self.handlers = dict((spec, handler(self)) for spec, handler in handlers.items())
 
         self.window = window
+        y, x = self.window.getmaxyx()
+        if y < 13:
+            raise CursesUIError(f'A minimum height of 13 lines is required.')
+
         self.window.attron(curses.COLOR_WHITE)
         self.window.nodelay(True)
 
@@ -67,6 +74,7 @@ class CursesUI:
             self._escape_state = 'main_menu'
         self._state = state
         self.menu_content.screen.erase()
+        self.menu_content.screen.move(0, 0)
         if self.state.menu is not None:
             for action in self.state.menu:
                 self.menu_content.screen.addstr(f'{action}  ')

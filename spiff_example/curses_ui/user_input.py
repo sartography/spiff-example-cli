@@ -49,7 +49,7 @@ class Option(Field):
         if value in self.options:
             return self.options[value]
         else:
-            raise Exception(f'Invliad option: {value}')
+            raise Exception(f'Invalid option: {value}')
 
 class UserInput:
 
