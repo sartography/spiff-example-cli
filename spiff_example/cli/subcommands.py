@@ -5,7 +5,7 @@ import logging
 def configure_logging():
     spiff_logger = logging.getLogger('spiff')
     spiff_handler = logging.StreamHandler()
-    spiff_handler.setFormatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s')
+    spiff_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s'))
     spiff_logger.addHandler(spiff_handler)
 
     metrics_logger = logging.getLogger('spiff.metrics')
@@ -24,13 +24,12 @@ def show_library(engine, args):
         sys.stdout.write(f'{spec_id}  {name:<20s} {filename}\n')
 
 def run(engine, args):
-    wf_id = engine.start_workflow(args.spec_id)
-    wf = engine.get_workflow(wf_id)
-    engine.run_until_user_input_required(wf)
-    engine.update_workflow(wf, wf_id)
-    if not args.active and not wf.is_completed():
+    instance = engine.start_workflow(args.spec_id)
+    instance.run_until_user_input_required()
+    instance.save()
+    if not args.active and not instance.workflow.is_completed():
         raise Exception('Expected the workflow to complete')
-    sys.stdout.write(json.dumps(wf.data, indent=2, separators=[', ', ': ']))
+    sys.stdout.write(json.dumps(instance.data, indent=2, separators=[', ', ': ']))
     sys.stdout.write('\n')
 
 

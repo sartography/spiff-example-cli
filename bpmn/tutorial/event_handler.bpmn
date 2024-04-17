@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1qnx3d3" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.0.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="read_file" isExecutable="true" camunda:versionTag="1">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_12bbl0r</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_12bbl0r" sourceRef="StartEvent_1" targetRef="Activity_1d8n877" />
+    <bpmn:subProcess id="Activity_1d8n877" name="Get File Contents">
+      <bpmn:incoming>Flow_12bbl0r</bpmn:incoming>
+      <bpmn:outgoing>Flow_0324p4o</bpmn:outgoing>
+      <bpmn:startEvent id="Event_08d64o8">
+        <bpmn:outgoing>Flow_1thi1o4</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_1thi1o4" sourceRef="Event_08d64o8" targetRef="Activity_16vgmnd" />
+      <bpmn:endEvent id="Event_0tiu7pg">
+        <bpmn:incoming>Flow_03a555m</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_08r1j82" sourceRef="Activity_1utfci3" targetRef="Activity_0p88ycy" />
+      <bpmn:serviceTask id="Activity_1utfci3" name="Read File">
+        <bpmn:extensionElements>
+          <spiffworkflow:serviceTaskOperator id="read_file" resultVariable="content">
+            <spiffworkflow:parameters>
+              <spiffworkflow:parameter id="filename" type="string" value="filename" />
+            </spiffworkflow:parameters>
+          </spiffworkflow:serviceTaskOperator>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1xaaugx</bpmn:incoming>
+        <bpmn:outgoing>Flow_08r1j82</bpmn:outgoing>
+      </bpmn:serviceTask>
+      <bpmn:sequenceFlow id="Flow_1xaaugx" sourceRef="Activity_16vgmnd" targetRef="Activity_1utfci3" />
+      <bpmn:userTask id="Activity_16vgmnd" name="Get Filename">
+        <bpmn:extensionElements>
+          <spiffworkflow:properties>
+            <spiffworkflow:property name="formJsonSchemaFilename" value="get_filename.json" />
+          </spiffworkflow:properties>
+          <spiffworkflow:instructionsForEndUser>Enter Filename</spiffworkflow:instructionsForEndUser>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_1thi1o4</bpmn:incoming>
+        <bpmn:outgoing>Flow_1xaaugx</bpmn:outgoing>
+      </bpmn:userTask>
+      <bpmn:sequenceFlow id="Flow_03a555m" sourceRef="Activity_0p88ycy" targetRef="Event_0tiu7pg" />
+      <bpmn:manualTask id="Activity_0p88ycy" name="Display File Contents">
+        <bpmn:extensionElements>
+          <spiffworkflow:instructionsForEndUser>{{filename}}
+------------------------------
+{{content}}</spiffworkflow:instructionsForEndUser>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_08r1j82</bpmn:incoming>
+        <bpmn:outgoing>Flow_03a555m</bpmn:outgoing>
+      </bpmn:manualTask>
+    </bpmn:subProcess>
+    <bpmn:endEvent id="Event_16w1iwy">
+      <bpmn:incoming>Flow_0324p4o</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0324p4o" sourceRef="Activity_1d8n877" targetRef="Event_16w1iwy" />
+    <bpmn:boundaryEvent id="Event_16a31zf" name="Handle File Not Found" attachedToRef="Activity_1d8n877">
+      <bpmn:outgoing>Flow_04zo08z</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1mxfqsd" errorRef="file_not_found" />
+    </bpmn:boundaryEvent>
+    <bpmn:sequenceFlow id="Flow_04zo08z" sourceRef="Event_16a31zf" targetRef="Activity_1fttkm2" />
+    <bpmn:endEvent id="Event_06gja82">
+      <bpmn:incoming>Flow_0ce59ik</bpmn:incoming>
+      <bpmn:terminateEventDefinition id="TerminateEventDefinition_00fcbn6" />
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0ce59ik" sourceRef="Activity_1fttkm2" targetRef="Event_06gja82" />
+    <bpmn:manualTask id="Activity_1fttkm2" name="Show Filename">
+      <bpmn:extensionElements>
+        <spiffworkflow:instructionsForEndUser>{{filename}}</spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_04zo08z</bpmn:incoming>
+      <bpmn:outgoing>Flow_0ce59ik</bpmn:outgoing>
+    </bpmn:manualTask>
+  </bpmn:process>
+  <bpmn:error id="file_not_found" name="file_not_found" errorCode="1">
+    <bpmn:extensionElements>
+      <spiffworkflow:variableName>filename</spiffworkflow:variableName>
+    </bpmn:extensionElements>
+  </bpmn:error>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_16xfaqc">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="142" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_16w1iwy_di" bpmnElement="Event_16w1iwy">
+        <dc:Bounds x="1002" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1eqeonf_di" bpmnElement="Event_06gja82">
+        <dc:Bounds x="1002" y="292" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0u400ug_di" bpmnElement="Activity_1fttkm2">
+        <dc:Bounds x="830" y="270" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0z9e7zo_di" bpmnElement="Activity_1d8n877" isExpanded="true">
+        <dc:Bounds x="250" y="0" width="700" height="200" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_08d64o8_di" bpmnElement="Event_08d64o8">
+        <dc:Bounds x="282" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1j98h6w_di" bpmnElement="Activity_1utfci3">
+        <dc:Bounds x="530" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0tiu7pg_di" bpmnElement="Event_0tiu7pg">
+        <dc:Bounds x="872" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1xguvpx_di" bpmnElement="Activity_16vgmnd">
+        <dc:Bounds x="360" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1ca53c3_di" bpmnElement="Activity_0p88ycy">
+        <dc:Bounds x="700" y="60" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1thi1o4_di" bpmnElement="Flow_1thi1o4">
+        <di:waypoint x="318" y="100" />
+        <di:waypoint x="360" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_08r1j82_di" bpmnElement="Flow_08r1j82">
+        <di:waypoint x="630" y="100" />
+        <di:waypoint x="700" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1xaaugx_di" bpmnElement="Flow_1xaaugx">
+        <di:waypoint x="460" y="100" />
+        <di:waypoint x="530" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_03a555m_di" bpmnElement="Flow_03a555m">
+        <di:waypoint x="800" y="100" />
+        <di:waypoint x="872" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0li274q_di" bpmnElement="Event_16a31zf">
+        <dc:Bounds x="732" y="182" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="713" y="225" width="76" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_12bbl0r_di" bpmnElement="Flow_12bbl0r">
+        <di:waypoint x="178" y="100" />
+        <di:waypoint x="250" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0324p4o_di" bpmnElement="Flow_0324p4o">
+        <di:waypoint x="950" y="100" />
+        <di:waypoint x="1002" y="100" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_04zo08z_di" bpmnElement="Flow_04zo08z">
+        <di:waypoint x="750" y="218" />
+        <di:waypoint x="750" y="310" />
+        <di:waypoint x="830" y="310" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ce59ik_di" bpmnElement="Flow_0ce59ik">
+        <di:waypoint x="930" y="310" />
+        <di:waypoint x="1002" y="310" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

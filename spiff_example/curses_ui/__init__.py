@@ -1,1 +1,1 @@
-from .ui import CursesUI
+from .ui import CursesUI, CursesUIError

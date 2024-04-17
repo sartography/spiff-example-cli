@@ -20,9 +20,9 @@ class LogHandler(logging.Handler):
 
 class LogView(Content):
 
-    def __init__(self, region):
+    def __init__(self, ui):
 
-        super().__init__(region)
+        super().__init__(ui.bottom)
 
         logger.addHandler(LogHandler(self.write))
         self.styles = {
@@ -31,29 +31,27 @@ class LogView(Content):
         }
         self.menu = ['[ESC] return to previous screen']
 
-        self.previous_state = None
-
     def write(self, record):
 
         y, x = curses.getsyx()
 
-        if record.exc_info is not None and record.levelno == 40:
+        if record.exc_info is not None and record.levelno >= 40:
             trace = traceback.format_exception(*record.exc_info)
         else:
             trace = []
 
-        self.content_height += len(trace) + 1
+        self.content_height += sum([ l.count('\n') for l in trace]) + 1
         self.first_visible = max(0, self.content_height - self.region.height)
         self.resize()
 
+        for line in trace:
+            self.screen.addstr(line)
         dt = datetime.fromtimestamp(record.created).strftime('%Y-%m-%d %H:%M:%S.%f')
         if record.name == 'spiff':
             message = f'{dt} [{record.name}:{record.levelname}] ({record.workflow_spec}:{record.task_spec}) {record.msg}'
         else:
             message = f'{dt} [{record.name}:{record.levelname}] {record.msg}'
         self.screen.addstr(f'\n{message}', self.styles.get(record.levelname, 0))
-        for line in trace:
-            self.screen.addstr(f'\n{line}')
 
         self.screen.clrtoeol()
         self.screen.refresh(self.first_visible, 0, *self.region.box)

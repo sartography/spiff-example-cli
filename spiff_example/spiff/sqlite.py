@@ -9,7 +9,7 @@ from SpiffWorkflow.bpmn import BpmnWorkflow
 from SpiffWorkflow.bpmn.util.subworkflow import BpmnSubWorkflow
 from SpiffWorkflow.bpmn.specs import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins import NoneTaskMixin as NoneTask
-from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment, PythonScriptEngine
+from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
 from ..serializer.sqlite import (
     SqliteSerializer,
@@ -47,6 +47,5 @@ handlers = {
 }
 
 script_env = TaskDataEnvironment({'datetime': datetime })
-script_engine = PythonScriptEngine(script_env)
 
-engine = BpmnEngine(parser, serializer, handlers, script_engine)
+engine = BpmnEngine(parser, serializer, script_env)

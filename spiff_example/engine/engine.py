@@ -7,22 +7,20 @@ from SpiffWorkflow.bpmn import BpmnWorkflow
 from SpiffWorkflow.bpmn.script_engine import PythonScriptEngine
 from SpiffWorkflow import TaskState
 
+from .instance import Instance
+
 
 logger = logging.getLogger('spiff_engine')
 
 class BpmnEngine:
     
-    def __init__(self, parser, serializer, handlers=None, script_engine=None):
+    def __init__(self, parser, serializer, script_env=None, instance_cls=None):
 
         self.parser = parser
         self.serializer = serializer
-        self._script_engine = script_engine or PythonScriptEngine()
-        self._handlers = handlers or {}
-
-    def handler(self, task):
-        handler = self._handlers.get(task.task_spec.__class__)
-        if handler is not None:
-            return handler(task)
+        # Ideally this would be recreated for each instance
+        self._script_engine = PythonScriptEngine(script_env)
+        self.instance_cls = instance_cls or Instance
 
     def add_spec(self, process_id, bpmn_files, dmn_files):
         self.add_files(bpmn_files, dmn_files)
@@ -67,16 +65,16 @@ class BpmnEngine:
         wf = BpmnWorkflow(spec, sp_specs, script_engine=self._script_engine)
         wf_id = self.serializer.create_workflow(wf, spec_id)
         logger.info(f'Created workflow with id {wf_id}')
-        return wf_id
+        return self.instance_cls(wf_id, wf, save=self.update_workflow)
 
     def get_workflow(self, wf_id):
         wf = self.serializer.get_workflow(wf_id)
         wf.script_engine = self._script_engine
-        return wf
+        return self.instance_cls(wf_id, wf, save=self.update_workflow)
 
-    def update_workflow(self, workflow, wf_id):
-        logger.info(f'Saved workflow {wf_id}')
-        self.serializer.update_workflow(workflow, wf_id)
+    def update_workflow(self, instance):
+        logger.info(f'Saved workflow {instance.wf_id}')
+        self.serializer.update_workflow(instance.workflow, instance.wf_id)
 
     def list_workflows(self, include_completed=False):
         return self.serializer.list_workflows(include_completed)
@@ -84,17 +82,3 @@ class BpmnEngine:
     def delete_workflow(self, wf_id):
         self.serializer.delete_workflow(wf_id)
         logger.info(f'Deleted workflow with id {wf_id}')
-
-    def run_until_user_input_required(self, workflow):
-        task = workflow.get_next_task(state=TaskState.READY, manual=False)
-        while task is not None:
-            task.run()
-            self.run_ready_events(workflow)
-            task = workflow.get_next_task(state=TaskState.READY, manual=False)
-
-    def run_ready_events(self, workflow):
-        workflow.refresh_waiting_tasks()
-        task = workflow.get_next_task(state=TaskState.READY, spec_class=CatchingEvent)
-        while task is not None:
-            task.run()
-            task = workflow.get_next_task(state=TaskState.READY, spec_class=CatchingEvent)
