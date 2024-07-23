@@ -197,6 +197,9 @@ class SqliteSerializer(BpmnWorkflowSerializer):
         return cursor.fetchall()
 
     def _delete_workflow(self, cursor, wf_id):
+        cursor.execute("select descendant as 'id [uuid]' from workflow_dependency where root=?", (wf_id, ))
+        for sp_id in [row[0] for row in cursor]:
+            cursor.execute("delete from workflow where id=?", (sp_id, ))
         cursor.execute("delete from workflow where id=?", (wf_id, ))
 
     def execute(self, func, *args, **kwargs):

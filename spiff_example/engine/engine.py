@@ -5,6 +5,13 @@ from SpiffWorkflow.bpmn.parser.ValidationException import ValidationException
 from SpiffWorkflow.bpmn.specs.mixins.events.event_types import CatchingEvent
 from SpiffWorkflow.bpmn import BpmnWorkflow
 from SpiffWorkflow.bpmn.script_engine import PythonScriptEngine
+from SpiffWorkflow.bpmn.util.diff import (
+    SpecDiff,
+    diff_dependencies,
+    diff_workflow,
+    filter_tasks,
+    migrate_workflow,
+)
 from SpiffWorkflow import TaskState
 
 from .instance import Instance
@@ -82,3 +89,47 @@ class BpmnEngine:
     def delete_workflow(self, wf_id):
         self.serializer.delete_workflow(wf_id)
         logger.info(f'Deleted workflow with id {wf_id}')
+
+    def diff_spec(self, original_id, new_id):
+        original, _ = self.serializer.get_workflow_spec(original_id, include_dependencies=False)
+        new, _ = self.serializer.get_workflow_spec(new_id, include_dependencies=False)
+        return SpecDiff(self.serializer.registry, original, new)
+
+    def diff_dependencies(self, original_id, new_id):
+        _, original = self.serializer.get_workflow_spec(original_id, include_dependencies=True)
+        _, new = self.serializer.get_workflow_spec(new_id, include_dependencies=True)
+        return diff_dependencies(self.serializer.registry, original, new)
+
+    def diff_workflow(self, wf_id, spec_id):
+        wf = self.serializer.get_workflow(wf_id)
+        spec, deps = self.serializer.get_workflow_spec(spec_id)
+        return diff_workflow(self.serializer.registry, wf, spec, deps)
+
+    def can_migrate(self, wf_diff, sp_diffs):
+
+        def safe(result):
+            mask = TaskState.COMPLETED|TaskState.STARTED
+            tasks = result.changed + result.removed
+            return len(filter_tasks(tasks, state=mask)) == 0
+
+        for diff in sp_diffs.values():
+            if diff is None or not safe(diff):
+                return False
+        return safe(wf_diff)
+
+    def migrate_workflow(self, wf_id, spec_id, validate=True):
+
+        wf = self.serializer.get_workflow(wf_id)
+        spec, deps = self.serializer.get_workflow_spec(spec_id)
+        wf_diff, sp_diffs = diff_workflow(self.serializer.registry, wf, spec, deps)
+
+        if validate and not self.can_migrate(wf_diff, sp_diffs):
+            raise Exception('Workflow is not safe to migrate!')
+
+        migrate_workflow(wf_diff, wf, spec)
+        for sp_id, sp in wf.subprocesses.items():
+            migrate_workflow(sp_diffs[sp_id], sp, deps.get(sp.spec.name))
+        wf.subprocess_specs = deps
+
+        self.serializer.delete_workflow(wf_id)
+        return self.serializer.create_workflow(wf, spec_id)
