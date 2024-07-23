@@ -47,10 +47,11 @@ def show_spec_diff(spec_diff):
 def show_workflow_diff(wf_diff, task_id=None):
 
     duplicates = []
-    name, start = get_name_and_start(wf_diff.spec_diff)
-    task_info = f'({task_id})' if task_id is not None else ''
+    if task_id is not None:
+        sys.stdout.write(f'\nResults for {task_id}\n\n')
+    else:
+        sys.stdout.write('Results\n\n')
 
-    sys.stdout.write(f'\nResults for {name} {task_info}\n\n')
     sys.stdout.write('Removed\n')
     for task in wf_diff.removed:
         if task.task_spec not in duplicates:

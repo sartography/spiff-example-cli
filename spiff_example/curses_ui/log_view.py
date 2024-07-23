@@ -47,8 +47,10 @@ class LogView(Content):
         for line in trace:
             self.screen.addstr(line)
         dt = datetime.fromtimestamp(record.created).strftime('%Y-%m-%d %H:%M:%S.%f')
-        if record.name == 'spiff':
+        if record.name == 'spiff.task':
             message = f'{dt} [{record.name}:{record.levelname}] ({record.workflow_spec}:{record.task_spec}) {record.msg}'
+        elif record.name == 'spiff.workflow':
+            message = f'{dt} [{record.name}:{record.levelname}] ({record.workflow_spec}) {record.msg}'
         else:
             message = f'{dt} [{record.name}:{record.levelname}] {record.msg}'
         self.screen.addstr(f'\n{message}', self.styles.get(record.levelname, 0))

@@ -5,15 +5,15 @@ import logging
 from .diff_result import show_spec_diff, show_workflow_diff
 
 def configure_logging():
-    spiff_logger = logging.getLogger('spiff')
-    spiff_handler = logging.StreamHandler()
-    spiff_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s'))
-    spiff_logger.addHandler(spiff_handler)
+    task_logger = logging.getLogger('spiff.task')
+    task_handler = logging.StreamHandler()
+    task_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(message)s'))
+    task_logger.addHandler(task_handler)
 
-    metrics_logger = logging.getLogger('spiff.metrics')
-    metrics_handler = logging.StreamHandler()
-    metrics_handler.setFormatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s:%(task_spec)s) %(elasped)s')
-    metrics_logger.addHandler(metrics_handler)
+    wf_logger = logging.getLogger('spiff.workflow')
+    wf_handler = logging.StreamHandler()
+    wf_handler.setFormatter(logging.Formatter('%(asctime)s [%(name)s:%(levelname)s] (%(workflow_spec)s) %(message)s'))
+    wf_logger.addHandler(wf_handler)
 
 def add(engine, args):
     if args.process is not None:
