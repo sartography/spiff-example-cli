@@ -27,7 +27,7 @@ def show_library(engine, args):
 
 def show_workflows(engine, args):
     for wf_id, name, filename, active, started, updated in engine.list_workflows():
-        sys.stdout.write(f'{wf_id}  {name:<20s} {active} {started} {updated or ''}\n')
+        sys.stdout.write(f'{wf_id}  {name:<20s} {active} {started} {updated or ""}\n')
 
 def run(engine, args):
     instance = engine.start_workflow(args.spec_id)
