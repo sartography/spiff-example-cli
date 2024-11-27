@@ -48,7 +48,7 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
             'datetime': datetime,
         })
 
-    def call_service(self, operation_name, operation_params, task_data):
+    def call_service(self, task_data, operation_name, operation_params):
         if operation_name == 'lookup_product_info':
             product_info = lookup_product_info(operation_params['product_name']['value'])
             result = product_info_to_dict(product_info)

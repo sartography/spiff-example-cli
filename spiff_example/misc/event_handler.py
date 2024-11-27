@@ -38,8 +38,12 @@ class EventHandlingServiceTask(ServiceTask):
         # The param also has a type, but I don't need it
         params = dict((name, script_engine.evaluate(my_task, p['value'])) for name, p in self.operation_params.items())
         try:
-            result = script_engine.call_service(self.operation_name, params, my_task.data)
-            my_task.data[self._result_variable(my_task)] = result
+            result = script_engine.call_service(
+                my_task,
+                operation_name=self.operation_name,
+                operation_params=params
+            )
+            my_task.data[self.result_variable] = result
             return True
         except FileNotFoundError as exc:
             event_definition = ErrorEventDefinition('file_not_found', code='1')
@@ -52,7 +56,7 @@ class EventHandlingServiceTask(ServiceTask):
 
 class ServiceTaskEnvironment(TaskDataEnvironment):
 
-    def call_service(self, operation_name, operation_params, context):
+    def call_service(self, context, operation_name, operation_params):
         if operation_name == 'read_file':
             return open(operation_params['filename']).read()
         else:

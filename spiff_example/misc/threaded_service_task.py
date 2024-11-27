@@ -42,7 +42,11 @@ class ThreadedServiceTask(ServiceTask):
         script_engine = my_task.workflow.script_engine
         params = dict((name, script_engine.evaluate(my_task, p['value'])) for name, p in self.operation_params.items())
         try:
-            future = script_engine.call_service(self.operation_name, params, my_task.data)
+            future = script_engine.call_service(
+                my_task,
+                operation_name=self.operation_name,
+                operation_params=params
+            )
             script_engine.environment.futures[future] = my_task
         except Exception as exc:
             raise WorkflowTaskException('Service Task execution error', task=my_task, exception=exc)
@@ -54,7 +58,7 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
         self.pool = ThreadPoolExecutor(max_workers=10)
         self.futures = {}
 
-    def call_service(self, operation_name, operation_params, context):
+    def call_service(self, context, operation_name, operation_params):
         if operation_name == 'wait':
             seconds = randrange(1, 30)
             return self.pool.submit(wait, seconds, operation_params['job_id'])
@@ -69,7 +73,7 @@ class ThreadInstance(Instance):
         for future in finished:
             task = futures.pop(future)
             result = future.result()
-            task.data[task.task_spec._result_variable(task)] = result
+            task.data[task.task_spec.result_variable] = result
             task.complete()
 
     def run_ready_events(self):
