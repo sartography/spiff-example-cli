@@ -2,17 +2,25 @@
 
 import curses
 import importlib
-import sys, traceback
+import sys
+import traceback
 from argparse import ArgumentParser
 
-from spiff_example.curses_ui import CursesUI, CursesUIError
+from spiff_example.curses_ui import CursesUI
 from spiff_example.cli import add_subparsers, configure_logging
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 
-    parser = ArgumentParser('Simple BPMN App')
-    parser.add_argument('-e', '--engine', dest='engine', required=True, metavar='MODULE', help='load engine from %(metavar)s')
-    subparsers = parser.add_subparsers(dest='subcommand')
+    parser = ArgumentParser("Simple BPMN App")
+    parser.add_argument(
+        "-e",
+        "--engine",
+        dest="engine",
+        required=True,
+        metavar="MODULE",
+        help="load engine from %(metavar)s",
+    )
+    subparsers = parser.add_subparsers(dest="subcommand")
     add_subparsers(subparsers)
 
     args = parser.parse_args()
@@ -24,6 +32,6 @@ if __name__ == '__main__':
         else:
             configure_logging()
             args.func(config.engine, args)
-    except Exception as exc:
+    except Exception:
         sys.stderr.write(traceback.format_exc())
         sys.exit(1)
