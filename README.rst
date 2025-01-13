@@ -72,12 +72,5 @@ To run the curses application using serialized JSON files:
 
 Select the 'Start Workflow' screen and start the process.
 
-Run in docker
-^^^^^^^^^^^^^
-
-.. code:: bash
-
-   ./bin/run_in_docker --help
-
 ## License
 GNU LESSER GENERAL PUBLIC LICENSE
