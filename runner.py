@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 
+import argparse
 import curses
 import importlib
+import os
 import sys
 import traceback
-from argparse import ArgumentParser
 
 from spiff_example.curses_ui import CursesUI
 from spiff_example.cli import add_subparsers, configure_logging
 
 if __name__ == "__main__":
 
-    parser = ArgumentParser("Simple BPMN App")
+    # Handle command line arguments.
+    parser = argparse.ArgumentParser("Simple BPMN App")
     parser.add_argument(
         "-e",
         "--engine",
@@ -22,9 +24,11 @@ if __name__ == "__main__":
     )
     subparsers = parser.add_subparsers(dest="subcommand")
     add_subparsers(subparsers)
-
     args = parser.parse_args()
-    config = importlib.import_module(args.engine)
+
+    # Convert engine file name into module name and import the engine.
+    engine = args.engine.rstrip('.py').replace(os.sep, '.')
+    config = importlib.import_module(engine)
 
     try:
         if args.subcommand is None:
