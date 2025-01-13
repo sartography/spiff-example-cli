@@ -58,8 +58,8 @@ To add a workflow via the command line and store serialized specs in JSON files:
 
    ./runner.py -e spiff_example.spiff.file add \
       -p order_product \
-      -b bpmn/tutorial/{top_level,call_activity}.bpmn \
-      -d bpmn/tutorial/{product_prices,shipping_costs}.dmn
+      -b models/{top_level,call_activity}.bpmn \
+      -d models/{product_prices,shipping_costs}.dmn
 
 Running Workflows
 ^^^^^^^^^^^^^^^^^
