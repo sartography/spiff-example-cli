@@ -7,8 +7,7 @@ import os
 import sys
 import traceback
 
-from configuration.curses_ui import CursesUI
-from configuration.cli import add_subparsers, configure_logging
+from configuration.cli import add_subparsers, configure_logging, CursesUI
 
 if __name__ == "__main__":
 

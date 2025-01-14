@@ -1,7 +1,7 @@
-import curses, curses.ascii
-import sys
+import curses
+import curses.ascii
 import logging
-from datetime import datetime
+import sys
 
 from .content import Region, Content
 
@@ -10,10 +10,11 @@ from .log_view import LogView
 from .list_view import SpecListView, WorkflowListView
 from .workflow_view import WorkflowView
 from .spec_view import SpecView
-from .user_input import UserInput, Field
+from .user_input import UserInput
 from .task_filter_view import greedy_view, step_view
 
 logger = logging.getLogger(__name__)
+
 
 class CursesUIError(Exception):
     pass
@@ -27,12 +28,14 @@ class CursesUI:
             curses.init_pair(i, i, 0)
 
         self.engine = engine
-        self.handlers = dict((spec, handler(self)) for spec, handler in handlers.items())
+        self.handlers = dict(
+            (spec, handler(self)) for spec, handler in handlers.items()
+        )
 
         self.window = window
         y, x = self.window.getmaxyx()
         if y < 13:
-            raise CursesUIError(f'A minimum height of 13 lines is required.')
+            raise CursesUIError("A minimum height of 13 lines is required.")
 
         self.window.attron(curses.COLOR_WHITE)
         self.window.nodelay(True)
@@ -46,18 +49,18 @@ class CursesUI:
         self.menu_content = Content(self.menu)
 
         self._states = {
-            'main_menu': Menu(self),
-            'add_spec': SpecView(self),
-            'log_view': LogView(self),
-            'spec_list': SpecListView(self),
-            'workflow_list': WorkflowListView(self),
-            'workflow_view': WorkflowView(self),
-            'user_input': UserInput(self),
+            "main_menu": Menu(self),
+            "add_spec": SpecView(self),
+            "log_view": LogView(self),
+            "spec_list": SpecListView(self),
+            "workflow_list": WorkflowListView(self),
+            "workflow_view": WorkflowView(self),
+            "user_input": UserInput(self),
         }
         self.resize()
         self._state = None
-        self._escape_state = 'main_menu'
-        self.state = 'main_menu'
+        self._escape_state = "main_menu"
+        self.state = "main_menu"
         self.run()
 
     @property
@@ -66,20 +69,20 @@ class CursesUI:
 
     @state.setter
     def state(self, state):
-        if state == 'log_view':
+        if state == "log_view":
             self._escape_state = self._state
-        elif state == 'user_input':
-            self._escape_state = 'workflow_view'
+        elif state == "user_input":
+            self._escape_state = "workflow_view"
         else:
-            self._escape_state = 'main_menu'
+            self._escape_state = "main_menu"
         self._state = state
         self.menu_content.screen.erase()
         self.menu_content.screen.move(0, 0)
         if self.state.menu is not None:
             for action in self.state.menu:
-                self.menu_content.screen.addstr(f'{action}  ')
+                self.menu_content.screen.addstr(f"{action}  ")
         self.menu_content.screen.noutrefresh(0, 0, *self.menu.box)
-        if self._state in ['spec_list', 'workflow_list']:
+        if self._state in ["spec_list", "workflow_list"]:
             self.state.refresh()
         self.state.draw()
         curses.doupdate()
@@ -94,8 +97,8 @@ class CursesUI:
                 self.state.draw()
             elif ch == curses.ascii.ESC:
                 self.state = self._escape_state
-            elif chr(ch) == ';':
-                self.state = 'log_view'
+            elif chr(ch) == ";":
+                self.state = "log_view"
             else:
                 try:
                     self.state.handle_key(ch, y, x)
@@ -105,20 +108,20 @@ class CursesUI:
 
     def start_workflow(self, spec_id, step):
         instance = self.engine.start_workflow(spec_id)
-        self.set_workflow(instance, step, 'spec_list')
+        self.set_workflow(instance, step, "spec_list")
 
     def run_workflow(self, wf_id, step):
         instance = self.engine.get_workflow(wf_id)
-        self.set_workflow(instance, step, 'workflow_list')
+        self.set_workflow(instance, step, "workflow_list")
 
     def set_workflow(self, instance, step, prev_state):
         instance.step = step
         instance.update_task_filter(step_view.copy() if step else greedy_view.copy())
         if not step:
             instance.run_until_user_input_required()
-        self._states['workflow_view'].instance = instance
-        self._states['workflow_view']._previous_state = prev_state
-        self.state = 'workflow_view'
+        self._states["workflow_view"].instance = instance
+        self._states["workflow_view"]._previous_state = prev_state
+        self.state = "workflow_view"
 
     def quit(self):
         sys.exit(0)
@@ -140,4 +143,3 @@ class CursesUI:
 
         self.window.hline(y - div_y, 0, curses.ACS_HLINE, x)
         self.window.refresh()
-

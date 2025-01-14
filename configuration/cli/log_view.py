@@ -1,11 +1,13 @@
-import curses, curses.ascii
-import traceback, logging
+import curses
+import curses.ascii
+import logging
+import traceback
 
 from datetime import datetime
 
 from .content import Content
 
-logger = logging.getLogger('root')
+logger = logging.getLogger("root")
 
 
 class LogHandler(logging.Handler):
@@ -26,10 +28,10 @@ class LogView(Content):
 
         logger.addHandler(LogHandler(self.write))
         self.styles = {
-            'ERROR': curses.color_pair(9),
-            'WARNING': curses.color_pair(11),
+            "ERROR": curses.color_pair(9),
+            "WARNING": curses.color_pair(11),
         }
-        self.menu = ['[ESC] return to previous screen']
+        self.menu = ["[ESC] return to previous screen"]
 
     def write(self, record):
 
@@ -40,20 +42,30 @@ class LogView(Content):
         else:
             trace = []
 
-        self.content_height += sum([ l.count('\n') for l in trace]) + 1
+        self.content_height += sum([l.count("\n") for l in trace]) + 1
         self.first_visible = max(0, self.content_height - self.region.height)
         self.resize()
 
         for line in trace:
             self.screen.addstr(line)
-        dt = datetime.fromtimestamp(record.created).strftime('%Y-%m-%d %H:%M:%S.%f')
-        if record.name == 'spiff.task':
-            message = f'{dt} [{record.name}:{record.levelname}] ({record.workflow_spec}:{record.task_spec}) {record.msg}'
-        elif record.name == 'spiff.workflow':
-            message = f'{dt} [{record.name}:{record.levelname}] ({record.workflow_spec}) {record.msg}'
+        dt = datetime.fromtimestamp(record.created).strftime("%Y-%m-%d %H:%M:%S.%f")
+        if record.name == "spiff.task":
+            message = (
+                f"{dt} "
+                f"[{record.name}:{record.levelname}] "
+                f"({record.workflow_spec}:{record.task_spec}) "
+                f"{record.msg}"
+            )
+        elif record.name == "spiff.workflow":
+            message = (
+                f"{dt} "
+                f"[{record.name}:{record.levelname}] "
+                f"({record.workflow_spec}) "
+                f"{record.msg}"
+            )
         else:
-            message = f'{dt} [{record.name}:{record.levelname}] {record.msg}'
-        self.screen.addstr(f'\n{message}', self.styles.get(record.levelname, 0))
+            message = f"{dt} [{record.name}:{record.levelname}] {record.msg}"
+        self.screen.addstr(f"\n{message}", self.styles.get(record.levelname, 0))
 
         self.screen.clrtoeol()
         self.screen.refresh(self.first_visible, 0, *self.region.box)
@@ -73,4 +85,3 @@ class LogView(Content):
         elif ch == curses.KEY_NPAGE:
             self.page_down(y)
         self.screen.refresh(self.first_visible, 0, *self.region.box)
-

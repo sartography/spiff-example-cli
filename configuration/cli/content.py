@@ -1,4 +1,6 @@
-import curses, curses.ascii
+import curses
+import curses.ascii
+
 
 class Region:
 
@@ -39,7 +41,7 @@ class Content:
         self.content_height = 1
         self.first_visible = 0
 
-        self.menu = ['[ESC] return to main menu']
+        self.menu = ["[ESC] return to main menu"]
 
     @property
     def last_visible(self):
@@ -60,7 +62,9 @@ class Content:
         self.screen.move(self.first_visible, 0)
 
     def page_down(self, y):
-        self.first_visible = min(self.content_height - self.region.height, y + self.region.height)
+        self.first_visible = min(
+            self.content_height - self.region.height, y + self.region.height
+        )
         self.screen.move(self.first_visible, 0)
 
     def draw(self):
@@ -70,6 +74,7 @@ class Content:
         pass
 
     def resize(self):
-        self.screen.resize(max(self.region.height, self.content_height), self.region.width)
+        self.screen.resize(
+            max(self.region.height, self.content_height), self.region.width
+        )
         self.screen.noutrefresh(self.first_visible, 0, *self.region.box)
-

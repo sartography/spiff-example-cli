@@ -1,4 +1,6 @@
-import curses, curses.ascii
+import curses
+import curses.ascii
+
 from .content import Content
 
 
@@ -26,7 +28,9 @@ class SpecView:
         return lineno in [self.bpmn_id_line, self.bpmn_line, self.dmn_line]
 
     def bpmn_filename(self, lineno):
-        return lineno > self.bpmn_line and lineno <= self.bpmn_line + len(self.bpmn_files)
+        return lineno > self.bpmn_line and lineno <= self.bpmn_line + len(
+            self.bpmn_files
+        )
 
     def dmn_filename(self, lineno):
         return lineno > self.dmn_line and lineno <= self.dmn_line + len(self.dmn_files)
@@ -40,26 +44,34 @@ class SpecView:
         self.left.screen.erase()
         self.right.screen.erase()
 
-        self.left.screen.addstr(self.bpmn_id_line, self.left.region.width - 13, 'Process ID: ')
-        self.left.screen.addstr(self.bpmn_line, self.left.region.width - 13, 'BPMN files: ')
-        self.left.screen.addstr(self.dmn_line, self.left.region.width - 12, 'DMN files: ')
+        self.left.screen.addstr(
+            self.bpmn_id_line, self.left.region.width - 13, "Process ID: "
+        )
+        self.left.screen.addstr(
+            self.bpmn_line, self.left.region.width - 13, "BPMN files: "
+        )
+        self.left.screen.addstr(
+            self.dmn_line, self.left.region.width - 12, "DMN files: "
+        )
 
         if self.bpmn_id is not None:
             self.right.screen.addstr(self.bpmn_id_line, 0, self.bpmn_id)
         for offset, filename in enumerate(self.bpmn_files):
-            self.right.screen.addstr(self.bpmn_line + offset + 1, 0, f'[X] {filename}')
+            self.right.screen.addstr(self.bpmn_line + offset + 1, 0, f"[X] {filename}")
         for offset, filename in enumerate(self.dmn_files):
-            self.right.screen.addstr(self.dmn_line + offset + 1, 0, f'[X] {filename}')
+            self.right.screen.addstr(self.dmn_line + offset + 1, 0, f"[X] {filename}")
 
-        self.right.screen.addstr(self.add_line, 0, '[Add]', curses.A_BOLD)
-        self.right.screen.addstr('  (Press ESC to cancel)')
+        self.right.screen.addstr(self.add_line, 0, "[Add]", curses.A_BOLD)
+        self.right.screen.addstr("  (Press ESC to cancel)")
 
         self.right.screen.move(lineno or self.bpmn_id_line, 0)
         if clear:
             self.right.screen.clrtoeol()
 
         self.left.screen.noutrefresh(self.left.first_visible, 0, *self.left.region.box)
-        self.right.screen.noutrefresh(self.right.first_visible, 0, *self.right.region.box)
+        self.right.screen.noutrefresh(
+            self.right.first_visible, 0, *self.right.region.box
+        )
 
         curses.curs_set(1)
         curses.ungetch(curses.KEY_LEFT)
@@ -72,7 +84,11 @@ class SpecView:
         elif ch == curses.KEY_LEFT and self.can_edit(y):
             self.right.screen.move(y, max(0, x - 1))
         elif ch == curses.KEY_RIGHT and self.can_edit(y):
-            line = self.right.screen.instr(y, 0, self.right.region.width).decode('utf-8').rstrip()
+            line = (
+                self.right.screen.instr(y, 0, self.right.region.width)
+                .decode("utf-8")
+                .rstrip()
+            )
             self.right.screen.move(y, min(len(line), x + 1))
         elif ch == curses.KEY_DOWN:
             if self.bpmn_filename(y + 1) or self.dmn_filename(y + 1):
@@ -92,15 +108,15 @@ class SpecView:
             elif y == self.add_line:
                 self.right.screen.move(self.bpmn_id_line, 0)
         elif ch == curses.ascii.NL:
-            text = self.right.screen.instr(y, 0, x).decode('utf-8').strip()
-            if y == self.bpmn_id_line and text != '':
+            text = self.right.screen.instr(y, 0, x).decode("utf-8").strip()
+            if y == self.bpmn_id_line and text != "":
                 self.bpmn_id = text
                 self.right.screen.addstr(y, 0, text, curses.A_ITALIC)
                 self.right.screen.move(self.bpmn_line, 0)
-            elif y == self.bpmn_line and text != '':
+            elif y == self.bpmn_line and text != "":
                 self.bpmn_files.append(text)
                 self.draw(self.bpmn_line, True)
-            elif y == self.dmn_line and text != '':
+            elif y == self.dmn_line and text != "":
                 self.dmn_files.append(text)
                 self.draw(self.dmn_line, True)
             elif self.bpmn_filename(y):
@@ -110,17 +126,23 @@ class SpecView:
                 self.dmn_files.pop(y - self.dmn_line - 1)
                 self.draw(self.dmn_line)
             elif y == self.add_line:
-                spec_id = self.add_spec(self.bpmn_id, self.bpmn_files, self.dmn_files or None)
+                spec_id = self.add_spec(
+                    self.bpmn_id, self.bpmn_files, self.dmn_files or None
+                )
                 self.bpmn_id = None
                 self.bpmn_files = []
                 self.dmn_files = []
                 self.draw()
-        elif curses.ascii.unctrl(ch) == '^E':
-            line = self.right.screen.instr(y, 0, self.right.region.width).decode('utf-8').rstrip()
+        elif curses.ascii.unctrl(ch) == "^E":
+            line = (
+                self.right.screen.instr(y, 0, self.right.region.width)
+                .decode("utf-8")
+                .rstrip()
+            )
             self.right.screen.move(y, len(line))
-        elif curses.ascii.unctrl(ch) == '^A':
+        elif curses.ascii.unctrl(ch) == "^A":
             self.right.screen.move(y, 0)
-        elif curses.ascii.unctrl(ch) == '^U':
+        elif curses.ascii.unctrl(ch) == "^U":
             self.right.screen.move(y, 0)
             self.right.screen.clrtoeol()
         elif curses.ascii.isprint(ch):

@@ -3,8 +3,8 @@ from jinja2 import Template
 from SpiffWorkflow.util.deep_merge import DeepMerge
 from SpiffWorkflow.camunda.specs.user_task import EnumFormField
 
-from ..curses_ui.user_input import Field, Option, SimpleField
-from ..curses_ui.human_task_handler import TaskHandler
+from ..cli.user_input import Field, Option, SimpleField
+from ..cli.human_task_handler import TaskHandler
 
 class CamundaTaskHandler(TaskHander):
 
