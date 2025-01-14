@@ -42,11 +42,13 @@ class Instance:
 
     @property
     def running_subprocesses(self):
-        return [sp for sp in self.workflow.subprocesses.values() if not sp.is_completed()]
+        return [
+            sp for sp in self.workflow.subprocesses.values() if not sp.is_completed()
+        ]
 
     @property
     def subprocesses(self):
-        return [sp for sp in self.workflow.subprocesses.values()]
+        return list(self.workflow.subprocesses.values())
 
     @property
     def data(self):
@@ -54,16 +56,16 @@ class Instance:
 
     def get_task_display_info(self, task):
         return {
-            'depth': task.depth,
-            'state': TaskState.get_name(task.state),
-            'name': task.task_spec.bpmn_name or task.task_spec.name,
-            'lane': task.task_spec.lane,
+            "depth": task.depth,
+            "state": TaskState.get_name(task.state),
+            "name": task.task_spec.bpmn_name or task.task_spec.name,
+            "lane": task.task_spec.lane,
         }
 
     def update_task_filter(self, task_filter=None):
         if task_filter is not None:
             self.task_filter.update(task_filter)
-        self.filtered_tasks = [t for t in self.workflow.get_tasks(**self.task_filter)]
+        self.filtered_tasks = list(self.workflow.get_tasks(**self.task_filter))
 
     def run_task(self, task, data=None):
         if data is not None:
@@ -84,12 +86,15 @@ class Instance:
 
     def run_ready_events(self):
         self.workflow.refresh_waiting_tasks()
-        task = self.workflow.get_next_task(state=TaskState.READY, spec_class=CatchingEvent)
+        task = self.workflow.get_next_task(
+            state=TaskState.READY, spec_class=CatchingEvent
+        )
         while task is not None:
             task.run()
-            task = self.workflow.get_next_task(state=TaskState.READY, spec_class=CatchingEvent)
+            task = self.workflow.get_next_task(
+                state=TaskState.READY, spec_class=CatchingEvent
+            )
         self.update_task_filter()
 
     def save(self):
         self._save(self)
-
