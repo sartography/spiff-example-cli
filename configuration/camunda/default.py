@@ -13,25 +13,26 @@ from ..serializer import (
     SqliteSerializer,
     WorkflowConverter,
     SubworkflowConverter,
-    WorkflowSpecConverter
+    WorkflowSpecConverter,
 )
 from ..engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
-logger = logging.getLogger('spiff_engine')
+DBNAME = "camunda.db"
+
+logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
 
 DEFAULT_CONFIG[BpmnWorkflow] = WorkflowConverter
 DEFAULT_CONFIG[BpmnSubWorkflow] = SubworkflowConverter
 DEFAULT_CONFIG[BpmnProcessSpec] = WorkflowSpecConverter
 
-dbname = 'camunda.db'
 
-with sqlite3.connect(dbname) as db:
+with sqlite3.connect(DBNAME) as db:
     SqliteSerializer.initialize(db)
 
 registry = SqliteSerializer.configure(DEFAULT_CONFIG)
-serializer = SqliteSerializer(dbname, registry=registry)
+serializer = SqliteSerializer(DBNAME, registry=registry)
 
 parser = CamundaParser()
 

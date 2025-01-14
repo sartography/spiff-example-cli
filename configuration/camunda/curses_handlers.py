@@ -6,15 +6,16 @@ from SpiffWorkflow.camunda.specs.user_task import EnumFormField
 from ..cli.user_input import Field, Option, SimpleField
 from ..cli.human_task_handler import TaskHandler
 
-class CamundaTaskHandler(TaskHander):
+
+class CamundaTaskHandler(TaskHandler):
 
     def set_instructions(self, task):
-        text = f'{self.task.task_spec.bpmn_name}'
+        text = f"{self.task.task_spec.bpmn_name}"
         if self.task.task_spec.documentation is not None:
             template = Template(self.task.task_spec.documentation)
             text += template.render(self.task.data)
-        text += '\n\n'
-        self.ui._states['user_input'].instructions = text
+        text += "\n\n"
+        self.ui._states["user_input"].instructions = text
 
 
 class ManualTaskHandler(TaskHandler):
@@ -27,16 +28,16 @@ class UserTaskHandler(TaskHandler):
         for field in task.task_spec.form.fields:
             if isinstance(field, EnumFormField):
                 options = dict((opt.name, opt.id) for opt in field.options)
-                label = field.label + ' (' + ', '.join(options) + ')'
-                field = Option(options, field.id, label, '')
-            elif field.type == 'long':
-                field = SimpleField(int, field.id, field.label, '')
+                label = field.label + " (" + ", ".join(options) + ")"
+                field = Option(options, field.id, label, "")
+            elif field.type == "long":
+                field = SimpleField(int, field.id, field.label, "")
             else:
-                field = Field(field.id, field.label, '')
-            self.ui._states['user_input'].fields.append(field)
+                field = Field(field.id, field.label, "")
+            self.ui._states["user_input"].fields.append(field)
 
-   def update_data(self, dct, name, value):
-        path = name.split('.')
+    def update_data(self, dct, name, value):
+        path = name.split(".")
         current = dct
         for component in path[:-1]:
             if component not in current:
