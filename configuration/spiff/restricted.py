@@ -12,17 +12,20 @@ from ..serializer import FileSerializer
 from ..engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
-logger = logging.getLogger('spiff_engine')
+
+DIRNAME = "wfdata"
+
+
+logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
 
-spiff_logger = logging.getLogger('spiff')
+spiff_logger = logging.getLogger("spiff")
 spiff_logger.setLevel(logging.INFO)
 
-dirname = 'wfdata'
-FileSerializer.initialize(dirname)
+FileSerializer.initialize(DIRNAME)
 
 registry = FileSerializer.configure(SPIFF_CONFIG)
-serializer = FileSerializer(dirname, registry=registry)
+serializer = FileSerializer(DIRNAME, registry=registry)
 
 parser = SpiffBpmnParser()
 

@@ -16,13 +16,13 @@ from ..serializer import FileSerializer
 from ..engine import BpmnEngine, Instance
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
-logger = logging.getLogger('spiff_engine')
+logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
 
-spiff_logger = logging.getLogger('spiff') 
+spiff_logger = logging.getLogger("spiff")
 spiff_logger.setLevel(logging.INFO)
 
-dirname = 'wfdata' 
+dirname = "wfdata"
 FileSerializer.initialize(dirname)
 
 handlers = {
@@ -31,36 +31,47 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
+
 class EventHandlingServiceTask(ServiceTask):
 
     def _execute(self, my_task):
         script_engine = my_task.workflow.script_engine
         # The param also has a type, but I don't need it
-        params = dict((name, script_engine.evaluate(my_task, p['value'])) for name, p in self.operation_params.items())
+        params = dict(
+            (name, script_engine.evaluate(my_task, p["value"]))
+            for name, p in self.operation_params.items()
+        )
         try:
-            result = script_engine.call_service(self.operation_name, params, my_task.data)
+            result = script_engine.call_service(
+                self.operation_name, params, my_task.data
+            )
             my_task.data[self._result_variable(my_task)] = result
             return True
         except FileNotFoundError as exc:
-            event_definition = ErrorEventDefinition('file_not_found', code='1')
-            event = BpmnEvent(event_definition, payload=params['filename'])
+            event_definition = ErrorEventDefinition("file_not_found", code="1")
+            event = BpmnEvent(event_definition, payload=params["filename"])
             my_task.workflow.top_workflow.catch(event)
             return False
         except Exception as exc:
-            raise WorkflowTaskException('Service Task execution error', task=my_task, exception=exc)
+            raise WorkflowTaskException(
+                "Service Task execution error", task=my_task, exception=exc
+            )
 
 
 class ServiceTaskEnvironment(TaskDataEnvironment):
 
     def call_service(self, operation_name, operation_params, context):
-        if operation_name == 'read_file':
-            return open(operation_params['filename']).read()
+        if operation_name == "read_file":
+            return open(operation_params["filename"]).read()
         else:
-            raise ValueError('Unknown Service')
+            raise ValueError("Unknown Service")
 
 
 parser = SpiffBpmnParser()
-parser.OVERRIDE_PARSER_CLASSES[full_tag('serviceTask')] = (ServiceTaskParser, EventHandlingServiceTask)
+parser.OVERRIDE_PARSER_CLASSES[full_tag("serviceTask")] = (
+    ServiceTaskParser,
+    EventHandlingServiceTask,
+)
 
 SPIFF_CONFIG[EventHandlingServiceTask] = SPIFF_CONFIG.pop(ServiceTask)
 registry = FileSerializer.configure(SPIFF_CONFIG)

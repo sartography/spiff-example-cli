@@ -19,18 +19,20 @@ from .product_info import (
     lookup_product_info,
     lookup_shipping_cost,
 )
-logger = logging.getLogger('spiff_engine')
+
+DIRNAME = "wfdata"
+
+logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
 
-spiff_logger = logging.getLogger('spiff_engine')
+spiff_logger = logging.getLogger("spiff_engine")
 spiff_logger.setLevel(logging.INFO)
 
-dirname = 'wfdata'
-FileSerializer.initialize(dirname)
+FileSerializer.initialize(DIRNAME)
 
 registry = FileSerializer.configure(SPIFF_CONFIG)
 registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
-serializer = FileSerializer(dirname, registry=registry)
+serializer = FileSerializer(DIRNAME, registry=registry)
 
 parser = SpiffBpmnParser()
 
@@ -40,23 +42,29 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
+
 class ServiceTaskEnvironment(TaskDataEnvironment):
 
     def __init__(self):
-        super().__init__({
-            'product_info_from_dict': product_info_from_dict,
-            'datetime': datetime,
-        })
+        super().__init__(
+            {
+                "product_info_from_dict": product_info_from_dict,
+                "datetime": datetime,
+            }
+        )
 
     def call_service(self, operation_name, operation_params, task_data):
-        if operation_name == 'lookup_product_info':
-            product_info = lookup_product_info(operation_params['product_name']['value'])
+        if operation_name == "lookup_product_info":
+            product_info = lookup_product_info(
+                operation_params["product_name"]["value"]
+            )
             result = product_info_to_dict(product_info)
-        elif operation_name == 'lookup_shipping_cost':
-            result = lookup_shipping_cost(operation_params['shipping_method']['value'])
+        elif operation_name == "lookup_shipping_cost":
+            result = lookup_shipping_cost(operation_params["shipping_method"]["value"])
         else:
             raise Exception("Unknown Service!")
         return json.dumps(result)
+
 
 script_env = ServiceTaskEnvironment()
 

@@ -14,7 +14,7 @@ from ..serializer import (
     SqliteSerializer,
     WorkflowConverter,
     SubworkflowConverter,
-    WorkflowSpecConverter
+    WorkflowSpecConverter,
 )
 from ..engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
@@ -27,24 +27,26 @@ from .product_info import (
     lookup_shipping_cost,
 )
 
-logger = logging.getLogger('spiff_engine')
+
+DBNAME = "spiff.db"
+
+logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
 
-spiff_logger = logging.getLogger('spiff')
+spiff_logger = logging.getLogger("spiff")
 spiff_logger.setLevel(logging.INFO)
 
 SPIFF_CONFIG[BpmnWorkflow] = WorkflowConverter
 SPIFF_CONFIG[BpmnSubWorkflow] = SubworkflowConverter
 SPIFF_CONFIG[BpmnProcessSpec] = WorkflowSpecConverter
 
-dbname = 'spiff.db'
-with sqlite3.connect(dbname) as db:
+with sqlite3.connect(DBNAME) as db:
     SqliteSerializer.initialize(db)
 
 registry = SqliteSerializer.configure(SPIFF_CONFIG)
 registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
 
-serializer = SqliteSerializer(dbname, registry=registry)
+serializer = SqliteSerializer(DBNAME, registry=registry)
 
 parser = SpiffBpmnParser()
 
@@ -54,9 +56,11 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
-script_env = TaskDataEnvironment({
-    'datetime': datetime,
-    'lookup_product_info': lookup_product_info,
-    'lookup_shipping_cost': lookup_shipping_cost,
-})
+script_env = TaskDataEnvironment(
+    {
+        "datetime": datetime,
+        "lookup_product_info": lookup_product_info,
+        "lookup_shipping_cost": lookup_shipping_cost,
+    }
+)
 engine = BpmnEngine(parser, serializer, script_env)

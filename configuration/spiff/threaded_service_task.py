@@ -17,14 +17,15 @@ from ..serializer import FileSerializer
 from ..engine import BpmnEngine, Instance
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
-logger = logging.getLogger('spiff_engine')
+DIRNAME = "wfdata"
+
+logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
 
-spiff_logger = logging.getLogger('spiff')
+spiff_logger = logging.getLogger("spiff")
 spiff_logger.setLevel(logging.INFO)
 
-dirname = 'wfdata'
-FileSerializer.initialize(dirname)
+FileSerializer.initialize(DIRNAME)
 
 handlers = {
     UserTask: UserTaskHandler,
@@ -32,20 +33,30 @@ handlers = {
     NoneTask: ManualTaskHandler,
 }
 
+
 def wait(seconds, job_id):
     time.sleep(seconds)
-    return f'{job_id} slept {seconds} seconds'
+    return f"{job_id} slept {seconds} seconds"
+
 
 class ThreadedServiceTask(ServiceTask):
 
     def _execute(self, my_task):
         script_engine = my_task.workflow.script_engine
-        params = dict((name, script_engine.evaluate(my_task, p['value'])) for name, p in self.operation_params.items())
+        params = dict(
+            (name, script_engine.evaluate(my_task, p["value"]))
+            for name, p in self.operation_params.items()
+        )
         try:
-            future = script_engine.call_service(self.operation_name, params, my_task.data)
+            future = script_engine.call_service(
+                self.operation_name, params, my_task.data
+            )
             script_engine.environment.futures[future] = my_task
         except Exception as exc:
-            raise WorkflowTaskException('Service Task execution error', task=my_task, exception=exc)
+            raise WorkflowTaskException(
+                "Service Task execution error", task=my_task, exception=exc
+            )
+
 
 class ServiceTaskEnvironment(TaskDataEnvironment):
 
@@ -55,11 +66,12 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
         self.futures = {}
 
     def call_service(self, operation_name, operation_params, context):
-        if operation_name == 'wait':
+        if operation_name == "wait":
             seconds = randrange(1, 30)
-            return self.pool.submit(wait, seconds, operation_params['job_id'])
-        else:
-            raise ValueError("Unknown Service!")
+            return self.pool.submit(wait, seconds, operation_params["job_id"])
+
+        raise ValueError("Unknown Service!")
+
 
 class ThreadInstance(Instance):
 
@@ -76,12 +88,16 @@ class ThreadInstance(Instance):
         self.update_completed_futures()
         super().run_ready_events()
 
+
 parser = SpiffBpmnParser()
-parser.OVERRIDE_PARSER_CLASSES[full_tag('serviceTask')] = (ServiceTaskParser, ThreadedServiceTask)
+parser.OVERRIDE_PARSER_CLASSES[full_tag("serviceTask")] = (
+    ServiceTaskParser,
+    ThreadedServiceTask,
+)
 
 SPIFF_CONFIG[ThreadedServiceTask] = SPIFF_CONFIG.pop(ServiceTask)
 registry = FileSerializer.configure(SPIFF_CONFIG)
-serializer = FileSerializer(dirname, registry=registry)
+serializer = FileSerializer(DIRNAME, registry=registry)
 
 script_env = ServiceTaskEnvironment()
 
