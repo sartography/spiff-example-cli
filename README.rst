@@ -56,7 +56,7 @@ To add a workflow via the command line and store serialized specs in JSON files:
 
 .. code-block:: console
 
-   ./runner.py -e spiff_example/spiff/file.py add \
+   ./runner.py -e configuration/spiff/file.py add \
       -p order_product \
       -b models/{top_level,call_activity}.bpmn \
       -d models/{product_prices,shipping_costs}.dmn
@@ -68,7 +68,7 @@ To run the curses application using serialized JSON files:
 
 .. code-block:: console
 
-   ./runner.py -e spiff_example/spiff/file.py
+   ./runner.py -e configuration/spiff/file.py
 
 Select the 'Start Workflow' screen and start the process.
 

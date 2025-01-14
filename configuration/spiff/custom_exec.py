@@ -69,7 +69,7 @@ class SubprocessScriptingEnvironment(BasePythonScriptEngineEnvironment):
             raise Exception(output.stderr.decode('utf-8'))
         return registry.restore(json.loads(output.stdout))
 
-executable = 'spiff_example.spiff.subprocess_engine'
+executable = 'configuration.spiff.subprocess_engine'
 script_env = SubprocessScriptingEnvironment(executable, serializer)
 
 engine = BpmnEngine(parser, serializer, script_env)

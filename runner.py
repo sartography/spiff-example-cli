@@ -7,8 +7,8 @@ import os
 import sys
 import traceback
 
-from spiff_example.curses_ui import CursesUI
-from spiff_example.cli import add_subparsers, configure_logging
+from configuration.curses_ui import CursesUI
+from configuration.cli import add_subparsers, configure_logging
 
 if __name__ == "__main__":
 
