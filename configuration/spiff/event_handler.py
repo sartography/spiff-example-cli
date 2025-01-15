@@ -43,9 +43,17 @@ class EventHandlingServiceTask(ServiceTask):
         )
         try:
             result = script_engine.call_service(
+<<<<<<< HEAD:configuration/spiff/event_handler.py
                 self.operation_name, params, my_task.data
             )
             my_task.data[self._result_variable(my_task)] = result
+=======
+                my_task,
+                operation_name=self.operation_name,
+                operation_params=params
+            )
+            my_task.data[self.result_variable] = result
+>>>>>>> main:spiff_example/misc/event_handler.py
             return True
         except FileNotFoundError as exc:
             event_definition = ErrorEventDefinition("file_not_found", code="1")
@@ -60,9 +68,15 @@ class EventHandlingServiceTask(ServiceTask):
 
 class ServiceTaskEnvironment(TaskDataEnvironment):
 
+<<<<<<< HEAD:configuration/spiff/event_handler.py
     def call_service(self, operation_name, operation_params, context):
         if operation_name == "read_file":
             return open(operation_params["filename"]).read()
+=======
+    def call_service(self, context, operation_name, operation_params):
+        if operation_name == 'read_file':
+            return open(operation_params['filename']).read()
+>>>>>>> main:spiff_example/misc/event_handler.py
         else:
             raise ValueError("Unknown Service")
 

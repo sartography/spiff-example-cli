@@ -49,7 +49,9 @@ class ThreadedServiceTask(ServiceTask):
         )
         try:
             future = script_engine.call_service(
-                self.operation_name, params, my_task.data
+                my_task,
+                operation_name=self.operation_name,
+                operation_params=params,
             )
             script_engine.environment.futures[future] = my_task
         except Exception as exc:
@@ -65,8 +67,8 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
         self.pool = ThreadPoolExecutor(max_workers=10)
         self.futures = {}
 
-    def call_service(self, operation_name, operation_params, context):
-        if operation_name == "wait":
+    def call_service(self, context, operation_name, operation_params):
+        if operation_name == 'wait':
             seconds = randrange(1, 30)
             return self.pool.submit(wait, seconds, operation_params["job_id"])
 
@@ -81,7 +83,7 @@ class ThreadInstance(Instance):
         for future in finished:
             task = futures.pop(future)
             result = future.result()
-            task.data[task.task_spec._result_variable(task)] = result
+            task.data[task.task_spec.result_variable] = result
             task.complete()
 
     def run_ready_events(self):
