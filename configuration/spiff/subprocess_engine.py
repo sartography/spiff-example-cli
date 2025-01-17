@@ -1,9 +1,19 @@
 #!/usr/bin/env python
+# FIXME: lookup_product_info and lookup_shipping_cost are not called within this module
+#        and need also to be imported (without being called) in custom_exec.py. When
+#        they are in either file, during runtime the following error is raised:
+#        "NameError: name 'lookup_product_info' is not defined"
+#        This is very opaque and hard to debug.
 
 import argparse
 import json
 
-from .custom_exec import registry
+from .custom_exec import (
+    lookup_product_info,
+    lookup_shipping_cost,
+    registry,
+)
+
 
 if __name__ == "__main__":
 

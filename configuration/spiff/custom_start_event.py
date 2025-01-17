@@ -1,4 +1,5 @@
 import logging
+import os
 
 from RestrictedPython import safe_globals
 
@@ -21,15 +22,8 @@ from ..serializer import FileSerializer
 from ..engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
-logger = logging.getLogger("spiff_engine")
-logger.setLevel(logging.INFO)
 
-spiff_logger = logging.getLogger("spiff")
-spiff_logger.setLevel(logging.INFO)
-
-DIRNAME = "wfdata"
-
-
+# Class definitions.
 class CustomStartEvent(StartEventMixin, SpiffBpmnTask):
 
     def __init__(self, wf_spec, bpmn_id, event_definition, **kwargs):
@@ -57,25 +51,36 @@ class CustomStartEventConverter(SpiffBpmnTaskConverter):
         return spec
 
 
-FileSerializer.initialize(DIRNAME)
+# Set loggers.
+logger = logging.getLogger("spiff_engine")
+logger.setLevel(logging.INFO)
+spiff_logger = logging.getLogger("spiff")
+spiff_logger.setLevel(logging.INFO)
 
+
+# Configure serializer.
+data_directory = os.environ["data_directory"]
+FileSerializer.initialize(data_directory)
 SPIFF_CONFIG[CustomStartEvent] = CustomStartEventConverter
-
 registry = FileSerializer.configure(SPIFF_CONFIG)
-serializer = FileSerializer(DIRNAME, registry=registry)
+serializer = FileSerializer(data_directory, registry=registry)
 
+# Configure parser.
 parser = SpiffBpmnParser()
 parser.OVERRIDE_PARSER_CLASSES[full_tag("startEvent")] = (
     StartEventParser,
     CustomStartEvent,
 )
 
+# Configure handlers.
 handlers = {
     UserTask: UserTaskHandler,
     ManualTask: ManualTaskHandler,
     NoneTask: ManualTaskHandler,
 }
 
+# Configure script environment.
 script_env = TaskDataEnvironment(safe_globals)
 
+# Create engine.
 engine = BpmnEngine(parser, serializer, script_env)

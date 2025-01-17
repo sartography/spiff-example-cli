@@ -1,5 +1,10 @@
+# FIXME: lookup_product_info and lookup_shipping_cost are not used in this module, but
+#        must be imported to be available within subprocess_engine.py. This is very
+#        opaque and hard to debug.
+
 import json
 import logging
+import os
 import subprocess
 
 from SpiffWorkflow.spiff.parser import SpiffBpmnParser
@@ -17,33 +22,14 @@ from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 from .product_info import (
     ProductInfo,
+    lookup_product_info,
+    lookup_shipping_cost,
     product_info_to_dict,
     product_info_from_dict,
 )
 
-DIRNAME = "wfdata"
 
-logger = logging.getLogger("spiff_engine")
-logger.setLevel(logging.INFO)
-
-spiff_logger = logging.getLogger("spiff")
-spiff_logger.setLevel(logging.INFO)
-
-FileSerializer.initialize(DIRNAME)
-
-registry = FileSerializer.configure(SPIFF_CONFIG)
-registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
-serializer = FileSerializer(DIRNAME, registry=registry)
-
-parser = SpiffBpmnParser()
-
-handlers = {
-    UserTask: UserTaskHandler,
-    ManualTask: ManualTaskHandler,
-    NoneTask: ManualTaskHandler,
-}
-
-
+# Class definitions.
 class SubprocessScriptingEnvironment(BasePythonScriptEngineEnvironment):
 
     def __init__(self, executable, serializer, **kwargs):
@@ -76,7 +62,32 @@ class SubprocessScriptingEnvironment(BasePythonScriptEngineEnvironment):
         return registry.restore(json.loads(output.stdout))
 
 
+# Set loggers.
+logger = logging.getLogger("spiff_engine")
+logger.setLevel(logging.INFO)
+spiff_logger = logging.getLogger("spiff")
+spiff_logger.setLevel(logging.INFO)
+
+# Configure serializer.
+data_directory = os.environ["data_directory"]
+FileSerializer.initialize(data_directory)
+registry = FileSerializer.configure(SPIFF_CONFIG)
+registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
+serializer = FileSerializer(data_directory, registry=registry)
+
+# Configure parser.
+parser = SpiffBpmnParser()
+
+# Configure handlers.
+handlers = {
+    UserTask: UserTaskHandler,
+    ManualTask: ManualTaskHandler,
+    NoneTask: ManualTaskHandler,
+}
+
+# Configure script environment.
 executable = "configuration.spiff.subprocess_engine"
 script_env = SubprocessScriptingEnvironment(executable, serializer)
 
+# Create engine.
 engine = BpmnEngine(parser, serializer, script_env)

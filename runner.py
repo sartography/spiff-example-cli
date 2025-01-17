@@ -7,8 +7,15 @@ import os
 import sys
 import traceback
 
-from configuration.cli import add_subparsers, configure_logging, CursesUI
+from configuration import cli
 
+
+# Constant definitions
+FORMS_DIRECTORY = "forms"
+DATA_DIRECTORY = "wfdata"
+
+
+# Command line entry point
 if __name__ == "__main__":
 
     # Handle command line arguments.
@@ -22,18 +29,23 @@ if __name__ == "__main__":
         help="load engine from %(metavar)s",
     )
     subparsers = parser.add_subparsers(dest="subcommand")
-    add_subparsers(subparsers)
+    cli.add_subparsers(subparsers)
     args = parser.parse_args()
 
+    # Set environment variables to inject directory paths into the configuration
+    # modules.
+    os.environ["forms_directory"] = FORMS_DIRECTORY
+    os.environ["data_directory"] = DATA_DIRECTORY
+
     # Convert engine file name into module name and import the engine.
-    engine = args.engine.rstrip('.py').replace(os.sep, '.')
+    engine = args.engine.rstrip(".py").replace(os.sep, ".")
     config = importlib.import_module(engine)
 
     try:
         if args.subcommand is None:
-            curses.wrapper(CursesUI, config.engine, config.handlers)
+            curses.wrapper(cli.CursesUI, config.engine, config.handlers)
         else:
-            configure_logging()
+            cli.configure_logging()
             args.func(config.engine, args)
     except Exception:
         sys.stderr.write(traceback.format_exc())

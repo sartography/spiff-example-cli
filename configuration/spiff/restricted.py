@@ -1,4 +1,5 @@
 import logging
+import os
 
 from RestrictedPython import safe_globals
 
@@ -13,28 +14,30 @@ from ..engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 
-DIRNAME = "wfdata"
-
-
+# Set loggers.
 logger = logging.getLogger("spiff_engine")
 logger.setLevel(logging.INFO)
-
 spiff_logger = logging.getLogger("spiff")
 spiff_logger.setLevel(logging.INFO)
 
-FileSerializer.initialize(DIRNAME)
-
+# Configure serializer.
+data_directory = os.environ["data_directory"]
+FileSerializer.initialize(data_directory)
 registry = FileSerializer.configure(SPIFF_CONFIG)
-serializer = FileSerializer(DIRNAME, registry=registry)
+serializer = FileSerializer(data_directory, registry=registry)
 
+# Configure parser.
 parser = SpiffBpmnParser()
 
+# Configure handlers.
 handlers = {
     UserTask: UserTaskHandler,
     ManualTask: ManualTaskHandler,
     NoneTask: ManualTaskHandler,
 }
 
+# Configure script environment.
 script_env = TaskDataEnvironment(safe_globals)
 
+# Create engine.
 engine = BpmnEngine(parser, serializer, script_env)

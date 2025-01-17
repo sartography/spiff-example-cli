@@ -1,5 +1,7 @@
 import logging
+import os
 import time
+
 from random import randrange
 from concurrent.futures import ThreadPoolExecutor
 
@@ -17,26 +19,27 @@ from ..serializer import FileSerializer
 from ..engine import BpmnEngine, Instance
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
-DIRNAME = "wfdata"
 
-logger = logging.getLogger("spiff_engine")
-logger.setLevel(logging.INFO)
-
-spiff_logger = logging.getLogger("spiff")
-spiff_logger.setLevel(logging.INFO)
-
-FileSerializer.initialize(DIRNAME)
-
-handlers = {
-    UserTask: UserTaskHandler,
-    ManualTask: ManualTaskHandler,
-    NoneTask: ManualTaskHandler,
-}
-
-
+# Function definitions.
 def wait(seconds, job_id):
     time.sleep(seconds)
     return f"{job_id} slept {seconds} seconds"
+
+
+# Class definitions.
+class ServiceTaskEnvironment(TaskDataEnvironment):
+
+    def __init__(self):
+        super().__init__()
+        self.pool = ThreadPoolExecutor(max_workers=10)
+        self.futures = {}
+
+    def call_service(self, context, operation_name, operation_params):
+        if operation_name == "wait":
+            seconds = randrange(1, 30)
+            return self.pool.submit(wait, seconds, operation_params["job_id"])
+
+        raise ValueError("Unknown Service!")
 
 
 class ThreadedServiceTask(ServiceTask):
@@ -60,21 +63,6 @@ class ThreadedServiceTask(ServiceTask):
             )
 
 
-class ServiceTaskEnvironment(TaskDataEnvironment):
-
-    def __init__(self):
-        super().__init__()
-        self.pool = ThreadPoolExecutor(max_workers=10)
-        self.futures = {}
-
-    def call_service(self, context, operation_name, operation_params):
-        if operation_name == 'wait':
-            seconds = randrange(1, 30)
-            return self.pool.submit(wait, seconds, operation_params["job_id"])
-
-        raise ValueError("Unknown Service!")
-
-
 class ThreadInstance(Instance):
 
     def update_completed_futures(self):
@@ -91,16 +79,35 @@ class ThreadInstance(Instance):
         super().run_ready_events()
 
 
+# Set loggers.
+logger = logging.getLogger("spiff_engine")
+logger.setLevel(logging.INFO)
+spiff_logger = logging.getLogger("spiff")
+spiff_logger.setLevel(logging.INFO)
+
+# Configure serializer.
+data_directory = os.environ["data_directory"]
+FileSerializer.initialize(data_directory)
+SPIFF_CONFIG[ThreadedServiceTask] = SPIFF_CONFIG.pop(ServiceTask)
+registry = FileSerializer.configure(SPIFF_CONFIG)
+serializer = FileSerializer(data_directory, registry=registry)
+
+# Configure parser.
 parser = SpiffBpmnParser()
 parser.OVERRIDE_PARSER_CLASSES[full_tag("serviceTask")] = (
     ServiceTaskParser,
     ThreadedServiceTask,
 )
 
-SPIFF_CONFIG[ThreadedServiceTask] = SPIFF_CONFIG.pop(ServiceTask)
-registry = FileSerializer.configure(SPIFF_CONFIG)
-serializer = FileSerializer(DIRNAME, registry=registry)
+# Configure handlers.
+handlers = {
+    UserTask: UserTaskHandler,
+    ManualTask: ManualTaskHandler,
+    NoneTask: ManualTaskHandler,
+}
 
+# Configure script environment.
 script_env = ServiceTaskEnvironment()
 
+# Create engine.
 engine = BpmnEngine(parser, serializer, script_env, instance_cls=ThreadInstance)

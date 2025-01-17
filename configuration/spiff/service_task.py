@@ -1,6 +1,7 @@
+import datetime
 import json
 import logging
-import datetime
+import os
 
 from SpiffWorkflow.spiff.parser import SpiffBpmnParser
 from SpiffWorkflow.spiff.specs.defaults import UserTask, ManualTask
@@ -20,29 +21,8 @@ from .product_info import (
     lookup_shipping_cost,
 )
 
-DIRNAME = "wfdata"
 
-logger = logging.getLogger("spiff_engine")
-logger.setLevel(logging.INFO)
-
-spiff_logger = logging.getLogger("spiff_engine")
-spiff_logger.setLevel(logging.INFO)
-
-FileSerializer.initialize(DIRNAME)
-
-registry = FileSerializer.configure(SPIFF_CONFIG)
-registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
-serializer = FileSerializer(DIRNAME, registry=registry)
-
-parser = SpiffBpmnParser()
-
-handlers = {
-    UserTask: UserTaskHandler,
-    ManualTask: ManualTaskHandler,
-    NoneTask: ManualTaskHandler,
-}
-
-
+# Class definitions.
 class ServiceTaskEnvironment(TaskDataEnvironment):
 
     def __init__(self):
@@ -54,8 +34,10 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
         )
 
     def call_service(self, task_data, operation_name, operation_params):
-        if operation_name == 'lookup_product_info':
-            product_info = lookup_product_info(operation_params['product_name']['value'])
+        if operation_name == "lookup_product_info":
+            product_info = lookup_product_info(
+                operation_params["product_name"]["value"]
+            )
             result = product_info_to_dict(product_info)
         elif operation_name == "lookup_shipping_cost":
             result = lookup_shipping_cost(operation_params["shipping_method"]["value"])
@@ -64,6 +46,31 @@ class ServiceTaskEnvironment(TaskDataEnvironment):
         return json.dumps(result)
 
 
+# Set loggers.
+logger = logging.getLogger("spiff_engine")
+logger.setLevel(logging.INFO)
+spiff_logger = logging.getLogger("spiff_engine")
+spiff_logger.setLevel(logging.INFO)
+
+# Configure serializer.
+data_directory = os.environ["data_directory"]
+FileSerializer.initialize(data_directory)
+registry = FileSerializer.configure(SPIFF_CONFIG)
+registry.register(ProductInfo, product_info_to_dict, product_info_from_dict)
+serializer = FileSerializer(data_directory, registry=registry)
+
+# Configure parser.
+parser = SpiffBpmnParser()
+
+# Configure handlers.
+handlers = {
+    UserTask: UserTaskHandler,
+    ManualTask: ManualTaskHandler,
+    NoneTask: ManualTaskHandler,
+}
+
+# Configure script environment.
 script_env = ServiceTaskEnvironment()
 
+# Create engine.
 engine = BpmnEngine(parser, serializer, script_env)

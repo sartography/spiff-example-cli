@@ -6,8 +6,6 @@ from jinja2 import Template
 from ..cli.user_input import SimpleField, Option, JsonField
 from ..cli.human_task_handler import TaskHandler
 
-FORMS_DIR = "forms"
-
 
 class SpiffTaskHandler(TaskHandler):
 
@@ -29,8 +27,11 @@ class UserTaskHandler(SpiffTaskHandler):
 
     def set_fields(self, task):
 
-        filename = task.task_spec.extensions["properties"]["formJsonSchemaFilename"]
-        with open(os.path.join(FORMS_DIR, filename), encoding="utf-8") as form:
+        file_path = os.path.join(
+            os.environ["forms_directory"],
+            task.task_spec.extensions["properties"]["formJsonSchemaFilename"],
+        )
+        with open(file_path, encoding="utf-8") as form:
             schema = json.load(form)
         user_input = self.ui._states["user_input"]
         for name, config in schema["properties"].items():
