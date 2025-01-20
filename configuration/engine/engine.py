@@ -40,7 +40,7 @@ class BpmnEngine:
             self.parser.process_parsers = {}
             raise exc
         spec_id = self.serializer.create_workflow_spec(spec, dependencies)
-        logger.info("Added %s with id %s", process_id, spec_id)
+        logger.info("Added %s with id %s" % (process_id, spec_id))
         return spec_id
 
     def add_collaboration(self, collaboration_id, bpmn_files, dmn_files=None):
@@ -51,7 +51,7 @@ class BpmnEngine:
             self.parser.process_parsers = {}
             raise exc
         spec_id = self.serializer.create_workflow_spec(spec, dependencies)
-        logger.info("Added {collaboration_id} with id %s", spec_id)
+        logger.info("Added %s with id %s" % (collaboration_id, spec_id))
         return spec_id
 
     def add_files(self, bpmn_files, dmn_files):
@@ -64,13 +64,13 @@ class BpmnEngine:
 
     def delete_workflow_spec(self, spec_id):
         self.serializer.delete_workflow_spec(spec_id)
-        logger.info("Deleted workflow spec with id %s", spec_id)
+        logger.info("Deleted workflow spec with id %s" % spec_id)
 
     def start_workflow(self, spec_id):
         spec, sp_specs = self.serializer.get_workflow_spec(spec_id)
         wf = BpmnWorkflow(spec, sp_specs, script_engine=self._script_engine)
         wf_id = self.serializer.create_workflow(wf, spec_id)
-        logger.info("Created workflow with id %s", wf_id)
+        logger.info("Created workflow with id %s" % wf_id)
         return self.instance_cls(wf_id, wf, save=self.update_workflow)
 
     def get_workflow(self, wf_id):
@@ -79,7 +79,7 @@ class BpmnEngine:
         return self.instance_cls(wf_id, wf, save=self.update_workflow)
 
     def update_workflow(self, instance):
-        logger.info("Saved workflow %s", instance.wf_id)
+        logger.info("Saved workflow %s" % instance.wf_id)
         self.serializer.update_workflow(instance.workflow, instance.wf_id)
 
     def list_workflows(self, include_completed=False):
@@ -87,7 +87,7 @@ class BpmnEngine:
 
     def delete_workflow(self, wf_id):
         self.serializer.delete_workflow(wf_id)
-        logger.info("Deleted workflow with id %s", wf_id)
+        logger.info("Deleted workflow with id %s" % wf_id)
 
     def diff_spec(self, original_id, new_id):
         original, _ = self.serializer.get_workflow_spec(
