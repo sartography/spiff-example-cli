@@ -12,7 +12,7 @@ from app import cli
 
 # Constant definitions
 FORMS_DIRECTORY = "forms"
-DATA_DIRECTORY = "wfdata"
+DATA_DIRECTORY = "data"
 
 
 # Command line entry point
