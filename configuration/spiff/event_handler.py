@@ -13,8 +13,8 @@ from SpiffWorkflow.bpmn.parser.util import full_tag
 from SpiffWorkflow.bpmn.exceptions import WorkflowTaskException
 from SpiffWorkflow.bpmn import BpmnEvent
 
-from ..serializer import FileSerializer
-from ..engine import BpmnEngine
+from app.serializer import FileSerializer
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 

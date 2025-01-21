@@ -10,13 +10,13 @@ from SpiffWorkflow.bpmn.specs import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
 from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
-from ..serializer import (
+from app.serializer import (
     SqliteSerializer,
     WorkflowConverter,
     SubworkflowConverter,
     WorkflowSpecConverter,
 )
-from ..engine import BpmnEngine
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 from .product_info import (

@@ -7,7 +7,7 @@ import os
 import sys
 import traceback
 
-from configuration import cli
+from app import cli
 
 
 # Constant definitions

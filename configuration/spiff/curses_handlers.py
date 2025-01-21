@@ -3,8 +3,8 @@ import os
 
 from jinja2 import Template
 
-from ..cli.user_input import SimpleField, Option, JsonField
-from ..cli.human_task_handler import TaskHandler
+from app.cli.user_input import SimpleField, Option, JsonField
+from app.cli.human_task_handler import TaskHandler
 
 
 class SpiffTaskHandler(TaskHandler):

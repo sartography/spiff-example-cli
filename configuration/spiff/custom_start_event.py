@@ -18,8 +18,8 @@ from SpiffWorkflow.spiff.parser.event_parsers import StartEventParser
 from SpiffWorkflow.bpmn.parser.util import full_tag
 from SpiffWorkflow.spiff.serializer.task_spec import SpiffBpmnTaskConverter
 
-from ..serializer import FileSerializer
-from ..engine import BpmnEngine
+from app.serializer import FileSerializer
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 

@@ -15,8 +15,8 @@ from SpiffWorkflow.spiff.parser.task_spec import ServiceTaskParser
 from SpiffWorkflow.bpmn.parser.util import full_tag
 from SpiffWorkflow.bpmn.exceptions import WorkflowTaskException
 
-from ..serializer import FileSerializer
-from ..engine import BpmnEngine, Instance
+from app.serializer import FileSerializer
+from app.engine import BpmnEngine, Instance
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 
