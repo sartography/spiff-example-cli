@@ -86,7 +86,7 @@ handlers = {
 }
 
 # Configure script environment.
-executable = "configuration.spiff.subprocess_engine"
+executable = "config.spiff.subprocess_engine"
 script_env = SubprocessScriptingEnvironment(executable, serializer)
 
 # Create engine.
