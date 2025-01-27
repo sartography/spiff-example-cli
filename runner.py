@@ -5,8 +5,7 @@ import importlib
 import sys, traceback
 from argparse import ArgumentParser
 
-from spiff_example.curses_ui import CursesUI, CursesUIError
-from spiff_example.cli import add_subparsers, configure_logging
+from app.cli import add_subparsers, configure_logging, CursesUI, CursesUIError
 
 if __name__ == '__main__':
 
