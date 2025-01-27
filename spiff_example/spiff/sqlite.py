@@ -11,7 +11,7 @@ from SpiffWorkflow.bpmn.specs import BpmnProcessSpec
 from SpiffWorkflow.bpmn.specs.mixins import NoneTaskMixin as NoneTask
 from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
-from ..serializer.sqlite import (
+from app.serializer import (
     SqliteSerializer,
     WorkflowConverter,
     SubworkflowConverter,

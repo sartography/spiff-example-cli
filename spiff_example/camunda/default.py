@@ -9,7 +9,7 @@ from SpiffWorkflow.bpmn import BpmnWorkflow
 from SpiffWorkflow.bpmn.util.subworkflow import BpmnSubWorkflow
 from SpiffWorkflow.bpmn.specs import BpmnProcessSpec
 
-from ..serializer.sqlite import (
+from app.serializer import (
     SqliteSerializer,
     WorkflowConverter,
     SubworkflowConverter,
