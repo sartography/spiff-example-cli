@@ -1,5 +1,6 @@
 .idea
 .vscode
+.python-version
 venv
 .venv
 docs/build
