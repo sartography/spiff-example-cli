@@ -8,3 +8,9 @@ __pycache__
 *.log
 *.db
 wfdata
+
+# Don't track model definitions of the user, but keep the examples that are part of the
+# repository.
+models/*
+!models/camunds
+!models/tutorial
