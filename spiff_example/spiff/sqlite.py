@@ -17,7 +17,7 @@ from ..serializer.sqlite import (
     SubworkflowConverter,
     WorkflowSpecConverter
 )
-from ..engine import BpmnEngine
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 logger = logging.getLogger('spiff_engine')
