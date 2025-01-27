@@ -6,7 +6,7 @@ from jinja2 import Template
 from ..curses_ui.user_input import SimpleField, Option, JsonField
 from ..curses_ui.human_task_handler import TaskHandler
 
-forms_dir = 'bpmn/tutorial/forms'
+forms_dir = 'models/tutorial/forms'
 
 class SpiffTaskHandler(TaskHandler):
 
