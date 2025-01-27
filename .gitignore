@@ -14,3 +14,8 @@ wfdata
 models/*
 !models/camunds
 !models/tutorial
+
+# Don't track form definitions of the user, but keep the examples that are part of the
+# repository.
+forms/*
+!forms/tutorial
