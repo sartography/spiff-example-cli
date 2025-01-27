@@ -26,7 +26,7 @@ logger.setLevel(logging.INFO)
 spiff_logger = logging.getLogger('spiff')
 spiff_logger.setLevel(logging.INFO)
 
-dirname = 'wfdata'
+dirname = 'data'
 FileSerializer.initialize(dirname)
 
 registry = FileSerializer.configure(SPIFF_CONFIG)
