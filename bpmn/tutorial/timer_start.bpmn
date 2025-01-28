@@ -17,16 +17,10 @@
     <bpmn:startEvent id="Start_Event">
       <bpmn:outgoing>Flow_032rj36</bpmn:outgoing>
       <bpmn:timerEventDefinition id="TimerEventDefinition_0jgw0qx">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">"PT1D"</bpmn:timeDuration>
+        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">"P1D"</bpmn:timeDuration>
       </bpmn:timerEventDefinition>
     </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0exxc43" sourceRef="Start_Event" targetRef="any_task" />
-    <bpmn:startEvent id="Start_Event">
-      <bpmn:outgoing>Flow_0exxc43</bpmn:outgoing>
-      <bpmn:timerEventDefinition id="TimerEventDefinition_0404tuj">
-        <bpmn:timeDuration xsi:type="bpmn:tFormalExpression">"PT1D"</bpmn:timeDuration>
-      </bpmn:timerEventDefinition>
-    </bpmn:startEvent>
   </bpmn:process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="timer_start">
