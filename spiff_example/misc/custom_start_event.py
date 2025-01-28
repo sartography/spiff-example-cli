@@ -53,7 +53,7 @@ class CustomStartEventConverter(SpiffBpmnTaskConverter):
         spec.timer_event = self.registry.restore(dct['timer_event'])
         return spec
 
-dirname = 'wfdata'
+dirname = 'data'
 FileSerializer.initialize(dirname)
 
 SPIFF_CONFIG[CustomStartEvent] = CustomStartEventConverter

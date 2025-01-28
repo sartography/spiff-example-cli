@@ -7,4 +7,4 @@ docs/_build
 __pycache__
 *.log
 *.db
-wfdata
+data
