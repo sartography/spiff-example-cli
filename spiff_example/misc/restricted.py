@@ -8,7 +8,7 @@ from SpiffWorkflow.spiff.serializer.config import SPIFF_CONFIG
 from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
 from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
-from ..serializer.file import FileSerializer
+from app.serializer import FileSerializer
 from ..engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
