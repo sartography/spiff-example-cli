@@ -14,7 +14,7 @@ from SpiffWorkflow.bpmn.parser.util import full_tag
 from SpiffWorkflow.bpmn.exceptions import WorkflowTaskException
 
 from ..serializer.file import FileSerializer
-from ..engine import BpmnEngine, Instance
+from app.engine import BpmnEngine, Instance
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 logger = logging.getLogger('spiff_engine')

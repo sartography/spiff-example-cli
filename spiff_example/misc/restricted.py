@@ -9,7 +9,7 @@ from SpiffWorkflow.bpmn.specs.mixins.none_task import NoneTask
 from SpiffWorkflow.bpmn.script_engine import TaskDataEnvironment
 
 from ..serializer.file import FileSerializer
-from ..engine import BpmnEngine
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 logger = logging.getLogger('spiff_engine')

@@ -19,7 +19,7 @@ from SpiffWorkflow.bpmn.serializer.default import EventConverter
 from SpiffWorkflow.spiff.serializer.task_spec import SpiffBpmnTaskConverter
 
 from ..serializer.file import FileSerializer
-from ..engine import BpmnEngine
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 logger = logging.getLogger('spiff_engine')

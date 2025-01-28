@@ -16,7 +16,7 @@ from ..serializer.sqlite import (
     SubworkflowConverter,
     WorkflowSpecConverter
 )
-from ..engine import BpmnEngine
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 from .product_info import (

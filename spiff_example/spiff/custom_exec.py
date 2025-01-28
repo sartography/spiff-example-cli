@@ -10,7 +10,7 @@ from SpiffWorkflow.bpmn.script_engine.python_environment import BasePythonScript
 from SpiffWorkflow.util.deep_merge import DeepMerge
 
 from ..serializer.file import FileSerializer
-from ..engine import BpmnEngine
+from app.engine import BpmnEngine
 from .curses_handlers import UserTaskHandler, ManualTaskHandler
 
 from .product_info import (
