@@ -43,9 +43,9 @@ the models and application can be found there.
 Models
 ^^^^^^
 
-Example BPMN and DMN files can be found in the `bpmn` directory of this repository.
+Example BPMN and DMN files can be found in the `models` directory of this repository.
 There are several versions of a product ordering process of variying complexity located in the
-`bpmn/tutorial` directory of the repo which contain most of the elements that SpiffWorkflow supports.  These
+`models/tutorial` directory of the repo which contain most of the elements that SpiffWorkflow supports.  These
 diagrams can be viewed in any BPMN editor, but many of them have custom extensions created with
 `bpmn-js-spiffworflow <https://github.com/sartography/bpmn-js-spiffworkflow>`_.
 
@@ -58,8 +58,8 @@ To add a workflow via the command line and store serialized specs in JSON files:
 
    ./runner.py -e spiff_example.spiff.file add \
       -p order_product \
-      -b bpmn/tutorial/{top_level,call_activity}.bpmn \
-      -d bpmn/tutorial/{product_prices,shipping_costs}.dmn
+      -b models/tutorial/{top_level,call_activity}.bpmn \
+      -d models/tutorial/{product_prices,shipping_costs}.dmn
 
 Running Workflows
 ^^^^^^^^^^^^^^^^^
