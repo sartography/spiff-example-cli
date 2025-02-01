@@ -25,6 +25,12 @@ Set up virtual environment
     python3 -m venv venv
     source ./venv/bin/activate
 
+Note: Some libraries included in requirements.txt only work in Python versions up to
+and including 3.11.  So if you run into troubles installing the required dependencies
+(see below), you might want to consider using `pyenv <https://github.com/pyenv/pyenv>`
+to install an additional version of Python on your system *before* creating the virtual
+environment.
+
 Install Requirements
 --------------------
 
