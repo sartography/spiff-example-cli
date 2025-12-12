@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:spiffworkflow="http://spiffworkflow.org/bpmn/schema/1.0/core" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="Definitions_96f6665" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.0.0-dev">
+  <bpmn:process id="Process_1764942097580" isExecutable="true">
+    <bpmn:endEvent id="EndEvent_1764942097580">
+      <bpmn:incoming>Flow_05gufh2</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow2_1764942097580" sourceRef="Task_1764942097580" targetRef="Activity_0odk3g0" />
+    <bpmn:scriptTask id="Task_1764942097580" name="make array">
+      <bpmn:incoming>Flow_1x0s7nh</bpmn:incoming>
+      <bpmn:outgoing>Flow2_1764942097580</bpmn:outgoing>
+      <bpmn:script>ar = [1,2,3,4,5,6]
+record_valid = {}</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:subProcess id="Activity_0odk3g0">
+      <bpmn:extensionElements>
+        <spiffworkflow:preScript>cnt = 0
+record_valid = {}
+record_valid_a = []
+test_dict = {}</spiffworkflow:preScript>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow2_1764942097580</bpmn:incoming>
+      <bpmn:outgoing>Flow_0m4ubvn</bpmn:outgoing>
+      <bpmn:standardLoopCharacteristics>
+        <bpmn:loopCondition xsi:type="bpmn:tFormalExpression">cnt &lt; len(ar)</bpmn:loopCondition>
+      </bpmn:standardLoopCharacteristics>
+      <bpmn:startEvent id="Event_0td954d">
+        <bpmn:outgoing>Flow_05t47xq</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:sequenceFlow id="Flow_05t47xq" sourceRef="Event_0td954d" targetRef="Activity_045lkt4" />
+      <bpmn:endEvent id="Event_1erwxgx">
+        <bpmn:incoming>Flow_18lt8tq</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_18lt8tq" sourceRef="Activity_045lkt4" targetRef="Event_1erwxgx" />
+      <bpmn:scriptTask id="Activity_045lkt4">
+        <bpmn:incoming>Flow_05t47xq</bpmn:incoming>
+        <bpmn:outgoing>Flow_18lt8tq</bpmn:outgoing>
+        <bpmn:script>reason = []
+
+if cnt%2 == 0:
+    valid = False
+    reason.append("I didn't feel like it")
+    reason_str = "I didn't feel like it"
+else:
+    valid = True
+    reason_str = ""
+
+# store result
+record_valid[cnt] = {
+    "valid": valid,
+    "reason": reason,
+    "reason_id": id(reason),
+    "reason_copy": reason[:]
+}
+
+record_valid_a.append(record_valid[cnt])
+
+
+# increment idx
+cnt = cnt + 1</bpmn:script>
+      </bpmn:scriptTask>
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_0m4ubvn" sourceRef="Activity_0odk3g0" targetRef="Activity_092geex" />
+    <bpmn:startEvent id="Event_0y2urc4">
+      <bpmn:outgoing>Flow_1x0s7nh</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:sequenceFlow id="Flow_1x0s7nh" sourceRef="Event_0y2urc4" targetRef="Task_1764942097580" />
+    <bpmn:sequenceFlow id="Flow_05gufh2" sourceRef="Activity_092geex" targetRef="EndEvent_1764942097580" />
+    <bpmn:manualTask id="Activity_092geex">
+      <bpmn:extensionElements>
+        <spiffworkflow:instructionsForEndUser>{{record_valid}}
+
+{{record_valid_a}}</spiffworkflow:instructionsForEndUser>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0m4ubvn</bpmn:incoming>
+      <bpmn:outgoing>Flow_05gufh2</bpmn:outgoing>
+    </bpmn:manualTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_1764942097580">
+      <bpmndi:BPMNShape id="EndEvent_1764942097580_di" bpmnElement="EndEvent_1764942097580">
+        <dc:Bounds x="952" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1c9joc1_di" bpmnElement="Task_1764942097580">
+        <dc:Bounds x="260" y="120" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0odk3g0_di" bpmnElement="Activity_0odk3g0" isExpanded="true">
+        <dc:Bounds x="420" y="60" width="350" height="200" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0td954d_di" bpmnElement="Event_0td954d">
+        <dc:Bounds x="460" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1erwxgx_di" bpmnElement="Event_1erwxgx">
+        <dc:Bounds x="712" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0s2s2ys_di" bpmnElement="Activity_045lkt4">
+        <dc:Bounds x="550" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_05t47xq_di" bpmnElement="Flow_05t47xq">
+        <di:waypoint x="496" y="160" />
+        <di:waypoint x="550" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_18lt8tq_di" bpmnElement="Flow_18lt8tq">
+        <di:waypoint x="650" y="160" />
+        <di:waypoint x="712" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0y2urc4_di" bpmnElement="Event_0y2urc4">
+        <dc:Bounds x="172" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_152vj1y_di" bpmnElement="Activity_092geex">
+        <dc:Bounds x="820" y="120" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow2_1764942097580_di" bpmnElement="Flow2_1764942097580">
+        <di:waypoint x="360" y="160" />
+        <di:waypoint x="420" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0m4ubvn_di" bpmnElement="Flow_0m4ubvn">
+        <di:waypoint x="770" y="160" />
+        <di:waypoint x="820" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1x0s7nh_di" bpmnElement="Flow_1x0s7nh">
+        <di:waypoint x="208" y="160" />
+        <di:waypoint x="260" y="160" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_05gufh2_di" bpmnElement="Flow_05gufh2">
+        <di:waypoint x="920" y="160" />
+        <di:waypoint x="952" y="160" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
